@@ -1,2 +1,4 @@
 node_modules/
-**/dist
+**/dist/
+playground/public/applets
+playground/public/manifest.json

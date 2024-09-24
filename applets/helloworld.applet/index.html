@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello World</title>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        window.parent.postMessage({ type: 'ready' });
+      });
+
+      window.addEventListener('message', (event) => {
+        console.log(event.data);
+        document.querySelector('#name').innerText = event.data.payload.name;
+      });
+
+      // client.on('state', () => ...)
+      // client.send('state', () => ...)
+    </script>
+  </head>
+  <body>
+    Hello, <span id="name">whoever you are</span>.
+  </body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "type": "applet",
+  "name": "Hello World",
+  "description": "Displays a greeting to the user.",
+  "view": "index.html",
+  "controller": "actions.js"
+}

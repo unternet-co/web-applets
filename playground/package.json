@@ -1,0 +1,15 @@
+{
+  "name": "playground",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm run import-applets && vite",
+    "import-applets": "cp -r ../dist/applets ./public && cp ../dist/manifest.json ./public"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.4.7"
+  }
+}
