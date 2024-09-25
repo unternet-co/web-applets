@@ -4,28 +4,33 @@ import { AppletView } from './components/applet-view';
 import { AppletSelect, SelectEvent } from './components/applet-select';
 import { getAppletsList, loadAppletManifest } from '../sdk';
 
+const appletSelect = document.querySelector('applet-select') as AppletSelect;
+const appletFrame = document.querySelector('applet-view') as AppletView;
+
 const applets = await getAppletsList('/');
 initializeApplet(applets[0].url);
 
-const appletSelect = document.querySelector('applet-select') as AppletSelect;
-const appletView = document.querySelector('applet-view') as AppletView;
-
 async function initializeApplet(url: string) {
   const appletManifest = await loadAppletManifest(url);
-  appletView.url = appletManifest.view;
-  let state;
+  appletFrame.url = appletManifest.entrypoint;
+
+  appletFrame.postMessage({
+    type: 'action',
+    action: {
+      id: 'set_name',
+      params: {
+        name: 'Rupert',
+      },
+    },
+  });
+
+  appletFrame.addEventListener('message', ((e: CustomEvent) => {
+    if (e.detail.type === 'state') updateState(e.detail.state);
+  }) as EventListener);
 
   function updateState(newState) {
-    state = newState;
-    appletView.state = newState;
+    appletFrame.postMessage({ type: 'state', state: newState });
   }
-
-  const worker = new Worker(appletManifest.controller);
-
-  worker.postMessage({ type: 'name', payload: 'Rupert' });
-  worker.onmessage = function (e) {
-    updateState(e.data.payload);
-  };
 }
 
 function handleAppletChange(event: SelectEvent) {

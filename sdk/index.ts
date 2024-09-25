@@ -31,8 +31,7 @@ export async function loadAppletManifest(url: string): Promise<AppletManifest> {
     throw new Error("URL doesn't point to a valid applet manifest.");
   }
 
-  appletManifest.view = parseUrl(appletManifest.view, url);
-  appletManifest.controller = parseUrl(appletManifest.controller, url);
+  appletManifest.entrypoint = parseUrl(appletManifest.entrypoint, url);
   return appletManifest;
 }
 
@@ -41,13 +40,23 @@ export interface AppletManifest {
   name: string;
   description: string;
   icon?: string;
-  initState?: Record<string, unknown>;
-  view: string;
-  controller: string;
+  entrypoint: string;
 }
 
 export interface AppletAction {
   id: string;
   description: string;
   params?: { name: string; type: string; description: string }[];
+}
+
+export class AppletMessage {
+  type: string;
+  detail: unknown;
+  timestamp: number;
+
+  constructor(type, detail) {
+    this.type = type;
+    this.detail = detail;
+    this.timestamp = Date.now();
+  }
 }

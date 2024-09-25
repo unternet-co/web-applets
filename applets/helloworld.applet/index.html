@@ -9,13 +9,38 @@
         window.parent.postMessage({ type: 'ready' });
       });
 
-      window.addEventListener('message', (event) => {
-        console.log(event.data);
-        document.querySelector('#name').innerText = event.data.payload.name;
+      window.addEventListener('message', (message) => {
+        console.info('Received message', message.data);
+        if (event.data.type === 'state') render(message.data.state);
+        if (event.data.type === 'action') handleAction(message.data.action);
       });
+
+      function handleAction(action) {
+        switch (action.id) {
+          case 'set_name':
+            window.parent.postMessage({
+              type: 'state',
+              state: { name: action.params.name },
+            });
+            break;
+        }
+      }
+
+      function render(state) {
+        document.getElementById('name').innerText = state.name;
+      }
 
       // client.on('state', () => ...)
       // client.send('state', () => ...)
+
+      // window.postMessage({
+      //   type: 'action',
+      //   timestamp: Date.now(),
+      //   detail: {
+      //     id: 'set_name',
+      //     params: { name: 'Jeff' },
+      //   },
+      // });
     </script>
   </head>
   <body>
