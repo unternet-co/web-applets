@@ -6,6 +6,7 @@
   "scripts": {
     "playground": "nodemon --watch applets --exec \"npm run applets:build && npm run playground:dev\" -e ts,html,css,js",
     "playground:dev": "cd playground && npm run dev",
+    "build": "vite build",
     "applets:build": "npm run applets:copy-files && node scripts/write-manifest.js",
     "applets:compile": "tsc -p tsconfig.applets.json",
     "applets:copy-files": "rsync -a --exclude='*.ts' applets/ dist/applets/"
@@ -16,5 +17,8 @@
     "concurrently": "^9.0.1",
     "nodemon": "^3.1.7",
     "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "vite": "^5.4.8"
   }
 }

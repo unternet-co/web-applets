@@ -1,0 +1,19 @@
+{
+  "type": "applet",
+  "name": "Hello World",
+  "description": "Displays a greeting to the user.",
+  "entrypoint": "index.html",
+  "actions": [
+    {
+      "id": "set_name",
+      "description": "Sets the name of the user to be greeted",
+      "params": [
+        {
+          "id": "name",
+          "type": "string",
+          "description": "The name of the user"
+        }
+      ]
+    }
+  ]
+}
