@@ -7,6 +7,7 @@
     <script>
       window.addEventListener('DOMContentLoaded', () => {
         window.parent.postMessage({ type: 'ready' });
+        window.parent.postMessage({ type: 'actions', actions: ['set_name'] });
       });
 
       window.addEventListener('message', (message) => {
@@ -32,15 +33,6 @@
 
       // client.on('state', () => ...)
       // client.send('state', () => ...)
-
-      // window.postMessage({
-      //   type: 'action',
-      //   timestamp: Date.now(),
-      //   detail: {
-      //     id: 'set_name',
-      //     params: { name: 'Jeff' },
-      //   },
-      // });
     </script>
   </head>
   <body>

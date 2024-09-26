@@ -4,6 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Applets Chat</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="main.ts" type="module"></script>
   </head>
-  <body></body>
+
+  <body>
+    <aside class="applets-drawer">
+      <header><h1>Applets</h1></header>
+    </aside>
+    <main>
+      <ul class="responses"></ul>
+      <form id="input-form" autocomplete="off">
+        <input id="input" placeholder="Ask a question..." />
+        <input type="submit" value="Submit" />
+      </form>
+    </main>
+    <aside class="inspector">
+      <section class="actions"></section>
+      <section class="state"></section>
+    </aside>
+  </body>
 </html>
