@@ -9,6 +9,11 @@ body {
   padding: 0;
   margin: 0;
   font-family: system-ui;
+  font-size: 14px;
+}
+
+input {
+  font-family: system-ui;
 }
 
 body {
@@ -61,8 +66,6 @@ aside {
 }
 
 aside code {
-  /* border: 1px solid #ccc; */
-  /* background: #f7f7f7; */
   display: block;
   width: 100%;
   white-space: pre;
@@ -96,4 +99,85 @@ aside code {
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
+  height: 0;
+}
+
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 8px 14px;
+  padding-top: 0;
+  flex-grow: 1;
+}
+
+fieldset .action {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.action input {
+  z-index: 100;
+  margin-top: 13px;
+}
+
+.action label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: -25px;
+  padding: 10px;
+  padding-left: 25px;
+  border-radius: 4px;
+}
+
+.action-name {
+  font-weight: 500;
+}
+
+.action-description {
+  color: #6f6f6f;
+}
+
+input[type='radio']:checked + label {
+  background: #edf6fe;
+}
+
+#action-form {
+  border-top: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px;
+  gap: 20px;
+}
+
+#action-form label,
+#action-form p {
+  padding: 0;
+  margin: 0;
+  display: inline;
+}
+
+#action-form div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#action-form div input {
+  margin-top: 4px;
+  padding: 4px;
+}
+
+#action-form label {
+  font-weight: 600;
+}
+
+#action-form input[type='submit'] {
+  padding: 2px;
+  font-weight: 500;
+}
+
+#action-form p {
+  color: #888;
 }
