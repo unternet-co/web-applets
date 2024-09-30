@@ -62,5 +62,5 @@ function messageTemplate(message: Message) {
 
 onMessages((newMessages: Message[]) => {
   messages = newMessages;
-  responses.innerHTML = messages.map(messageTemplate).join('');
+  responses.innerHTML = [...messages].reverse().map(messageTemplate).join('');
 });
