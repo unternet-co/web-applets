@@ -13,10 +13,12 @@ body {
   margin: 0;
   width: 100%;
   height: 100%;
+  font-size: 15px;
 }
 
 body {
   display: flex;
+  justify-content: center;
 }
 
 .applets-drawer {
@@ -24,7 +26,13 @@ body {
   width: 300px;
 }
 
-main {
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.chat {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -34,23 +42,51 @@ main {
   padding: 8px;
   display: flex;
   gap: 5px;
+  align-items: flex-end;
+  flex-shrink: 0;
 }
 
 #input {
   width: 100%;
   padding: 5px;
+  resize: none;
+  field-sizing: content;
+  font-family: system-ui;
 }
 
-#submit {
+input[type='submit'] {
+  padding: 4px;
 }
 
-.responses {
+.responses-container {
   flex-grow: 1;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+}
+
+#responses {
   display: flex;
   flex-direction: column;
-  font-size: 14px;
+  gap: 20px;
+  padding: 12px 0;
+}
+
+#responses ul {
+  display: flex;
+  flex-direction: column;
   gap: 4px;
-  padding: 12px;
+  width: 100%;
+}
+
+#responses .from {
+  font-weight: 500;
+  font-size: 14px;
+  color: #aaa;
+}
+
+#responses .content {
+  white-space: pre;
+  text-wrap: wrap;
 }
 
 ul,

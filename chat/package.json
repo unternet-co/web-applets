@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "vite"
+    "dev": "npm run import-applets && vite",
+    "import-applets": "cp -r ../dist/applets ./public"
   },
   "author": "",
   "license": "ISC",

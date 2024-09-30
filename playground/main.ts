@@ -30,9 +30,11 @@ async function startApplet(url: string) {
 }
 
 function renderActions(actions) {
-  const actionTemplate = (action) => /*html*/ `
+  const actionTemplate = (action, i) => /*html*/ `
     <div class="action">
-      <input type="radio" id="${action.id}" name="${action.id}" value="${action.id}" />
+      <input type="radio" id="${action.id}" name="${action.id}" value="${
+    action.id
+  }" checked="${i === 0}"/>
       <label for="${action.id}">
         <div class="action-name">${action.id}</div>
         <div class="action-description">${action.description}</div>
@@ -41,6 +43,8 @@ function renderActions(actions) {
   `;
 
   actionsList.innerHTML = actions.map(actionTemplate).join('');
+  if (actions.length > 0) renderForm(actions[0]);
+
   document.querySelectorAll('.action > input').forEach((radio) => {
     radio.addEventListener('change', function () {
       if (this.checked) {

@@ -4,12 +4,18 @@ const messages: Message[] = [];
 const subscribers: ObserverCallback<Message>[] = [];
 
 export interface Message {
-  from: 'user' | 'assistant';
+  role: 'user' | 'assistant';
   content: string;
 }
 
 export function addMessage(message: Message) {
   messages.push(message);
+  updateSubscribers();
+  return messages.length - 1;
+}
+
+export function appendMessageContent(id: number, content: string) {
+  messages[id].content += content;
   updateSubscribers();
 }
 

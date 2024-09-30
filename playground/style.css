@@ -149,6 +149,8 @@ input[type='radio']:checked + label {
   flex-direction: column;
   padding: 20px 14px;
   gap: 20px;
+  max-height: 50vh;
+  overflow-y: scroll;
 }
 
 #action-form label,

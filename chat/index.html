@@ -9,19 +9,14 @@
   </head>
 
   <body>
-    <aside class="applets-drawer">
-      <header><h1>Applets</h1></header>
-    </aside>
-    <main>
-      <ul class="responses"></ul>
-      <form id="input-form" autocomplete="off">
-        <input id="input" placeholder="Ask a question..." />
+    <section class="chat">
+      <div class="responses-container">
+        <ul class="page" id="responses"></ul>
+      </div>
+      <form id="input-form" class="page" autocomplete="off">
+        <textarea id="input" placeholder="Ask a question..."></textarea>
         <input type="submit" value="Submit" />
       </form>
-    </main>
-    <aside class="inspector">
-      <section class="actions"></section>
-      <section class="state"></section>
-    </aside>
+    </section>
   </body>
 </html>
