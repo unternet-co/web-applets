@@ -5,7 +5,7 @@
   "entrypoint": "index.html",
   "actions": [
     {
-      "id": "set_name",
+      "id": "setName",
       "description": "Sets the name of the user to be greeted",
       "params": [
         {

@@ -16,4 +16,4 @@ for (const applet of applets) {
   });
 }
 
-fs.writeFileSync('dist/manifest.json', JSON.stringify(manifest));
+fs.writeFileSync('dist/applets/manifest.json', JSON.stringify(manifest));

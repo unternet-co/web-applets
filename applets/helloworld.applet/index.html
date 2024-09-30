@@ -4,36 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hello World</title>
-    <script>
-      window.addEventListener('DOMContentLoaded', () => {
-        window.parent.postMessage({ type: 'ready' });
-        window.parent.postMessage({ type: 'actions', actions: ['set_name'] });
-      });
-
-      window.addEventListener('message', (message) => {
-        console.info('Received message', message.data);
-        if (event.data.type === 'state') render(message.data.state);
-        if (event.data.type === 'action') handleAction(message.data.action);
-      });
-
-      function handleAction(action) {
-        switch (action.id) {
-          case 'set_name':
-            window.parent.postMessage({
-              type: 'state',
-              state: { name: action.params.name },
-            });
-            break;
-        }
+    <script src="./main.ts" type="module"></script>
+    <style>
+      body {
+        font-family: system-ui;
       }
-
-      function render(state) {
-        document.getElementById('name').innerText = state.name;
-      }
-
-      // client.on('state', () => ...)
-      // client.send('state', () => ...)
-    </script>
+    </style>
   </head>
   <body>
     Hello, <span id="name">whoever you are</span>.

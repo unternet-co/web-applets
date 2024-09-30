@@ -1,9 +1,0 @@
-{
-  "compilerOptions": {
-    "outDir": "dist/applets",
-    "target": "es6",
-    "esModuleInterop": true,
-    "rootDir": "applets"
-  },
-  "include": ["applets/**/*.ts"]
-}

@@ -2,3 +2,4 @@ node_modules/
 **/dist/
 playground/public/applets
 playground/public/manifest.json
+pending/

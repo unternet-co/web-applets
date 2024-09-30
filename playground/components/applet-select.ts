@@ -1,6 +1,5 @@
-import { getAppletsList } from '../../sdk';
-const applets = await getAppletsList('/');
-
+import { applets } from '../../sdk';
+const appletHeaders = await applets.getHeaders('/');
 export type SelectEvent = CustomEvent<string>;
 
 export class AppletSelect extends HTMLElement {
@@ -22,7 +21,7 @@ export class AppletSelect extends HTMLElement {
   }
 
   render() {
-    this.selectElem.innerHTML = applets
+    this.selectElem.innerHTML = appletHeaders
       .map((applet) => {
         return `
           <option value=${applet.url}>

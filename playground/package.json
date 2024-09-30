@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npm run import-applets && vite",
-    "import-applets": "cp -r ../dist/applets ./public && cp ../dist/manifest.json ./public"
+    "import-applets": "cp -r ../dist/applets ./public"
   },
   "author": "",
   "license": "ISC",

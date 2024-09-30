@@ -1,40 +1,34 @@
 import './components/applet-select';
-import './components/applet-view';
-import { AppletView } from './components/applet-view';
 import { AppletSelect, SelectEvent } from './components/applet-select';
-import { getAppletsList, loadAppletManifest } from '../sdk';
+import { applets } from '../sdk';
+import { Applet } from '../sdk/client';
 
 const appletSelect = document.querySelector('applet-select') as AppletSelect;
-const appletFrame = document.querySelector('applet-view') as AppletView;
+const appletContainer = document.querySelector(
+  '#applet-container'
+) as HTMLIFrameElement;
+const appletLabel = document.querySelector('label') as HTMLLabelElement;
+const appletStateDisplay = document.querySelector(
+  '#applet-state'
+) as HTMLLabelElement;
 
-const applets = await getAppletsList('/');
-initializeApplet(applets[0].url);
+let applet: Applet;
+const appletHeaders = await applets.getHeaders('/');
+startApplet(appletHeaders[0].url);
 
-async function initializeApplet(url: string) {
-  const appletManifest = await loadAppletManifest(url);
-  appletFrame.url = appletManifest.entrypoint;
-
-  appletFrame.postMessage({
-    type: 'action',
-    action: {
-      id: 'set_name',
-      params: {
-        name: 'Rupert',
-      },
-    },
-  });
-
-  appletFrame.addEventListener('message', ((e: CustomEvent) => {
-    if (e.detail.type === 'state') updateState(e.detail.state);
-  }) as EventListener);
-
-  function updateState(newState) {
-    appletFrame.postMessage({ type: 'state', state: newState });
-  }
+async function startApplet(url: string) {
+  const appletUrl = url;
+  applet = await applets.load(appletUrl, appletContainer);
+  appletLabel.innerText = applet.manifest.name;
+  applet.onstateupdated = (state) => {
+    appletStateDisplay.innerText = JSON.stringify(state, null, 2);
+  };
+  applet.dispatchAction('set_name', { name: 'Rupert' });
 }
 
 function handleAppletChange(event: SelectEvent) {
-  initializeApplet(event.detail);
+  if (applet) applet.disconnect();
+  startApplet(event.detail);
 }
 
 appletSelect.addEventListener(
