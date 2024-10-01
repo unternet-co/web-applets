@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "chat": "npm run applets:build && cd chat && npm run dev",
-    "playground": "nodemon --watch applets --exec \"npm run applets:build && npm run playground:dev\" -e ts,html,css,js",
+    "playground": "nodemon --watch applets --ignore 'applets/*/dist/*' --exec \"npm run applets:build && npm run playground:dev\" -e ts,html,css,js",
     "playground:dev": "cd playground && npm run dev",
-    "applets:build": "vite build --config vite.config.applets.js && node scripts/write-manifest.js",
+    "applets:build": "node scripts/build-all.js && node scripts/write-manifest.js",
     "applets:compile": "tsc -p tsconfig.applets.json",
     "applets:copy-files": "rsync -a --exclude='*.ts' applets/ dist/applets/"
   },

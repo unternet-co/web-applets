@@ -1,0 +1,18 @@
+{
+  "name": "weather",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "vite build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/google.maps": "^3.58.1",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8"
+  }
+}

@@ -77,6 +77,10 @@ export class Applet<T = unknown> extends EventTarget {
       if (message.data.type === 'resize') {
         this.resizeContainer(message.data.dimensions);
       }
+      this.container.contentWindow?.postMessage({
+        type: 'resolve',
+        id: message.data.id,
+      });
     });
   }
 

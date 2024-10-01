@@ -21,12 +21,24 @@ export class AppletContext<StateType = AppletState> extends EventTarget {
 
   connect() {
     this.client = new AppletClient();
+    console.log('connecting');
 
-    window.addEventListener('DOMContentLoaded', async () => {
+    const startup = async () => {
+      await this.onload();
+      console.log('loaded');
       this.client.send(new AppletMessage('ready'));
       this.dispatchEvent(new CustomEvent('ready'));
       await this.onready();
-    });
+    };
+
+    if (
+      document.readyState === 'complete' ||
+      document.readyState === 'interactive'
+    ) {
+      setTimeout(startup, 1);
+    } else {
+      window.addEventListener('DOMContentLoaded', startup);
+    }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
@@ -71,14 +83,15 @@ export class AppletContext<StateType = AppletState> extends EventTarget {
     this.actionHandlers[actionId] = handler;
   }
 
-  setState(state: StateType) {
+  async setState(state: StateType) {
     const message = new AppletMessage('state', { state });
-    this.client.send(message);
+    await this.client.send(message);
     this.state = state;
     this.dispatchEvent(new CustomEvent('render'));
     this.onrender(); // TODO: Should come from client? Or stay here, and only activate if mounted? Need a control for mounting.
   }
 
+  onload(): Promise<void> | void {}
   onready(): Promise<void> | void {}
   onrender(): void {}
 }
@@ -119,6 +132,19 @@ class AppletClient {
 
   send(message: AppletMessage) {
     window.parent.postMessage(message.toJson());
+
+    return new Promise<void>((resolve) => {
+      const listener = (messageEvent: MessageEvent<AppletMessage>) => {
+        if (
+          messageEvent.data.type === 'resolve' &&
+          messageEvent.data.id === message.id
+        ) {
+          window.removeEventListener('message', listener);
+          resolve();
+        }
+      };
+      window.addEventListener('message', listener);
+    });
   }
 }
 

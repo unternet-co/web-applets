@@ -7,13 +7,13 @@ const manifest = { applets: [] };
 
 for (const applet of applets) {
   const appletManifest = JSON.parse(
-    fs.readFileSync(`applets/${applet}/manifest.json`)
+    fs.readFileSync(`dist/applets/${applet}.applet/manifest.json`)
   );
 
   const header = {
     name: appletManifest.name,
     description: appletManifest.description,
-    url: `/applets/${applet}`,
+    url: `/applets/${applet}.applet`,
     actions: [],
   };
 
@@ -33,4 +33,7 @@ for (const applet of applets) {
   manifest.applets.push(header);
 }
 
-fs.writeFileSync('dist/applets/manifest.json', JSON.stringify(manifest));
+fs.writeFileSync(
+  'dist/applets/manifest.json',
+  JSON.stringify(manifest, null, 2)
+);
