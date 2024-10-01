@@ -4,10 +4,9 @@ import {
   onMessages,
   appendMessageContent,
 } from './features/messages';
-import { zodResponseFormat } from 'openai/helpers/zod';
 import schemas from './lib/schemas';
 import OpenAI from 'openai';
-import { AppletAction, AppletHeader, applets } from '../sdk';
+import { AppletAction, AppletHeader, applets } from '../sdk/src';
 import { convertToStandardMessages, convertToSchema } from './lib/utils';
 
 const openai = new OpenAI({
@@ -90,9 +89,10 @@ async function requestExecutionLoop(
       content: applet.state,
     } as Message;
     addMessage(appletMessage);
-    // const updatedMessages = [...messages, appletMessage];
-    // const followupRequired = await shouldContinue(updatedMessages);
-    // if (followupRequired) requestExecutionLoop();
+
+    responses.push(appletMessage);
+    const followupRequired = await shouldContinue(query, responses);
+    if (followupRequired) requestExecutionLoop(query, priorHistory, responses);
   } else {
     const messageId = addMessage({
       role: 'assistant',
@@ -109,9 +109,13 @@ async function requestExecutionLoop(
       text += textPart;
       appendMessageContent(messageId, textPart);
     }
-    // const updatedMessages = [...messages, { role: 'user', content: text }];
-    // const followupRequired = await shouldContinue(updatedMessages);
-    // if (followupRequired) requestExecutionLoop(updatedMessages);
+
+    responses.push({
+      role: 'assistant',
+      content: text,
+    });
+    const followupRequired = await shouldContinue(query, responses);
+    if (followupRequired) requestExecutionLoop(query, priorHistory, responses);
   }
 }
 
@@ -135,7 +139,7 @@ async function shouldRequestApplet(
     
     Available tools:\n\n${JSON.stringify(appletHeaders, null, 2)}
     
-    Do you require more information from a tool right now, in order to respond to the user? If so, which tool and which action do you choose? (If further clarifying information is needed from the user in order to successfully satisfy an action's parameters then you do not require a tool yet, you will have the chance to ask a follow-up question instead.)`,
+    Do you require more information from a tool right now, in order to respond to the user? If so, which tool and which action do you choose? Important: respond false if you require further clarification before filling the parameters.`,
   };
 
   const completion = await openai.beta.chat.completions.parse({
@@ -155,6 +159,38 @@ async function shouldRequestApplet(
     appletUrl: json && json.toolUrl,
     actionId: json && json.actionId,
   };
+}
+
+async function shouldContinue(
+  query: Message,
+  responses: Message[]
+): Promise<boolean> {
+  const question: Message = {
+    role: 'system',
+    content: `\
+    Given the query and past history of messages & tool use, you must stop responding if the user's query has been adequately responded to. Note: the system prompts above are visible to the user, and can be considered an answer to the query if sufficient. ONLY continue if it's necessary to provide additional output for clarification.
+
+    Query:\n\n${query.content}
+
+    History:\n\n${JSON.stringify(convertToStandardMessages(responses), null, 2)}
+
+    Should you continue to answer the user's query? Answer only either 'YES' or 'NO', with no other text.`,
+  };
+
+  console.log(question.content);
+
+  const completion = await openai.beta.chat.completions.parse({
+    // model: 'gpt-4o-2024-08-06',
+    model: 'gpt-4o-mini-2024-07-18',
+    messages: [question],
+  });
+
+  console.log(completion.choices[0]?.message?.content);
+
+  // const json = completion.choices[0]?.message?.parsed as any;
+
+  return completion.choices[0]?.message?.content === 'YES';
+  // return json.shouldContinue;
 }
 
 async function selectParamsForAction(
@@ -219,6 +255,7 @@ async function renderMessages(messages: Message[], elem: HTMLElement) {
 function createMessageElement(role: string, content: any, key: number) {
   const li = document.createElement('li');
   li.dataset.key = key.toString();
+  li.dataset.className = role;
 
   const fromElem = document.createElement('div');
   fromElem.className = 'from';

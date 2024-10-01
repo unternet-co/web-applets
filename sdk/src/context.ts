@@ -14,7 +14,7 @@ import {
  * Context
  */
 
-export class AppletContext<StateType extends AppletState> extends EventTarget {
+export class AppletContext<StateType = AppletState> extends EventTarget {
   client: AppletClient;
   actionHandlers: ActionHandlerDict = {};
   state: StateType;
@@ -122,4 +122,4 @@ class AppletClient {
   }
 }
 
-export default new AppletContext();
+export const appletContext = new AppletContext();

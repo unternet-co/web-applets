@@ -1,4 +1,4 @@
-import { AppletAction } from '../../sdk';
+import { AppletAction } from '../../sdk/src';
 import { Message } from '../features/messages';
 
 export function convertToStandardMessages(messages: Message[]) {

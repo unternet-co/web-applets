@@ -10,7 +10,7 @@ export interface AppletManifest {
 export interface AppletAction {
   id: string;
   description: string;
-  params?: ActionParams;
+  params?: ActionParamSchema;
 }
 
 export interface AppletHeader {
@@ -26,13 +26,15 @@ export type AppletState = Record<string, Serializable>;
 
 /* Actions */
 
-export type ActionParams = Record<
+export type ActionParamSchema = Record<
   string,
   {
     description: string;
     type: 'string';
   }
 >;
+
+export type ActionParams = Record<string, unknown>;
 
 export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
 export type ActionHandler<T extends ActionParams> = (

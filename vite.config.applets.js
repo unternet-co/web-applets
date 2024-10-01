@@ -37,6 +37,9 @@ function copyJsonPlugin() {
 export default defineConfig({
   plugins: [copyJsonPlugin()],
   build: {
+    modulePreload: {
+      polyfill: false,
+    },
     rollupOptions: {
       input: {
         ...Object.fromEntries(

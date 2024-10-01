@@ -25,4 +25,20 @@ export default {
       additionalProperties: false,
     },
   },
+  shouldContinue: {
+    name: 'continue',
+    strict: true,
+    schema: {
+      type: 'object',
+      required: ['shouldContinue'],
+      properties: {
+        shouldContinue: {
+          description:
+            'A true/false answer as to whether the response requires more information to be complete.',
+          type: 'boolean',
+        },
+      },
+      additionalProperties: false,
+    },
+  },
 };

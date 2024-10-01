@@ -104,3 +104,7 @@ li {
   border-left: 2px solid #ccc;
   width: 300px;
 }
+
+iframe {
+  border: 0;
+}

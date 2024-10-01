@@ -1,7 +1,6 @@
 import './components/applet-select';
 import { AppletSelect, SelectEvent } from './components/applet-select';
-import { applets } from '../sdk';
-import { Applet } from '../sdk/client';
+import { applets, Applet } from '../sdk/src';
 
 const appletSelect = document.querySelector('applet-select') as AppletSelect;
 const appletContainer = document.querySelector(
@@ -23,7 +22,6 @@ startApplet(appletHeaders[0].url);
 async function startApplet(url: string) {
   const appletUrl = url;
   applet = await applets.load(appletUrl, appletContainer);
-
   appletLabel.innerText = applet.manifest.name;
   renderActions(applet.manifest.actions);
   applet.onstateupdated = renderState;

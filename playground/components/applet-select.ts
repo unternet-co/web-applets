@@ -1,4 +1,4 @@
-import { applets } from '../../sdk';
+import { applets } from '../../sdk/src';
 const appletHeaders = await applets.getHeaders('/');
 export type SelectEvent = CustomEvent<string>;
 

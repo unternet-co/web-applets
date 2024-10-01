@@ -1,4 +1,4 @@
-import appletContext, { type AppletContext } from '../../sdk/context';
+import { appletContext, type AppletContext } from '../../sdk/src';
 
 // Set up the types we'll use
 type HelloWorldState = { name: string }; // Applet state
