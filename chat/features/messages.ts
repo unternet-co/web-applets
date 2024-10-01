@@ -1,12 +1,23 @@
 import { type ObserverCallback } from '../lib/observers';
-
 const messages: Message[] = [];
 const subscribers: ObserverCallback<Message>[] = [];
 
-export interface Message {
-  role: 'user' | 'assistant';
+/* Model */
+
+export type Message = TextMessage | AppletMessage;
+
+export interface TextMessage {
+  role: 'user' | 'system' | 'assistant';
   content: string;
 }
+
+export interface AppletMessage {
+  role: 'applet';
+  appletUrl: string;
+  content: Record<string, unknown>;
+}
+
+/* Actions */
 
 export function addMessage(message: Message) {
   messages.push(message);
@@ -19,7 +30,7 @@ export function appendMessageContent(id: number, content: string) {
   updateSubscribers();
 }
 
-// Observers
+/* Observers */
 
 export function onMessages(callback: ObserverCallback<Message>) {
   subscribers.push(callback);
@@ -29,7 +40,6 @@ export function onMessages(callback: ObserverCallback<Message>) {
 
 function updateSubscribers() {
   for (const subscriber of subscribers) {
-    console.log(subscriber, messages);
     subscriber(messages);
   }
 }

@@ -12,7 +12,6 @@
     "incremental": true,
     "jsx": "react-jsxdev",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "strict": true,
     "outDir": "dist",
     "module": "ESNext",
     "moduleResolution": "Node",

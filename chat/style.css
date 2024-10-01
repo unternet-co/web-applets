@@ -76,17 +76,11 @@ input[type='submit'] {
 
 #responses {
   display: flex;
-  flex-direction: column-reverse;
-  height: 100%;
+  flex-direction: column;
+  min-height: 100%;
   gap: 20px;
   padding: 12px 0;
-}
-
-#responses ul {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
+  list-style: none;
 }
 
 #responses .from {

@@ -63,8 +63,15 @@ function renderForm(action) {
     </div>
   `;
 
+  const paramsArray = Object.keys(action.params).map((id) => {
+    return {
+      id,
+      ...action.params[id],
+    };
+  });
+
   actionForm.innerHTML = /*html*/ `
-    ${action.params.map(template).join('')}
+    ${paramsArray.map(template).join('')}
     <input type="submit" />
   `;
 

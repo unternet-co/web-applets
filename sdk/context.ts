@@ -1,3 +1,15 @@
+import {
+  ActionHandlerDict,
+  AppletState,
+  AppletMessage,
+  AppletActionMessage,
+  AppletMessageType,
+  AppletMessageCallback,
+  ActionParams,
+  ActionHandler,
+  AppletStateMessage,
+} from './types';
+
 /**
  * Context
  */
@@ -11,37 +23,42 @@ export class AppletContext<StateType extends AppletState> extends EventTarget {
     this.client = new AppletClient();
 
     window.addEventListener('DOMContentLoaded', async () => {
-      this.client.send('ready');
+      this.client.send(new AppletMessage('ready'));
       this.dispatchEvent(new CustomEvent('ready'));
       await this.onready();
     });
 
-    window.addEventListener('resize', () => {
-      this.client.send('resize', {
-        innerWidth: window.innerWidth,
-        innerHeight: window.innerHeight,
-      });
-    });
-
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
-        this.client.send('resize', {
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
+        const message = new AppletMessage('resize', {
+          dimensions: {
+            width: entry.contentRect.width,
+            height: entry.contentRect.height,
+          },
         });
+        this.client.send(message);
       }
     });
     resizeObserver.observe(document.querySelector('html')!);
 
-    this.client.on('action', (detail: AppletMessageDetail) => {
-      if (!isActionMessageDetail(detail)) {
-        throw new TypeError(
-          "Message detail doesn't match type AppletMessageDetail."
-        );
+    this.client.on('state', (message: AppletMessage) => {
+      if (!isStateMessage(message)) {
+        throw new TypeError("Message doesn't match type StateMessage");
       }
-      if (Object.keys(this.actionHandlers).includes(detail.actionId)) {
-        this.actionHandlers[detail.actionId](detail.params);
+
+      this.setState(message.state);
+    });
+
+    this.client.on('action', async (message: AppletMessage) => {
+      if (!isActionMessage(message)) {
+        throw new TypeError("Message doesn't match type AppletMessage.");
       }
+
+      if (Object.keys(this.actionHandlers).includes(message.actionId)) {
+        await this.actionHandlers[message.actionId](message.params);
+      }
+
+      message.resolve();
     });
 
     return this;
@@ -55,7 +72,8 @@ export class AppletContext<StateType extends AppletState> extends EventTarget {
   }
 
   setState(state: StateType) {
-    this.client.send('state', state);
+    const message = new AppletMessage('state', { state });
+    this.client.send(message);
     this.state = state;
     this.dispatchEvent(new CustomEvent('render'));
     this.onrender(); // TODO: Should come from client? Or stay here, and only activate if mounted? Need a control for mounting.
@@ -65,10 +83,14 @@ export class AppletContext<StateType extends AppletState> extends EventTarget {
   onrender(): void {}
 }
 
-function isActionMessageDetail(
-  detail: AppletMessageDetail
-): detail is ActionMessageDetail {
-  return 'actionId' in detail && 'params' in detail;
+function isActionMessage(
+  message: AppletMessage
+): message is AppletActionMessage {
+  return message.type === 'action';
+}
+
+function isStateMessage(message: AppletMessage): message is AppletStateMessage {
+  return message.type === 'state';
 }
 
 /**
@@ -77,63 +99,27 @@ function isActionMessageDetail(
 
 class AppletClient {
   on(messageType: AppletMessageType, callback: AppletMessageCallback) {
-    window.addEventListener('message', (message: AppletMessage) => {
-      if (message.data.type !== messageType) return;
-      callback(message.data.detail);
-    });
+    window.addEventListener(
+      'message',
+      (messageEvent: MessageEvent<AppletMessage>) => {
+        if (messageEvent.data.type !== messageType) return;
+        const message = new AppletMessage(
+          messageEvent.data.type,
+          messageEvent.data
+        );
+        message.resolve = () => {
+          window.parent.postMessage(
+            new AppletMessage('resolve', { id: message.id })
+          );
+        };
+        callback(message);
+      }
+    );
   }
 
-  send(messageType: AppletMessageType, detail?: AppletMessageDetail) {
-    const id = crypto.randomUUID();
-    window.parent.postMessage({
-      type: messageType,
-      id,
-      detail,
-    });
+  send(message: AppletMessage) {
+    window.parent.postMessage(message.toJson());
   }
 }
-
-/**
- * Types
- */
-
-// State
-type AppletState = Record<string, Serializable>;
-type StateMessageDetail = AppletState;
-
-// Actions
-export type ActionParams = Record<string, Serializable>;
-type ActionHandlerDict = { [key: string]: ActionHandler<any> };
-type ActionHandler<T extends ActionParams> = (params: T) => void;
-interface ActionMessageDetail {
-  actionId: string;
-  params: ActionParams;
-}
-
-// Messages
-// TODO: Get rid of detail here, just have it as part of the event
-interface AppletMessage extends MessageEvent {
-  data: {
-    type: AppletMessageType;
-    id: string;
-    detail: AppletMessageDetail;
-  };
-}
-type AppletMessageType = 'action' | 'render' | 'state' | 'ready' | 'resize';
-type AppletMessageCallback = (detail: AppletMessageDetail) => void;
-type AppletMessageDetail = ActionMessageDetail | StateMessageDetail;
-
-// Generic
-type Serializable =
-  | string
-  | number
-  | boolean
-  | null
-  | Serializable[]
-  | { [key: string]: Serializable };
-
-/**
- * Exports
- */
 
 export default new AppletContext();

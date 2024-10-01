@@ -9,11 +9,28 @@ for (const applet of applets) {
   const appletManifest = JSON.parse(
     fs.readFileSync(`applets/${applet}/manifest.json`)
   );
-  manifest.applets.push({
+
+  const header = {
     name: appletManifest.name,
     description: appletManifest.description,
     url: `/applets/${applet}`,
-  });
+    actions: [],
+  };
+
+  for (const action of appletManifest.actions) {
+    header.actions.push({
+      id: action.id,
+      description: action.description,
+      params: {},
+    });
+
+    for (const paramId in action.params) {
+      header.actions[header.actions.length - 1].params[paramId] =
+        action.params[paramId].description;
+    }
+  }
+
+  manifest.applets.push(header);
 }
 
 fs.writeFileSync('dist/applets/manifest.json', JSON.stringify(manifest));

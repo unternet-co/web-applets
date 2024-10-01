@@ -1,15 +1,39 @@
-import { ActionParams } from './context';
-import { AppletAction, type AppletManifest } from './types';
+import {
+  AppletAction,
+  AppletHeader,
+  AppletMessage,
+  ActionParams,
+  AppletManifest,
+} from './types';
 
-export async function getHeaders(url: string) {
+const hiddenRoot = document.createElement('div');
+hiddenRoot.style.display = 'none';
+document.body.appendChild(hiddenRoot);
+
+export async function getHeaders(url: string): Promise<AppletHeader[]> {
   url = parseUrl(url);
   try {
     const request = await fetch(`${url}/manifest.json`);
     const appManifest = await request.json();
-    return appManifest.applets ? appManifest.applets : [];
+    const appletHeaders = appManifest.applets as AppletHeader[];
+    return appletHeaders ?? [];
   } catch {
     return [];
   }
+}
+
+export async function getManifests(url: string) {
+  url = parseUrl(url);
+  const request = await fetch(`${url}/manifest.json`);
+  const headers = (await request.json()).applets;
+  const manifests = await Promise.all(
+    headers.map(async (header: any) => {
+      const appletUrl = parseUrl(header.url);
+      const request = await fetch(`${appletUrl}/manifest.json`);
+      return await request.json();
+    })
+  );
+  return manifests ?? [];
 }
 
 export async function load(
@@ -23,6 +47,7 @@ export async function load(
   applet.actions = manifest.actions; // let the events set this later
   applet.container = container;
   container.src = applet.manifest.entrypoint;
+  if (!container.isConnected) hiddenRoot.appendChild(container);
 
   return new Promise((resolve) => {
     window.addEventListener('message', (message) => {
@@ -32,66 +57,85 @@ export async function load(
   });
 }
 
-export class Applet extends EventTarget {
+export class Applet<T = unknown> extends EventTarget {
   actions: AppletAction[] = [];
   manifest: AppletManifest;
-  // containerStyle: CSSStyleDeclaration;
-  // #styleOverrides: (string | symbol)[] = [];
-  #container: HTMLIFrameElement;
+  container: HTMLIFrameElement;
+  #state: T;
 
   constructor() {
     super();
     window.addEventListener('message', (message) => {
-      if (message.source !== this.#container.contentWindow) return;
+      if (message.source !== this.container.contentWindow) return;
       if (message.data.type === 'state') {
+        this.#state = message.data.state;
         this.dispatchEvent(
           new CustomEvent('stateupdated', { detail: message.data.detail })
         );
-        this.onstateupdated(message.data.detail);
+        this.onstateupdated(message.data.state);
       }
       if (message.data.type === 'resize') {
-        this.resizeContainer(message.data.detail);
+        this.resizeContainer(message.data.dimensions);
       }
     });
   }
 
-  resizeContainer(dimensions) {
-    this.#container.style.height = `${dimensions.height}px`;
+  get state() {
+    return this.#state;
+  }
+
+  set state(state: T) {
+    this.#state = state;
+    const stateMessage = new AppletMessage('state', { state });
+    this.container.contentWindow.postMessage(stateMessage.toJson());
+  }
+
+  toJson() {
+    return Object.fromEntries(
+      Object.entries(this).filter(([_, value]) => {
+        try {
+          JSON.stringify(value);
+          return true;
+        } catch {
+          return false;
+        }
+      })
+    );
+  }
+
+  resizeContainer(dimensions: { height: number; width: number }) {
+    this.container.style.height = `${dimensions.height}px`;
     // if (!this.#styleOverrides) {
     //   this.#container.style.height = `${dimensions.height}px`;
     // }
   }
 
-  set container(container: HTMLIFrameElement) {
-    // container.style.border = 'none';
-    container.style.height = '0px';
-    this.#container = container;
-    // this.containerStyle = new Proxy(container.style, {
-    //   set: (target, property, value) => {
-    //     this.#styleOverrides.push(property);
-    //     return Reflect.set(target, property, value);
-    //   },
-    //   deleteProperty: (target, property) => {
-    //     this.#styleOverrides.splice()
-    //     return Reflect.deleteProperty(target, property);
-    //   }
-    // });
-  }
-
-  get container() {
-    return this.#container;
-  }
-
   onstateupdated(event: CustomEvent) {}
   disconnect() {}
-  dispatchAction(actionId: string, params: ActionParams) {
-    // TODO: Make async, with each action requiring a reply
-    this.#container.contentWindow?.postMessage({
-      type: 'action',
-      detail: {
-        actionId,
-        params,
-      },
+  async dispatchAction(actionId: string, params: ActionParams) {
+    const requestMessage = new AppletMessage('action', {
+      actionId,
+      params,
+    });
+    this.container.contentWindow.postMessage(requestMessage.toJson());
+
+    return new Promise<AppletMessage>((resolve) => {
+      const listener = (messageEvent: MessageEvent) => {
+        if (messageEvent.source !== this.container.contentWindow) return;
+        const responseMessage = new AppletMessage(
+          messageEvent.data.type,
+          messageEvent.data
+        );
+
+        if (
+          responseMessage.type === 'resolve' &&
+          responseMessage.id === requestMessage.id
+        ) {
+          this.container.contentWindow.removeEventListener('message', listener);
+          resolve(responseMessage);
+        }
+      };
+      window.addEventListener('message', listener);
     });
   }
 }
