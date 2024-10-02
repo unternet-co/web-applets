@@ -1,6 +1,5 @@
 node_modules/
+dist/
 **/dist/
-**/public/applets
-**/public/manifest.json
-pending/
 **/.env
+playground/public
