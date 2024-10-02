@@ -46,10 +46,10 @@ Now let's update `main.ts` to assign an action handler:
 
 ```js
 // First, import the SDK
-import { appletContext, type AppletContext } from '../../sdk/src';
+import { appletContext } from '../../sdk/src';
 
 // Now connect to the applet runtime
-const applet = appletContext.connect() as AppletContext;
+const applet = appletContext.connect();
 
 // Attach the action handler, and update the state
 applet.setActionHandler('set_name', ({ name }) => {
