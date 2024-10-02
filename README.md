@@ -20,6 +20,8 @@ Inside your applet folder, you'll find a basic web app setup:
 - `index.html`: Much like a website, this holds the main page for your applet
 - `main.js`: Declares functions that respond to each action, and a render function that updates the view based on state
 
+> Want to use React? Svelte? Vue? – No problem, just install the dependencies and create an app the way you normally would in a website. So long as you're receiving the action events, it will all just work.
+
 Let's say we want our applet to respond to a "set_name" action and render the user's name. In our `manifest.json` file we can write:
 
 ```js
