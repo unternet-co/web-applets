@@ -90,10 +90,23 @@ import { applets } from '@unternet/web-applets';
 Now you can create a new applet from a URL:
 
 ```js
-applet = await applets.load(`https://unternet.co/applets/helloworld.applet`);
+const applet = await applets.load(
+  `https://unternet.co/applets/helloworld.applet`
+);
 applet.onstateupdated = (state) => console.log(state);
 applet.dispatchAction('set_name', { name: 'Web Applets' });
 // console.log: { name: "Web Applets" }
+```
+
+The above applet is actually running headless, but we can get it to display by attaching it to an iframe. For the loading step, instead run:
+
+```js
+const container = document.createElement('iframe');
+document.body.appendChild(container);
+const applet = await applets.load(
+  `https://unternet.co/applets/helloworld.applet`,
+  container
+);
 ```
 
 To load pre-existing saved state into an applet, simply set the state property:
