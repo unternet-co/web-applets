@@ -73,7 +73,7 @@ Now if you run `npm run playground` from the project root, you should be able to
 
 Integrating Web Applets is just as easy as creating one. First, in your project, make sure you have the sdk installed:
 
-```
+```bash
 npm install @unternet/web-applets
 ```
 
