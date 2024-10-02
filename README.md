@@ -22,7 +22,7 @@ Inside your applet folder, you'll find a basic web app setup:
 
 Let's say we want our applet to respond to a "set_name" action and render the user's name. In our `manifest.json` file we can write:
 
-```json
+```js
 {
   // ...
   "actions": [
@@ -107,24 +107,24 @@ const headers = await applets.getHeaders('/');
 
 This headers object looks like:
 
-```json
+```js
 [
   {
-    "name": "Hello World",
-    "description": "Displays a greeting to the user.",
-    "url": "/applets/helloworld.applet",
-    "actions": [
+    name: 'Hello World',
+    description: 'Displays a greeting to the user.',
+    url: '/applets/helloworld.applet',
+    actions: [
       {
-        "id": "set_name",
-        "description": "Sets the name of the user to be greeted",
-        "params": {
-          "name": "The name of the user"
-        }
-      }
-    ]
-  }
+        id: 'set_name',
+        description: 'Sets the name of the user to be greeted',
+        params: {
+          name: 'The name of the user',
+        },
+      },
+    ],
+  },
   // ...
-]
+];
 ```
 
 You can use it to present a quick summary of available tools to your model, and then decide on an applet and action to use.
