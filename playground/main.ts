@@ -1,6 +1,6 @@
 import './components/applet-select';
 import { AppletSelect, SelectEvent } from './components/applet-select';
-import { applets, Applet } from '../sdk/src';
+import { applets, type Applet } from '../sdk/src';
 
 const appletSelect = document.querySelector('applet-select') as AppletSelect;
 const appletContainer = document.querySelector(

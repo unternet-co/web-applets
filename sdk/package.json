@@ -1,17 +1,26 @@
 {
-  "name": "sdk",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@unternet/web-applets",
+  "version": "0.0.1",
+  "description": "The Web Applets SDK, for creating & hosting Web Applets.",
+  "author": "Rupert Manfredi <rupert@unternet.co>",
+  "license": "MIT",
   "type": "module",
-  "scripts": {
-    "playground": "build-applets && cd playground && npm run vite",
-    "build-applets": "npm run compile-applets && npm run copy-applets-files && node scripts/write-manifest.js",
-    "compile-applets": "tsc -p tsconfig.applets.json",
-    "copy-applets-files": "rsync -a --exclude='*.ts' applets/ public/applets/"
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unternet-co/web-applets.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
   "devDependencies": {
     "typescript": "^5.6.2"
   },
