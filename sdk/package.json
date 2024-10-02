@@ -1,6 +1,6 @@
 {
   "name": "@unternet/web-applets",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The Web Applets SDK, for creating & hosting Web Applets.",
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "url": "git+https://github.com/unternet-co/web-applets.git"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp ../README.md dist/README.md",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
