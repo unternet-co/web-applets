@@ -22,6 +22,7 @@ startApplet(appletHeaders[0].url);
 async function startApplet(url: string) {
   const appletUrl = url;
   applet = await applets.load(appletUrl, appletContainer);
+  console.log('loaded!!');
   appletLabel.innerText = applet.manifest.name;
   renderActions(applet.manifest.actions);
   applet.onstateupdated = renderState;

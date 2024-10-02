@@ -21,11 +21,9 @@ export class AppletContext<StateType = AppletState> extends EventTarget {
 
   connect() {
     this.client = new AppletClient();
-    console.log('connecting');
 
     const startup = async () => {
       await this.onload();
-      console.log('loaded');
       this.client.send(new AppletMessage('ready'));
       this.dispatchEvent(new CustomEvent('ready'));
       await this.onready();
@@ -122,7 +120,8 @@ class AppletClient {
         );
         message.resolve = () => {
           window.parent.postMessage(
-            new AppletMessage('resolve', { id: message.id })
+            new AppletMessage('resolve', { id: message.id }),
+            '*'
           );
         };
         callback(message);
@@ -131,7 +130,7 @@ class AppletClient {
   }
 
   send(message: AppletMessage) {
-    window.parent.postMessage(message.toJson());
+    window.parent.postMessage(message.toJson(), '*');
 
     return new Promise<void>((resolve) => {
       const listener = (messageEvent: MessageEvent<AppletMessage>) => {

@@ -77,10 +77,13 @@ export class Applet<T = unknown> extends EventTarget {
       if (message.data.type === 'resize') {
         this.resizeContainer(message.data.dimensions);
       }
-      this.container.contentWindow?.postMessage({
-        type: 'resolve',
-        id: message.data.id,
-      });
+      this.container.contentWindow?.postMessage(
+        {
+          type: 'resolve',
+          id: message.data.id,
+        },
+        '*'
+      );
     });
   }
 
@@ -91,7 +94,7 @@ export class Applet<T = unknown> extends EventTarget {
   set state(state: T) {
     this.#state = state;
     const stateMessage = new AppletMessage('state', { state });
-    this.container.contentWindow?.postMessage(stateMessage.toJson());
+    this.container.contentWindow?.postMessage(stateMessage.toJson(), '*');
   }
 
   toJson() {
@@ -121,7 +124,7 @@ export class Applet<T = unknown> extends EventTarget {
       actionId,
       params,
     });
-    this.container.contentWindow?.postMessage(requestMessage.toJson());
+    this.container.contentWindow?.postMessage(requestMessage.toJson(), '*');
 
     return new Promise<AppletMessage>((resolve) => {
       const listener = (messageEvent: MessageEvent) => {
@@ -135,10 +138,7 @@ export class Applet<T = unknown> extends EventTarget {
           responseMessage.type === 'resolve' &&
           responseMessage.id === requestMessage.id
         ) {
-          this.container.contentWindow?.removeEventListener(
-            'message',
-            listener
-          );
+          window.removeEventListener('message', listener);
           resolve(responseMessage);
         }
       };
