@@ -6,6 +6,8 @@
 
 Web Applets is a specification for modular, local web software that can be read and used by both humans and machines. Web Applets aims to be an interoperabe application layer for agents – instead of chatbots that can only interact in plain text, Web Applets allow them to actuate real software, read the results, and render rich, graphical views in response.
 
+Did we mention it's _interoperable_? We think the future of software should be open & collaborative, not locked down to a single platform.
+
 ## Getting started
 
 First, clone this repo and run `npm run install`. There are a few sample applets included in `/applets`. To install these applets and start the playground, run `npm run playground`.
