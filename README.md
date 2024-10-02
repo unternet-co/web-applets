@@ -65,7 +65,7 @@ Finally, we need to render the applet whenever a render signal is received. Agai
 // ...
 
 applet.onrender = () => {
-  nameElem.innerText = applet.state.name;
+  document.body.innerText = `Hello, ${applet.state.name}!`;
 };
 ```
 
