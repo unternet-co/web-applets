@@ -1,0 +1,40 @@
+{
+  "name": "@unternet/web-applets-cli",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run build-cli && npm run build-playground && npm run postbuild",
+    "build-cli": "tsc",
+    "build-playground": "vite build",
+    "dev": "nodemon",
+    "postbuild": "chmod +x ./dist/index.js"
+  },
+  "bin": {
+    "web-applets": "./dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/chokidar": "^1.7.5",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/lodash.merge": "^4.6.9",
+    "@unternet/web-applets": "file:../sdk",
+    "chokidar": "^4.0.1",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "lodash.debounce": "^4.0.8",
+    "lodash.merge": "^4.6.2",
+    "web-applets-sdk": "file:../sdk/dist",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.7.5",
+    "@types/yargs": "^17.0.33",
+    "nodemon": "^3.1.7",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "helloworld",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@unternet/web-applets": "file:../../../sdk"
+  },
+  "author": "",
+  "license": "ISC"
+}

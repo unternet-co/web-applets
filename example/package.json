@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "build-applets"
+    "build": "web-applets build",
+    "dev": "web-applets dev",
+    "playground": "web-applets playground"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@unternet/web-applets-cli": "file:../cli"
+  }
 }

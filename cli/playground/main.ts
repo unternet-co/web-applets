@@ -1,6 +1,6 @@
 import './components/applet-select';
 import { AppletSelect, SelectEvent } from './components/applet-select';
-import { applets, type Applet } from '../sdk/src';
+import { applets, type Applet } from '../../sdk/dist';
 
 const appletSelect = document.querySelector('applet-select') as AppletSelect;
 const appletContainer = document.querySelector(
@@ -16,8 +16,14 @@ const actionsList = document.querySelector(
 const actionForm = document.querySelector('#action-form') as HTMLFormElement;
 
 let applet: Applet;
-const appletHeaders = await applets.getHeaders('/');
-startApplet(appletHeaders[0].url);
+
+async function main() {
+  const appletHeaders = await applets.getHeaders('/');
+  console.log(appletHeaders);
+  startApplet(appletHeaders[0].url);
+}
+
+main();
 
 async function startApplet(url: string) {
   const appletUrl = url;
