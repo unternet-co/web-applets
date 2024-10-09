@@ -17,7 +17,13 @@ export interface AppletHeader {
   name: string;
   description: string;
   url: string;
-  params: { [key: string]: string };
+  actions: {
+    id: string;
+    description: string;
+    params: {
+      [key: string]: string;
+    };
+  }[];
 }
 
 /* State */

@@ -1,0 +1,18 @@
+{
+  "type": "applet",
+  "name": "",
+  "description": "",
+  "entrypoint": "index.html",
+  "actions": [
+    {
+      "id": "",
+      "description": "",
+      "params": {
+        "name": {
+          "type": "string",
+          "description": ""
+        }
+      }
+    }
+  ]
+}

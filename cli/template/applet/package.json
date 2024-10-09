@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@web-applets/sdk": "^0.0.5"
+  }
+}

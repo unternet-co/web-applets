@@ -7,5 +7,8 @@
     "build": "vite build"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@web-applets/sdk": "^0.0.5"
+  }
 }

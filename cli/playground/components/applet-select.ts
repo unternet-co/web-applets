@@ -1,12 +1,17 @@
-import { applets } from '../../sdk/src';
-const appletHeaders = await applets.getHeaders('/');
+import { AppletHeader, applets, type Applet } from '../../../sdk/dist';
 export type SelectEvent = CustomEvent<string>;
 
 export class AppletSelect extends HTMLElement {
   selectElem = document.createElement('select');
+  appletHeaders: AppletHeader[] = [];
 
   connectedCallback() {
     this.selectElem.addEventListener('change', this.handleSelect.bind(this));
+    this.asyncSetup();
+  }
+
+  async asyncSetup() {
+    this.appletHeaders = await applets.getHeaders('/');
     this.render();
   }
 
@@ -21,7 +26,7 @@ export class AppletSelect extends HTMLElement {
   }
 
   render() {
-    this.selectElem.innerHTML = appletHeaders
+    this.selectElem.innerHTML = this.appletHeaders
       .map((applet) => {
         return `
           <option value=${applet.url}>
