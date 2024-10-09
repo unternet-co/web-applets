@@ -182,11 +182,15 @@ async function getParamsChoice(action: AppletAction, query: string) {
     messages: [
       {
         role: 'system',
-        content: `Please fill the following tool schema to gather more information in order to answer the user's query. The tool is called "${action.id}" and its description is "${action.description}".
+        content: `Please fill the following tool schema to gather more information in order to answer the user's query. The tool is called "${action.id}" and its description is "${action.description}". You will also see the tool's current state, which is currently being presented to the user, for context.
         
         Query:
 
         ${query}
+
+        Current state:
+
+        ${applet.state}
 
         Schema:
         
