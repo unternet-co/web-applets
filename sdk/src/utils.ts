@@ -1,4 +1,4 @@
-import { type AppletManifest } from './types';
+import { AppletAction, type AppletManifest } from './types';
 
 function parseUrl(url: string, base?: string) {
   if (['http', 'https'].includes(url.split('://')[0])) {
@@ -35,4 +35,20 @@ export async function loadAppletManifest(url: string): Promise<AppletManifest> {
 
   appletManifest.entrypoint = parseUrl(appletManifest.entrypoint, url);
   return appletManifest;
+}
+
+export function createOpenAISchemaForAction(action: AppletAction) {
+  return {
+    strict: true,
+    name: 'action_schema',
+    schema: {
+      type: 'object',
+      required: Object.keys(action),
+      properties: {
+        id: { type: 'string' },
+        params: action.params,
+      },
+      additionalProperties: false,
+    },
+  };
 }

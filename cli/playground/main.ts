@@ -1,6 +1,14 @@
 import './components/applet-select';
 import { AppletSelect, SelectEvent } from './components/applet-select';
-import { applets, type Applet } from '../../sdk/dist';
+import {
+  applets,
+  createOpenAISchemaForAction,
+  type AppletAction,
+  type Applet,
+} from '../../sdk/dist';
+import OpenAI from 'openai';
+
+let openaiKey = '';
 
 const appletSelect = document.querySelector('applet-select') as AppletSelect;
 const appletContainer = document.querySelector(
@@ -14,6 +22,10 @@ const actionsList = document.querySelector(
   '#actions-list'
 ) as HTMLFieldSetElement;
 const actionForm = document.querySelector('#action-form') as HTMLFormElement;
+const commandForm = document.querySelector('#cmd-form') as HTMLFormElement;
+const commandInput = document.querySelector('#cmd-input') as HTMLInputElement;
+
+let openai;
 
 let applet: Applet;
 
@@ -101,3 +113,105 @@ appletSelect.addEventListener(
   'applet-select',
   handleAppletChange as EventListener
 );
+
+commandForm.addEventListener('submit', async (e: SubmitEvent) => {
+  e.preventDefault();
+  const formData = new FormData(commandForm);
+  const formContents = Object.fromEntries(formData.entries());
+  if (!openaiKey) {
+    openaiKey = formContents.command as string;
+    openai = new OpenAI({
+      apiKey: openaiKey,
+      dangerouslyAllowBrowser: true,
+    });
+    commandInput.value = '';
+    commandInput.placeholder = 'Ask a command...';
+  } else {
+    const command = formContents.command as string;
+    commandInput.value = '';
+    const actionId = await getActionChoice(command);
+    const action = applet.actions.find((action) => action.id === actionId)!;
+    const params = await getParamsChoice(action, command);
+    await applet.dispatchAction(actionId, params);
+  }
+});
+
+async function getActionChoice(query: string): Promise<string> {
+  const question = {
+    role: 'system',
+    content: `\
+    Query:\n\n${query}
+    
+    Available tools:\n\n${JSON.stringify(applet.actions, null, 2)}
+    
+    Which tool best answers the user's query?`,
+  };
+
+  const completion = await openai.beta.chat.completions.parse({
+    model: 'gpt-4o-mini-2024-07-18',
+    messages: [question],
+    response_format: {
+      type: 'json_schema',
+      json_schema: {
+        name: 'boolean',
+        strict: true,
+        schema: {
+          type: 'object',
+          required: ['id'],
+          properties: {
+            id: {
+              description: 'The ID of the specific tool',
+              type: 'string',
+            },
+          },
+          additionalProperties: false,
+        },
+      },
+    },
+  });
+
+  const json = completion.choices[0]?.message?.parsed as any;
+
+  return json && json.id;
+}
+
+async function getParamsChoice(action: AppletAction, query: string) {
+  const completion = await openai.beta.chat.completions.parse({
+    // model: 'gpt-4o-2024-08-06',
+    model: 'gpt-4o-mini-2024-07-18',
+    messages: [
+      {
+        role: 'system',
+        content: `Please fill the following tool schema to gather more information in order to answer the user's query. The tool is called "${action.id}" and its description is "${action.description}".
+        
+        Query:
+
+        ${query}
+
+        Schema:
+        
+        ${action.params}`,
+      },
+    ],
+    response_format: {
+      type: 'json_schema',
+      json_schema: convertToSchema(action),
+    },
+  });
+
+  const json = completion.choices[0]?.message?.parsed as any;
+  return json;
+}
+
+export function convertToSchema(action: AppletAction) {
+  return {
+    strict: true,
+    name: 'params_schema',
+    schema: {
+      type: 'object',
+      required: Object.keys(action.params!),
+      properties: action.params!,
+      additionalProperties: false,
+    },
+  };
+}

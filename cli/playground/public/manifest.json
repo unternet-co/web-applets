@@ -1,0 +1,18 @@
+{
+  "applets": [
+    {
+      "name": "Hello World",
+      "description": "Displays a greeting to the user.",
+      "url": "/helloworld.applet",
+      "actions": [
+        {
+          "id": "set_name",
+          "description": "Sets the name of the user to be greeted",
+          "params": {
+            "name": "The name of the user"
+          }
+        }
+      ]
+    }
+  ]
+}
