@@ -1,13 +1,14 @@
 {
   "name": "@web-applets/cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npm run build-cli && npm run build-playground && npm run postbuild",
     "build-cli": "tsc",
-    "build-playground": "rm -r dist/playground && vite build",
+    "build-playground": "rm -r dist/playground && vite build && rm -r dist/playground/applets && rm dist/playground/manifest.json",
     "dev": "nodemon",
+    "dev:playground": "vite",
     "postbuild": "cp -r template dist && chmod +x ./dist/index.js"
   },
   "files": [
@@ -36,6 +37,7 @@
     "fs-extra": "^11.2.0",
     "lodash.debounce": "^4.0.8",
     "lodash.merge": "^4.6.2",
+    "openai": "^4.67.3",
     "opener": "^1.5.2",
     "yargs": "^17.7.2"
   },

@@ -72,7 +72,7 @@ aside code {
   padding: 4px;
 }
 
-.applet-container {
+.main {
   flex-grow: 1;
   border-width: 0 1px;
   border-style: solid;
@@ -84,6 +84,14 @@ aside code {
   justify-content: center;
   background: #eee;
   padding: 14px;
+}
+
+.applet-container {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .applet-container label {
@@ -182,4 +190,14 @@ input[type='radio']:checked + label {
 
 #action-form p {
   color: #888;
+}
+
+#cmd-form {
+  width: 100%;
+}
+
+#cmd-input {
+  width: 100%;
+  padding: 5px;
+  font-size: 14px;
 }
