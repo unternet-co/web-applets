@@ -1,4 +1,4 @@
-import { createServer, Logger } from 'vite';
+import { createServer } from 'vite';
 
 async function startViteServer(root: string, port: number) {
   const server = await createServer({

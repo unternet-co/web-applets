@@ -1,4 +1,4 @@
-import { appletContext, type AppletContext } from 'web-applets-sdk';
+import { appletContext, type AppletContext } from '@web-applets/sdk';
 
 // Set up the types we'll use
 type HelloWorldState = { name: string }; // Applet state

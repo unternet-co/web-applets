@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import { AppletProjectConfig } from '../types';
 import { isAppletFolder } from '../utils';
 import { loadConfig } from '../config';
-import { type AppletHeader } from 'web-applets-sdk';
+import { type AppletHeader } from '@web-applets/sdk';
 const execAsync = promisify(exec);
 
 export async function build() {

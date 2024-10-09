@@ -6,9 +6,9 @@
   "scripts": {
     "build": "vite build"
   },
-  "dependencies": {
-    "@unternet/web-applets": "file:../../../sdk"
-  },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@web-applets/sdk": "^0.0.5"
+  }
 }

@@ -1,13 +1,12 @@
 import { join, resolve } from 'path';
 import { dev } from './dev';
 import { createServer } from 'vite';
-import { copySync, mkdir, readdir } from 'fs-extra';
+import { copySync, readdir } from 'fs-extra';
 import { loadConfig } from '../config';
 import opener from 'opener';
 
 export async function playground() {
   const config = await loadConfig();
-  const inputPath = resolve(process.cwd(), config.input.path);
   const outputPath = resolve(process.cwd(), config.output.path);
   const playgroundPath = resolve(__dirname, '../playground');
   const port = config.playground.port;
