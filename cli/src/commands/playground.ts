@@ -3,6 +3,7 @@ import { dev } from './dev';
 import { createServer } from 'vite';
 import { copySync, mkdir, readdir } from 'fs-extra';
 import { loadConfig } from '../config';
+import opener from 'opener';
 
 export async function playground() {
   const config = await loadConfig();
@@ -39,6 +40,9 @@ export async function playground() {
   });
 
   await server.listen();
+
+  const url = `http://localhost:${port}`;
   console.log(`Playground running at http://localhost:${port}`);
   console.log('Press Ctrl+C to stop');
+  opener(url);
 }
