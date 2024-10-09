@@ -1,11 +1,6 @@
 import './components/applet-select';
 import { AppletSelect, SelectEvent } from './components/applet-select';
-import {
-  applets,
-  createOpenAISchemaForAction,
-  type AppletAction,
-  type Applet,
-} from '../../sdk/dist';
+import { applets, type AppletAction, type Applet } from '../../sdk/dist';
 import OpenAI from 'openai';
 
 let openaiKey = '';
@@ -91,11 +86,14 @@ function renderForm(action) {
     <input type="submit" />
   `;
 
-  actionForm.addEventListener('submit', (e) => {
+  actionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(actionForm);
     const formContents = Object.fromEntries(formData.entries());
-    applet.dispatchAction(action.id, formContents as Record<string, string>);
+    await applet.dispatchAction(
+      action.id,
+      formContents as Record<string, string>
+    );
     actionForm.reset();
   });
 }
@@ -182,7 +180,11 @@ async function getParamsChoice(action: AppletAction, query: string) {
     messages: [
       {
         role: 'system',
-        content: `Please fill the following tool schema to gather more information in order to answer the user's query. The tool is called "${action.id}" and its description is "${action.description}". You will also see the tool's current state, which is currently being presented to the user, for context.
+        content: `Please fill the following tool schema to gather more information in order to answer the user's query. The tool is called "${
+          action.id
+        }" and its description is "${
+          action.description
+        }". You will also see the tool's current state, which is currently being presented to the user, for context.
         
         Query:
 
@@ -190,7 +192,7 @@ async function getParamsChoice(action: AppletAction, query: string) {
 
         Current state:
 
-        ${applet.state}
+        ${JSON.stringify(applet.state)}
 
         Schema:
         
