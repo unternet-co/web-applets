@@ -68,8 +68,9 @@ aside {
 aside code {
   display: block;
   width: 100%;
-  white-space: pre;
+  white-space: pre-wrap;
   padding: 4px;
+  font-size: 12px;
 }
 
 .main {
