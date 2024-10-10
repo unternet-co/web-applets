@@ -1,12 +1,18 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { loadConfig } from '../config';
 
 export async function create(nameArg: string) {
+  const config = await loadConfig();
   let name = 'my-applet.applet';
   if (nameArg) name = nameArg;
 
   const templateSource = path.join(__dirname, '..', 'template', 'applet');
-  const appletDest = path.join(process.cwd(), 'applets', `${name}.applet`);
+  const appletDest = path.join(
+    process.cwd(),
+    config.input.path,
+    `${name}.applet`
+  );
 
   try {
     // Check if the template directory exists
