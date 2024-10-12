@@ -2,7 +2,7 @@
 
 > An open SDK to create interoperable actions & views for agents – _a web of capabilities!_
 
-🔗 [Community Applets Repo](https://github.com/unternet-co/community-applets)
+🔗 [Community Applets Repo](https://github.com/unternet-co/community-applets) | 🔗 [Community Mailing List](https://groups.google.com/a/unternet.co/g/community)
 
 ## What is it?
 
