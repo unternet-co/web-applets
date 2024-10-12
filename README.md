@@ -10,6 +10,8 @@ Web Applets is a specification for modular, local web software that can be read 
 
 Did we mention it's _interoperable_? We think the future of software should be open & collaborative, not locked down to a single platform.
 
+For more, see [why](./docs/why.md).
+
 ## Getting started
 
 Install the applets SDK & CLI:
