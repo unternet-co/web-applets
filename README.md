@@ -2,6 +2,8 @@
 
 > An open SDK to create interoperable actions & views for agents – _a web of capabilities!_
 
+🔗 [Community Applets Repo](https://github.com/unternet-co/community-applets)
+
 ## What is it?
 
 Web Applets is a specification for modular, local web software that can be read and used by both humans and machines. Web Applets aims to be an interoperabe application layer for agents – instead of chatbots that can only interact in plain text, Web Applets allow them to actuate real software, read the results, and render rich, graphical views in response.
@@ -9,6 +11,8 @@ Web Applets is a specification for modular, local web software that can be read 
 In short, your model can use & respond with artibrary bits of web UI that a human can then interact with – a map, a rich text document, an item on Amazon with a purchase button, whatever you can build with the web you can turn it into an applet that an agent can use and display.
 
 Did we mention it's _interoperable_? We think the future of software should be open & collaborative, not locked down to a single platform.
+
+For more, see [why](./docs/why.md).
 
 ## Getting started
 

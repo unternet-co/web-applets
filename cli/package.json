@@ -1,6 +1,6 @@
 {
   "name": "@web-applets/cli",
-  "version": "0.0.5",
+  "version": "0.0.12",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -9,6 +9,7 @@
     "build-playground": "rm -r dist/playground && vite build && rm -r dist/playground/applets && rm dist/playground/manifest.json",
     "dev": "nodemon",
     "dev:playground": "vite",
+    "prepare": "npm run build",
     "postbuild": "cp -r template dist && chmod +x ./dist/index.js"
   },
   "files": [

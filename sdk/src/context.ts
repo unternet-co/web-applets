@@ -14,7 +14,7 @@ import {
  * Context
  */
 
-export class AppletContext<StateType = AppletState> extends EventTarget {
+export class AppletContext<StateType = any> extends EventTarget {
   client: AppletClient;
   actionHandlers: ActionHandlerDict = {};
   state: StateType;
