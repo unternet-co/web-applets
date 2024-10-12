@@ -6,9 +6,7 @@ With the community here, we want to build a richer interaction layer for languag
 
 And, we want to build this at the scale of the open web – if anyone can build these and host them, and any client can integrate them, we can create a web of capabilities that any intelligent system can use, without being tied to a single proprietary model or ecosystem.
 
-My first approximation of this is Web Applets (repo with guide to get started here), which is a spec & SDK to make it super easy to build this kind of modular software. I'd love your feedback on this, and contributions to its direction.
-
-On the community, right now this is a mailing list to make things easy, but we’ll probably get a Discord going within the next few weeks. This is a place where we can discuss the spec & how the SDK should work, troubleshoot issues, send links to applets we’ve built, and set the direction for future development to benefit everyone. (Lightning poll – do you prefer a mailing list, Discord, web forum, or some other new-fangled way of being involved? Email a reply to this!)
+My first approximation of this is Web Applets ([repo with guide to get started here](https://github.com/unternet-co/web-applets)), which is a spec & SDK to make it super easy to build this kind of modular software. I'd love your feedback on this, and contributions to its direction.
 
 This has been a vision technologists have been pursuing since Apple’s Knowledge Navigator and Ada Lovelace’s writing about intelligence machines. It’s vital that this next phase is not one in which the biggest players get to dictate the rules and own the platform, but rather an open one in which anyone can participate and build.
 
