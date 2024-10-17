@@ -1,6 +1,5 @@
 import {
   ActionHandlerDict,
-  AppletState,
   AppletMessage,
   AppletActionMessage,
   AppletMessageType,
@@ -8,6 +7,7 @@ import {
   ActionParams,
   ActionHandler,
   AppletStateMessage,
+  AppletInitMessage,
 } from './types';
 
 /**
@@ -18,6 +18,7 @@ export class AppletContext<StateType = any> extends EventTarget {
   client: AppletClient;
   actionHandlers: ActionHandlerDict = {};
   state: StateType;
+  headless: boolean = false;
 
   connect() {
     this.client = new AppletClient();
@@ -51,6 +52,11 @@ export class AppletContext<StateType = any> extends EventTarget {
     });
     resizeObserver.observe(document.querySelector('html')!);
 
+    this.client.on('init', (message: AppletMessage) => {
+      const initMessage = message as AppletInitMessage;
+      this.headless = initMessage.headless;
+    });
+
     this.client.on('state', (message: AppletMessage) => {
       if (!isStateMessage(message)) {
         throw new TypeError("Message doesn't match type StateMessage");
@@ -67,8 +73,6 @@ export class AppletContext<StateType = any> extends EventTarget {
       if (Object.keys(this.actionHandlers).includes(message.actionId)) {
         await this.actionHandlers[message.actionId](message.params);
       }
-
-      message.resolve();
     });
 
     return this;
@@ -81,12 +85,12 @@ export class AppletContext<StateType = any> extends EventTarget {
     this.actionHandlers[actionId] = handler;
   }
 
-  async setState(state: StateType) {
+  async setState(state: StateType, shouldRender?: boolean) {
     const message = new AppletMessage('state', { state });
     await this.client.send(message);
     this.state = state;
     this.dispatchEvent(new CustomEvent('render'));
-    this.onrender(); // TODO: Should come from client? Or stay here, and only activate if mounted? Need a control for mounting.
+    if (shouldRender && !this.headless) this.onrender();
   }
 
   onload(): Promise<void> | void {}
@@ -112,19 +116,17 @@ class AppletClient {
   on(messageType: AppletMessageType, callback: AppletMessageCallback) {
     window.addEventListener(
       'message',
-      (messageEvent: MessageEvent<AppletMessage>) => {
+      async (messageEvent: MessageEvent<AppletMessage>) => {
         if (messageEvent.data.type !== messageType) return;
         const message = new AppletMessage(
           messageEvent.data.type,
           messageEvent.data
         );
-        message.resolve = () => {
-          window.parent.postMessage(
-            new AppletMessage('resolve', { id: message.id }),
-            '*'
-          );
-        };
-        callback(message);
+        await callback(message);
+        window.parent.postMessage(
+          new AppletMessage('resolve', { id: message.id }),
+          '*'
+        );
       }
     );
   }

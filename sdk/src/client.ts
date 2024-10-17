@@ -4,6 +4,8 @@ import {
   AppletMessage,
   ActionParams,
   AppletManifest,
+  AppletMessageType,
+  AppletMessageCallback,
 } from './types';
 
 const hiddenRoot = document.createElement('div');
@@ -22,6 +24,32 @@ export async function getHeaders(url: string): Promise<AppletHeader[]> {
   }
 }
 
+export async function list(
+  url: string
+): Promise<{ [key: string]: AppletManifest }> {
+  url = parseUrl(url);
+
+  try {
+    const request = await fetch(`${url}/manifest.json`);
+    const appManifest = await request.json();
+    const appletUrls = appManifest.applets as string[];
+    const manifests = {};
+
+    const manifestRequests = appletUrls.map(async (appletUrl) => {
+      appletUrl = parseUrl(appletUrl, url);
+      const request = await fetch(`${appletUrl}/manifest.json`);
+      const manifest = await request.json();
+      manifests[appletUrl] = manifest;
+    });
+
+    await Promise.all(manifestRequests);
+
+    return manifests;
+  } catch {
+    return {};
+  }
+}
+
 export async function getManifests(url: string) {
   url = parseUrl(url);
   const request = await fetch(`${url}/manifest.json`);
@@ -36,10 +64,21 @@ export async function getManifests(url: string) {
   return manifests ?? [];
 }
 
+interface AppletOpts {
+  headless?: boolean;
+}
+
+const defaultOpts = {
+  headless: false,
+};
+
 export async function load(
   url: string,
-  container: HTMLIFrameElement
+  container: HTMLIFrameElement,
+  opts?: AppletOpts
 ): Promise<Applet> {
+  const _opts = Object.assign(defaultOpts, opts ?? {});
+
   url = parseUrl(url);
   const manifest = await loadManifest(`${url}`);
   const applet = new Applet();
@@ -52,7 +91,10 @@ export async function load(
   return new Promise((resolve) => {
     window.addEventListener('message', (message) => {
       if (message.source !== container.contentWindow) return;
-      if (message.data.type === 'ready') resolve(applet);
+      if (message.data.type === 'ready') {
+        applet;
+        resolve(applet);
+      }
     });
   });
 }
@@ -124,11 +166,14 @@ export class Applet<T = unknown> extends EventTarget {
       actionId,
       params,
     });
-    this.container.contentWindow?.postMessage(requestMessage.toJson(), '*');
+    return await this.send(requestMessage);
+  }
+
+  async send(message: AppletMessage) {
+    this.container.contentWindow?.postMessage(message.toJson(), '*');
 
     return new Promise<AppletMessage>((resolve) => {
       const listener = (messageEvent: MessageEvent) => {
-        if (messageEvent.source !== this.container.contentWindow) return;
         const responseMessage = new AppletMessage(
           messageEvent.data.type,
           messageEvent.data
@@ -136,14 +181,35 @@ export class Applet<T = unknown> extends EventTarget {
 
         if (
           responseMessage.type === 'resolve' &&
-          responseMessage.id === requestMessage.id
+          responseMessage.id === message.id
         ) {
           window.removeEventListener('message', listener);
           resolve(responseMessage);
         }
+
+        window.addEventListener('message', listener);
       };
-      window.addEventListener('message', listener);
     });
+  }
+
+  async on(messageType: AppletMessageType, callback: AppletMessageCallback) {
+    const listener = async (messageEvent: MessageEvent<AppletMessage>) => {
+      if (messageEvent.source !== this.container.contentWindow) return;
+      if (messageEvent.data.type !== messageType) return;
+
+      const message = new AppletMessage(
+        messageEvent.data.type,
+        messageEvent.data
+      );
+
+      await callback(message);
+      this.container.contentWindow?.postMessage(
+        new AppletMessage('resolve', { id: message.id }),
+        '*'
+      );
+    };
+
+    window.addEventListener('message', listener);
   }
 }
 

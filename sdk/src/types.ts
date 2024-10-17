@@ -9,7 +9,8 @@ export interface AppletManifest {
 
 export interface AppletAction {
   id: string;
-  description: string;
+  title?: string;
+  description?: string;
   params?: ActionParamSchema;
 }
 
@@ -65,6 +66,11 @@ export interface AppletActionMessage<T = any> extends AppletMessage {
   params: T;
 }
 
+export interface AppletInitMessage extends AppletMessage {
+  type: 'init';
+  headless: boolean;
+}
+
 export class AppletMessage<T = any> {
   type: AppletMessageType;
   id: string;
@@ -95,12 +101,16 @@ export class AppletMessage<T = any> {
 
 export type AppletMessageType =
   | 'action'
+  | 'actions'
   | 'render'
   | 'state'
+  | 'init'
   | 'ready'
   | 'resolve'
   | 'resize';
-export type AppletMessageCallback = (message: AnyAppletMessage) => void;
+export type AppletMessageCallback = (
+  message: AnyAppletMessage
+) => Promise<void> | void;
 
 /* Utils */
 
