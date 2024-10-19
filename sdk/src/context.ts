@@ -143,13 +143,11 @@ class AppletClient {
       async (messageEvent: MessageEvent<AppletMessage>) => {
         if (messageEvent.data.type !== messageType) return;
 
-        console.log('Received message from client', messageEvent);
         const message = new AppletMessage(
           messageEvent.data.type,
           messageEvent.data
         );
         await callback(message);
-        console.log('Resolving');
         window.parent.postMessage(
           new AppletMessage('resolve', { id: message.id }),
           '*'
