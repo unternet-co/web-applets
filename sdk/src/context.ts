@@ -53,7 +53,6 @@ export class AppletContext<StateType = any> extends EventTarget {
     resizeObserver.observe(document.querySelector('html')!);
 
     this.client.on('init', (message: AppletMessage) => {
-      console.log('init messagee', message);
       const initMessage = message as AppletInitMessage;
       this.headless = initMessage.headless;
     });
@@ -67,8 +66,6 @@ export class AppletContext<StateType = any> extends EventTarget {
       // this retains cursor positions in text fields, for example
       if (JSON.stringify(message.state) === JSON.stringify(this.#state)) return;
       this.#state = message.state;
-
-      console.log('Headless?', this.headless);
 
       if (!this.headless) {
         this.onrender();
