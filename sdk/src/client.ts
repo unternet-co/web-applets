@@ -6,23 +6,14 @@ import {
   AppletManifest,
   AppletMessageType,
   AppletMessageCallback,
+  AppletStateMessage,
+  AppletResizeMessage,
+  AppletInitMessage,
 } from './types';
 
-const hiddenRoot = document.createElement('div');
-hiddenRoot.style.display = 'none';
-document.body.appendChild(hiddenRoot);
-
-export async function getHeaders(url: string): Promise<AppletHeader[]> {
-  url = parseUrl(url);
-  try {
-    const request = await fetch(`${url}/manifest.json`);
-    const appManifest = await request.json();
-    const appletHeaders = appManifest.applets as AppletHeader[];
-    return appletHeaders ?? [];
-  } catch {
-    return [];
-  }
-}
+const hiddenContainer = document.createElement('iframe');
+hiddenContainer.style.display = 'none';
+document.body.appendChild(hiddenContainer);
 
 export async function list(
   url: string
@@ -43,58 +34,50 @@ export async function list(
     });
 
     await Promise.all(manifestRequests);
-
     return manifests;
   } catch {
     return {};
   }
 }
 
-export async function getManifests(url: string) {
-  url = parseUrl(url);
-  const request = await fetch(`${url}/manifest.json`);
-  const headers = (await request.json()).applets;
-  const manifests = await Promise.all(
-    headers.map(async (header: any) => {
-      const appletUrl = parseUrl(header.url);
-      const request = await fetch(`${appletUrl}/manifest.json`);
-      return await request.json();
-    })
-  );
-  return manifests ?? [];
-}
-
 interface AppletOpts {
   headless?: boolean;
+  unsafe?: boolean;
 }
 
 const defaultOpts = {
   headless: false,
+  unsafe: false,
 };
 
 export async function load(
   url: string,
-  container: HTMLIFrameElement,
+  container?: HTMLIFrameElement,
   opts?: AppletOpts
 ): Promise<Applet> {
   const _opts = Object.assign(defaultOpts, opts ?? {});
+
+  if (!container) {
+    container = hiddenContainer;
+    _opts.headless = true;
+  }
+  if (!_opts.unsafe) container.setAttribute('sandbox', 'allow-scripts');
 
   url = parseUrl(url);
   const manifest = await loadManifest(`${url}`);
   const applet = new Applet();
   applet.manifest = manifest;
-  applet.actions = manifest.actions; // let the events set this later
+  applet.actions = manifest.actions;
   applet.container = container;
   container.src = applet.manifest.entrypoint;
-  if (!container.isConnected) hiddenRoot.appendChild(container);
 
   return new Promise((resolve) => {
-    window.addEventListener('message', (message) => {
-      if (message.source !== container.contentWindow) return;
-      if (message.data.type === 'ready') {
-        applet;
-        resolve(applet);
-      }
+    applet.on('ready', () => {
+      const initMessage = new AppletMessage('init', {
+        headless: _opts.headless,
+      }) as AppletInitMessage;
+      applet.send(initMessage);
+      resolve(applet);
     });
   });
 }
@@ -107,25 +90,14 @@ export class Applet<T = unknown> extends EventTarget {
 
   constructor() {
     super();
-    window.addEventListener('message', (message) => {
-      if (message.source !== this.container.contentWindow) return;
-      if (message.data.type === 'state') {
-        this.#state = message.data.state;
-        this.dispatchEvent(
-          new CustomEvent('stateupdated', { detail: message.data.detail })
-        );
-        this.onstateupdated(message.data.state);
-      }
-      if (message.data.type === 'resize') {
-        this.resizeContainer(message.data.dimensions);
-      }
-      this.container.contentWindow?.postMessage(
-        {
-          type: 'resolve',
-          id: message.data.id,
-        },
-        '*'
-      );
+
+    this.on('state', (message: AppletStateMessage) => {
+      this.#state = message.state;
+      this.#dispatchEvent('stateupdated', message.state);
+    });
+
+    this.on('resize', (message: AppletResizeMessage) => {
+      this.resizeContainer(message.dimensions);
     });
   }
 
@@ -135,8 +107,7 @@ export class Applet<T = unknown> extends EventTarget {
 
   set state(state: T) {
     this.#state = state;
-    const stateMessage = new AppletMessage('state', { state });
-    this.container.contentWindow?.postMessage(stateMessage.toJson(), '*');
+    this.send(new AppletMessage('state', { state }));
   }
 
   toJson() {
@@ -153,7 +124,7 @@ export class Applet<T = unknown> extends EventTarget {
   }
 
   resizeContainer(dimensions: { height: number; width: number }) {
-    this.container.style.height = `${dimensions.height}px`;
+    this.container.style.height = `${dimensions.height + 2}px`;
     // if (!this.#styleOverrides) {
     //   this.#container.style.height = `${dimensions.height}px`;
     // }
@@ -161,6 +132,7 @@ export class Applet<T = unknown> extends EventTarget {
 
   onstateupdated(event: CustomEvent) {}
   disconnect() {}
+
   async dispatchAction(actionId: string, params: ActionParams) {
     const requestMessage = new AppletMessage('action', {
       actionId,
@@ -186,9 +158,9 @@ export class Applet<T = unknown> extends EventTarget {
           window.removeEventListener('message', listener);
           resolve(responseMessage);
         }
-
-        window.addEventListener('message', listener);
       };
+
+      window.addEventListener('message', listener);
     });
   }
 
@@ -211,7 +183,16 @@ export class Applet<T = unknown> extends EventTarget {
 
     window.addEventListener('message', listener);
   }
+
+  #dispatchEvent(id: string, detail: any) {
+    if (typeof this[`on${id}`] === 'function') {
+      this[`on${id}`](detail);
+    }
+    this.dispatchEvent(new CustomEvent(id, { detail }));
+  }
 }
+
+/* Helpers */
 
 function parseUrl(url: string, base?: string) {
   if (['http', 'https'].includes(url.split('://')[0])) {
@@ -237,4 +218,30 @@ export async function loadManifest(url: string): Promise<AppletManifest> {
 
   appletManifest.entrypoint = parseUrl(appletManifest.entrypoint, url);
   return appletManifest;
+}
+
+export async function getHeaders(url: string): Promise<AppletHeader[]> {
+  url = parseUrl(url);
+  try {
+    const request = await fetch(`${url}/manifest.json`);
+    const appManifest = await request.json();
+    const appletHeaders = appManifest.applets as AppletHeader[];
+    return appletHeaders ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getManifests(url: string) {
+  url = parseUrl(url);
+  const request = await fetch(`${url}/manifest.json`);
+  const headers = (await request.json()).applets;
+  const manifests = await Promise.all(
+    headers.map(async (header: any) => {
+      const appletUrl = parseUrl(header.url);
+      const request = await fetch(`${appletUrl}/manifest.json`);
+      return await request.json();
+    })
+  );
+  return manifests ?? [];
 }

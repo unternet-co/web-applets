@@ -60,6 +60,11 @@ export interface AppletStateMessage<T = any> extends AppletMessage {
   state: T;
 }
 
+export interface AppletResizeMessage extends AppletMessage {
+  type: 'resize';
+  dimensions: { height: number; width: number };
+}
+
 export interface AppletActionMessage<T = any> extends AppletMessage {
   type: 'action';
   actionId: string;

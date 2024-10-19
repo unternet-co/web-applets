@@ -17,7 +17,7 @@ import {
 export class AppletContext<StateType = any> extends EventTarget {
   client: AppletClient;
   actionHandlers: ActionHandlerDict = {};
-  state: StateType;
+  #state: StateType;
   headless: boolean = false;
 
   connect() {
@@ -53,6 +53,7 @@ export class AppletContext<StateType = any> extends EventTarget {
     resizeObserver.observe(document.querySelector('html')!);
 
     this.client.on('init', (message: AppletMessage) => {
+      console.log('init messagee', message);
       const initMessage = message as AppletInitMessage;
       this.headless = initMessage.headless;
     });
@@ -62,7 +63,17 @@ export class AppletContext<StateType = any> extends EventTarget {
         throw new TypeError("Message doesn't match type StateMessage");
       }
 
-      this.setState(message.state);
+      // Don't render when state updates match the current state
+      // this retains cursor positions in text fields, for example
+      if (JSON.stringify(message.state) === JSON.stringify(this.#state)) return;
+      this.#state = message.state;
+
+      console.log('Headless?', this.headless);
+
+      if (!this.headless) {
+        this.onrender();
+        this.dispatchEvent(new CustomEvent('render'));
+      }
     });
 
     this.client.on('action', async (message: AppletMessage) => {
@@ -85,12 +96,25 @@ export class AppletContext<StateType = any> extends EventTarget {
     this.actionHandlers[actionId] = handler;
   }
 
+  set state(state: StateType) {
+    this.setState(state);
+  }
+
+  get state() {
+    return this.#state;
+  }
+
   async setState(state: StateType, shouldRender?: boolean) {
     const message = new AppletMessage('state', { state });
     await this.client.send(message);
-    this.state = state;
-    this.dispatchEvent(new CustomEvent('render'));
-    if (shouldRender && !this.headless) this.onrender();
+    this.#state = state;
+
+    console.log('Headless?', this.headless);
+
+    if (shouldRender !== false && !this.headless) {
+      this.onrender();
+      this.dispatchEvent(new CustomEvent('render'));
+    }
   }
 
   onload(): Promise<void> | void {}
@@ -118,11 +142,14 @@ class AppletClient {
       'message',
       async (messageEvent: MessageEvent<AppletMessage>) => {
         if (messageEvent.data.type !== messageType) return;
+
+        console.log('Received message from client', messageEvent);
         const message = new AppletMessage(
           messageEvent.data.type,
           messageEvent.data
         );
         await callback(message);
+        console.log('Resolving');
         window.parent.postMessage(
           new AppletMessage('resolve', { id: message.id }),
           '*'

@@ -32,7 +32,7 @@
     "@types/chokidar": "^1.7.5",
     "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.merge": "^4.6.9",
-    "@web-applets/sdk": "^0.0.6",
+    "@web-applets/sdk": "file:../sdk",
     "chokidar": "^4.0.1",
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0",
