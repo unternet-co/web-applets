@@ -1,15 +1,16 @@
 export interface AppletManifest {
   type: 'applet';
   name: string;
-  description: string;
+  description?: string;
   icon?: string;
-  entrypoint: string;
-  actions: AppletAction[];
+  frameless?: boolean;
+  entrypoint?: string;
+  actions?: AppletAction[];
 }
 
 export interface AppletAction {
   id: string;
-  title?: string;
+  name?: string;
   description?: string;
   params?: ActionParamSchema;
 }
@@ -29,7 +30,7 @@ export interface AppletHeader {
 
 /* State */
 
-export type AppletState = Record<string, Serializable>;
+export type AppletState = any;
 
 /* Actions */
 

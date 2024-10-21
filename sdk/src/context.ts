@@ -54,10 +54,12 @@ export class AppletContext<StateType = any> extends EventTarget {
 
     this.client.on('init', (message: AppletMessage) => {
       const initMessage = message as AppletInitMessage;
+
       this.headless = initMessage.headless;
     });
 
     this.client.on('state', (message: AppletMessage) => {
+      console.log('Received state!');
       if (!isStateMessage(message)) {
         throw new TypeError("Message doesn't match type StateMessage");
       }
@@ -67,10 +69,13 @@ export class AppletContext<StateType = any> extends EventTarget {
       if (JSON.stringify(message.state) === JSON.stringify(this.#state)) return;
       this.#state = message.state;
 
-      if (!this.headless) {
-        this.onrender();
-        this.dispatchEvent(new CustomEvent('render'));
-      }
+      console.log('OK', this.headless);
+      // BUG: For some reason regular applets were loading headless, when instantiated not on a page reload
+      // if (!this.headless) {
+      console.log('Now I will render');
+      this.onrender();
+      this.dispatchEvent(new CustomEvent('render'));
+      // }
     });
 
     this.client.on('action', async (message: AppletMessage) => {
@@ -105,8 +110,6 @@ export class AppletContext<StateType = any> extends EventTarget {
     const message = new AppletMessage('state', { state });
     await this.client.send(message);
     this.#state = state;
-
-    console.log('Headless?', this.headless);
 
     if (shouldRender !== false && !this.headless) {
       this.onrender();

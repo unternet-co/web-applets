@@ -71,11 +71,14 @@ export async function load(
   applet.container = container;
   container.src = applet.manifest.entrypoint;
 
+  console.log('loading');
+
   return new Promise((resolve) => {
     applet.on('ready', () => {
       const initMessage = new AppletMessage('init', {
         headless: _opts.headless,
       }) as AppletInitMessage;
+      console.log('applet is ready');
       applet.send(initMessage);
       resolve(applet);
     });
@@ -199,12 +202,14 @@ function parseUrl(url: string, base?: string) {
     return url;
   }
 
-  let path = url;
-  if (path.startsWith('/')) path = path.slice(1);
-  if (path.endsWith('/')) path = path.slice(0, -1);
+  let path = trimSlashes(url);
   url = `${base || window.location.origin}/${path}`;
 
   return url;
+}
+
+function trimSlashes(str: string) {
+  return str.replace(/^\/+|\/+$/g, '');
 }
 
 export async function loadManifest(url: string): Promise<AppletManifest> {
