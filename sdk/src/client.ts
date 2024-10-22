@@ -9,15 +9,14 @@ import {
   AppletStateMessage,
   AppletResizeMessage,
   AppletInitMessage,
+  AppletManifestDict,
 } from './types';
 
 const hiddenContainer = document.createElement('iframe');
 hiddenContainer.style.display = 'none';
 document.body.appendChild(hiddenContainer);
 
-export async function list(
-  url: string
-): Promise<{ [key: string]: AppletManifest }> {
+export async function list(url: string): Promise<AppletManifestDict> {
   url = parseUrl(url);
 
   try {
@@ -71,14 +70,11 @@ export async function load(
   applet.container = container;
   container.src = applet.manifest.entrypoint;
 
-  console.log('loading');
-
   return new Promise((resolve) => {
     applet.on('ready', () => {
       const initMessage = new AppletMessage('init', {
         headless: _opts.headless,
       }) as AppletInitMessage;
-      console.log('applet is ready');
       applet.send(initMessage);
       resolve(applet);
     });

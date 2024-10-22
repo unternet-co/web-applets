@@ -8,6 +8,10 @@ export interface AppletManifest {
   actions?: AppletAction[];
 }
 
+export interface AppletManifestDict {
+  [url: string]: AppletManifest;
+}
+
 export interface AppletAction {
   id: string;
   name?: string;

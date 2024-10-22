@@ -26,7 +26,6 @@ class AppletView extends HTMLElement {
 
     applet-frame:not(.frameless) {
       border: 1px solid #ddd;
-      border-radius: var(--rounded-md);
     }
 
     applet-frame.frameless {
