@@ -4,6 +4,6 @@
     "buildDir": "dist"
   },
   "output": {
-    "path": "./public/applets"
+    "path": "dist"
   }
 }

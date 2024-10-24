@@ -1,18 +1,96 @@
 # Web Applets
 
-> An open SDK to create interoperable actions & views for agents – _a web of capabilities!_
+> An open spec & SDK for creating apps that agents can use.
 
-🔗 [Community Applets Repo](https://github.com/unternet-co/community-applets) | 🔗 [Community Mailing List](https://groups.google.com/a/unternet.co/g/community)
+🔗 [Applets Repo](https://github.com/unternet-co/community-applets) | 🔗 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 🔗 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
 
 ## What is it?
 
-Web Applets is a specification for modular, local web software that can be read and used by both humans and machines. Web Applets aims to be an interoperabe application layer for agents – instead of chatbots that can only interact in plain text, Web Applets allow them to actuate real software, read the results, and render rich, graphical views in response.
+Web Applets is an open specification for building software that both humans and AI can understand and use together. Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed from the ground up for seamless human-AI collaboration.
 
-In short, your model can use & respond with artibrary bits of web UI that a human can then interact with – a map, a rich text document, an item on Amazon with a purchase button, whatever you can build with the web you can turn it into an applet that an agent can use and display.
+![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
 
-Did we mention it's _interoperable_? We think the future of software should be open & collaborative, not locked down to a single platform.
+Web Applets are modular pieces of web software that:
 
-For more, see [why](./docs/why.md).
+- Can be used directly by humans with rich, graphical interfaces
+- Can be understood and operated by AI through a clear protocol
+- Run locally in your environment, not on distant servers
+- Share context and state with their environment
+- Can be freely combined and composed
+
+Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly.
+
+Web Applets aims to do for AI-enabled software what the web did for documents - create an open platform where anyone can build, share, and connect applications. We believe the future of software should be built on open collaboration, not tight integration with closed platforms.
+
+## Key Features
+
+- **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript)
+- **AI-Native Protocol:** Applets expose their state and actions in a way AI can understand and use
+- **Rich Interfaces:** Full support for complex graphical UIs, not just text
+- **Local-First:** Runs in your environment, keeping your data under your control
+- **Composable:** Applets can work together, sharing context and state
+- **Open Standard:** Designed for interoperability, not platform lock-in
+
+## Example
+
+This is a simple applet that prints "Hello, [your name]" when given the `set_name` action.
+
+`index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <script src="./main.js" type="module"></script>
+  <body>
+    Hello! <span id="name">whoever you are</span>.
+  </body>
+</html>
+```
+
+`main.js`:
+
+```js
+import { appletContext } from '@web-applets/sdk';
+
+// Get view element we want to manipulate
+const nameElem = document.getElementById('name');
+
+// Connect to the applet context
+const applet = appletContext.connect();
+
+// When the set_name action is called, change the state
+applet.setActionHandler('set_name', ({ name }) => {
+  applet.setState({ name });
+});
+
+// Whenever we get a request to render the view, update the name
+applet.onrender = () => {
+  nameElem.innerText = applet.state?.name;
+};
+```
+
+`manifest.json`:
+
+```json
+{
+  "type": "applet",
+  "name": "Hello World",
+  "description": "Displays a greeting to the user.",
+  "entrypoint": "index.html",
+  "actions": [
+    {
+      "id": "set_name",
+      "description": "Sets the name of the user to be greeted",
+      "params": {
+        "name": {
+          "type": "string",
+          "description": "The name of the user"
+        }
+      }
+    }
+  ]
+}
+```
 
 ## Getting started
 
@@ -135,29 +213,30 @@ applet.state = { name: 'Ada Lovelace' };
 It may also be helpful to check available applets at a domain, or in your public folder. For that you can extract the applet headers from the App Manifest at the public root (`/manifest.json`), and see the available applets and a shorthand for the actions you can take in them. This is automatically created when you build your applets.
 
 ```js
-const headers = await applets.getHeaders('/');
+const applets = await applets.list('/');
 ```
 
-This headers object looks like:
+This applets object looks like:
 
 ```js
-[
-  {
+{
+  '/helloworld.applet': {
     name: 'Hello World',
     description: 'Displays a greeting to the user.',
     url: '/applets/helloworld.applet',
-    actions: [
-      {
-        id: 'set_name',
-        description: 'Sets the name of the user to be greeted',
-        params: {
-          name: 'The name of the user',
-        },
+    actions: {
+      set_name: {
+      description: 'Sets the name of the user to be greeted',
+      params: {
+        name: {
+          type: 'string',
+          description: 'The name of the user'
+        }
       },
-    ],
+    },
   },
   // ...
-];
+};
 ```
 
 You can use it to present a quick summary of available tools to your model, and then decide on an applet and action to use.
