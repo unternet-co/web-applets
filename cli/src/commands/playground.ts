@@ -15,11 +15,10 @@ export async function playground() {
 
   async function copyApplets() {
     try {
-      // await mkdir(join(playgroundPath), { recursive: true });
       const applets = await readdir(outputPath);
       for (const applet of applets) {
         const srcPath = join(outputPath, applet);
-        const destPath = join(playgroundPath, applet);
+        const destPath = join(playgroundPath, 'applets', applet);
         copySync(srcPath, destPath);
       }
       console.log('Synced applets to playground.');
@@ -34,7 +33,7 @@ export async function playground() {
   const server = await createServer({
     root: playgroundPath,
     server: {
-      port: port,
+      port,
     },
   });
 

@@ -60,7 +60,8 @@ export async function load(
     container = hiddenContainer;
     _opts.headless = true;
   }
-  if (!_opts.unsafe) container.setAttribute('sandbox', 'allow-scripts');
+  if (!_opts.unsafe)
+    container.setAttribute('sandbox', 'allow-scripts allow-forms');
 
   url = parseUrl(url);
   const manifest = await loadManifest(`${url}`);

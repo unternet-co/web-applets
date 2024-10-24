@@ -1,6 +1,6 @@
-import { Applet, applets } from '../index';
+import { Applet, applets } from '../index.js';
 
-class AppletView extends HTMLElement {
+class AppletFrame extends HTMLElement {
   container?: HTMLIFrameElement;
   applet?: Applet;
 
@@ -58,4 +58,4 @@ class AppletView extends HTMLElement {
   }
 }
 
-customElements.define('applet-frame', AppletView);
+customElements.define('applet-frame', AppletFrame);

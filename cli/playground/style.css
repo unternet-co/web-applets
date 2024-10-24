@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
 * {
   box-sizing: border-box;
 }
@@ -8,12 +10,41 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
+  /* font-family: 'Roboto Mono', system-ui; */
   font-family: system-ui;
   font-size: 14px;
 }
 
-input {
+input,
+select,
+button {
+  /* font-family: 'Roboto Mono', system-ui; */
   font-family: system-ui;
+}
+
+.dark {
+  background: black;
+  color: white;
+}
+
+.dark input,
+.dark button {
+  background: #333;
+  border: 1px solid #5d5d5d;
+  border-radius: 3px;
+  color: #ccc;
+}
+
+.dark button {
+  background: black;
+}
+
+button {
+  padding: 5px;
+}
+
+input {
+  padding: 3px;
 }
 
 body {
@@ -27,11 +58,17 @@ header {
   border-bottom: 1px solid #ccc;
   background: #f8f8f8;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   display: flex;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
   z-index: 100;
+}
+
+.dark header {
+  background: black;
+  border-color: #444;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 applet-select select {
@@ -40,12 +77,22 @@ applet-select select {
   font-size: 14px;
 }
 
+.dark applet-select select {
+  background: black;
+  color: white;
+  border-radius: 4px;
+}
+
 h1 {
   font-size: 16px;
   margin: 0;
   padding: 0;
   width: 100%;
   border-bottom: 1px solid #ccc;
+}
+
+.dark h1 {
+  border-color: #444;
 }
 
 main {
@@ -87,6 +134,11 @@ aside code {
   padding: 14px;
 }
 
+.dark .main {
+  background: #222;
+  border-color: #444;
+}
+
 .applet-container {
   display: flex;
   flex-grow: 1;
@@ -94,6 +146,8 @@ aside code {
   align-items: center;
   justify-content: center;
   width: 100%;
+  gap: 5px;
+  max-width: 750px;
 }
 
 .applet-container label {
@@ -149,8 +203,16 @@ fieldset .action {
   color: #6f6f6f;
 }
 
+.dark .action-description {
+  color: #aaa;
+}
+
 input[type='radio']:checked + label {
   background: #edf6fe;
+}
+
+.dark input[type='radio']:checked + label {
+  background: #333;
 }
 
 #action-form {
@@ -161,6 +223,9 @@ input[type='radio']:checked + label {
   gap: 20px;
   max-height: 50vh;
   overflow-y: scroll;
+}
+.dark #action-form {
+  border-color: #444;
 }
 
 #action-form label,
@@ -202,4 +267,8 @@ input[type='radio']:checked + label {
   width: 100%;
   padding: 5px;
   font-size: 14px;
+}
+
+.no-devtools .actions {
+  display: none;
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run build-cli && npm run build-playground && npm run postbuild",
     "build-cli": "tsc",
-    "build-playground": "rm -r dist/playground && vite build && rm -r dist/playground/applets && rm dist/playground/manifest.json",
+    "build-playground": "rm -rf dist/playground && vite build && rm -rf dist/playground/applets/*",
     "dev": "nodemon",
     "dev:playground": "vite",
     "prepare": "npm run build",

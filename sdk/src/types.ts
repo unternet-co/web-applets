@@ -46,7 +46,7 @@ export type ActionParamSchema = Record<
   }
 >;
 
-export type ActionParams = Record<string, unknown>;
+export type ActionParams<T = any> = Record<string, T>;
 
 export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
 export type ActionHandler<T extends ActionParams> = (

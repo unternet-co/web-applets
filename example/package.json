@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "web-applets build",
-    "dev": "web-applets dev",
-    "playground": "web-applets playground"
+    "build": "applets build",
+    "dev": "applets dev",
+    "playground": "applets playground"
   },
   "author": "",
   "license": "ISC",

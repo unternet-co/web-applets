@@ -1,9 +1,9 @@
-import { AppletHeader, applets, type Applet } from '../../../sdk/dist';
+import { AppletManifestDict, applets } from '../../../sdk/dist';
 export type SelectEvent = CustomEvent<string>;
 
 export class AppletSelect extends HTMLElement {
   selectElem = document.createElement('select');
-  appletHeaders: AppletHeader[] = [];
+  applets: AppletManifestDict = {};
 
   connectedCallback() {
     this.selectElem.addEventListener('change', this.handleSelect.bind(this));
@@ -11,7 +11,8 @@ export class AppletSelect extends HTMLElement {
   }
 
   async asyncSetup() {
-    this.appletHeaders = await applets.getHeaders('/');
+    this.applets = await applets.list('/applets');
+    console.log(this.applets);
     this.render();
   }
 
@@ -26,11 +27,11 @@ export class AppletSelect extends HTMLElement {
   }
 
   render() {
-    this.selectElem.innerHTML = this.appletHeaders
-      .map((applet) => {
+    this.selectElem.innerHTML = Object.keys(this.applets)
+      .map((url) => {
         return `
-          <option value=${applet.url}>
-            ${applet.name}
+          <option value=${url}>
+            ${this.applets[url].name}
           </option>
         `;
       })

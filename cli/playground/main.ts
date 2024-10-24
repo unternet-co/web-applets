@@ -19,15 +19,19 @@ const actionsList = document.querySelector(
 const actionForm = document.querySelector('#action-form') as HTMLFormElement;
 const commandForm = document.querySelector('#cmd-form') as HTMLFormElement;
 const commandInput = document.querySelector('#cmd-input') as HTMLInputElement;
+const devtoolsButton = document.querySelector('#devtools') as HTMLInputElement;
+
+devtoolsButton.addEventListener('click', () => {
+  document.body.classList.toggle('no-devtools');
+});
 
 let openai;
 
 let applet: Applet;
 
 async function main() {
-  const appletHeaders = await applets.getHeaders('/');
-  console.log(appletHeaders);
-  startApplet(appletHeaders[0].url);
+  const appletsDict = await applets.list('/applets');
+  startApplet(Object.keys(appletsDict)[0]);
 }
 
 main();
