@@ -17,5 +17,5 @@ applet.setActionHandler<SetNameParams>('set_name', ({ name }) => {
 
 // Whenever we get a request to render the view, update the name
 applet.onrender = () => {
-  nameElem.innerText = applet.state.name;
+  nameElem.innerText = applet.state?.name;
 };

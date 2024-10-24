@@ -1,6 +1,7 @@
 {
   "type": "applet",
   "name": "",
+  "icon": "",
   "description": "",
   "entrypoint": "index.html",
   "actions": [

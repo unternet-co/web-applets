@@ -5,7 +5,6 @@ import { promisify } from 'util';
 import { AppletProjectConfig } from '../types';
 import { isAppletFolder } from '../utils';
 import { loadConfig } from '../config';
-import { type AppletHeader } from '@web-applets/sdk';
 const execAsync = promisify(exec);
 
 export async function build() {
@@ -40,50 +39,76 @@ export async function build() {
 }
 
 export async function writeManifest(config: AppletProjectConfig) {
-  const outputPath = path.resolve(process.cwd(), config.output.path);
-  const paths = fs.readdirSync(outputPath);
-  const manifest = { applets: [] as AppletHeader[] };
+  const appletOutputDir = path.resolve(process.cwd(), config.output.path);
+  const appletPaths = fs.readdirSync(appletOutputDir);
+  const manifest = { applets: [] as string[] };
 
-  for (let appletName of paths) {
+  for (let appletName of appletPaths) {
     const appletPath = path.resolve(
       process.cwd(),
       `${config.output.path}/${appletName}`
     );
+
     if (await isAppletFolder(appletPath)) {
-      const appletManifestJson = fs.readFileSync(
-        `${appletPath}/manifest.json`,
-        'utf-8'
-      );
-      const appletManifest = JSON.parse(appletManifestJson);
-
-      const header = {
-        name: appletManifest.name,
-        description: appletManifest.description,
-        url: `${
-          config.output.baseUrl === '/' ? '' : config.output.baseUrl
-        }/${appletName}`,
-        actions: [],
-      } as AppletHeader;
-
-      for (const action of appletManifest.actions) {
-        header.actions.push({
-          id: action.id,
-          description: action.description,
-          params: {},
-        });
-
-        for (const paramId in action.params) {
-          header.actions[header.actions.length - 1].params[paramId] =
-            action.params[paramId].description;
-        }
-      }
-
-      manifest.applets.push(header);
+      const baseUrl = trimSlashes(config.output.baseUrl);
+      manifest.applets.push(`${baseUrl}/${appletName}`);
     }
   }
 
   fs.writeFileSync(
-    `${outputPath}/manifest.json`,
+    `${appletOutputDir}/manifest.json`,
     JSON.stringify(manifest, null, 2)
   );
+}
+// export async function writeManifest(config: AppletProjectConfig) {
+//   const outputPath = path.resolve(process.cwd(), config.output.path);
+//   const paths = fs.readdirSync(outputPath);
+//   const manifest = { applets: [] as AppletHeader[] };
+
+//   for (let appletName of paths) {
+//     const appletPath = path.resolve(
+//       process.cwd(),
+//       `${config.output.path}/${appletName}`
+//     );
+//     if (await isAppletFolder(appletPath)) {
+//       const appletManifestJson = fs.readFileSync(
+//         `${appletPath}/manifest.json`,
+//         'utf-8'
+//       );
+//       const appletManifest = JSON.parse(appletManifestJson);
+
+//       const header = {
+//         name: appletManifest.name,
+//         description: appletManifest.description,
+//         url: `${
+//           config.output.baseUrl === '/' ? '' : config.output.baseUrl
+//         }/${appletName}`,
+//         actions: [],
+//       } as AppletHeader;
+
+//       for (const action of appletManifest.actions) {
+//         header.actions.push({
+//           id: action.id,
+//           description: action.description,
+//           params: {},
+//         });
+
+//         for (const paramId in action.params) {
+//           header.actions[header.actions.length - 1].params[paramId] =
+//             action.params[paramId].description;
+//         }
+//       }
+
+//       manifest.applets.push(header);
+//     }
+//   }
+
+//   fs.writeFileSync(
+//     `${outputPath}/manifest.json`,
+//     JSON.stringify(manifest, null, 2)
+//   );
+// }
+
+function trimSlashes(str: string) {
+  return str.replace(/^\/+|\/+$/g, '');
 }

@@ -15,7 +15,7 @@ const defaultConfig: AppletProjectConfig = {
     createRootManifest: true,
   },
   playground: {
-    port: 3000,
+    port: 1234,
   },
 };
 

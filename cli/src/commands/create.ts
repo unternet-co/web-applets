@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { loadConfig } from '../config';
+import { execSync } from 'child_process';
 
 export async function create(nameArg: string) {
   const config = await loadConfig();
@@ -30,6 +31,10 @@ export async function create(nameArg: string) {
     // Copy the template to the new applet directory
     await fs.copy(templateSource, appletDest);
     console.log(`Created '${name}.applet' in ./applets`);
+    process.stdout.write(`Installing dependencies...`);
+    process.chdir(appletDest);
+    execSync('npm install');
+    process.stdout.write('Done!\n');
     console.log(
       'Please update public/manifest.json & start developing according to the docs.'
     );

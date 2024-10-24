@@ -1,15 +1,21 @@
 export interface AppletManifest {
   type: 'applet';
   name: string;
-  description: string;
+  description?: string;
   icon?: string;
-  entrypoint: string;
-  actions: AppletAction[];
+  frameless?: boolean;
+  entrypoint?: string;
+  actions?: AppletAction[];
+}
+
+export interface AppletManifestDict {
+  [url: string]: AppletManifest;
 }
 
 export interface AppletAction {
   id: string;
-  description: string;
+  name?: string;
+  description?: string;
   params?: ActionParamSchema;
 }
 
@@ -28,7 +34,7 @@ export interface AppletHeader {
 
 /* State */
 
-export type AppletState = Record<string, Serializable>;
+export type AppletState = any;
 
 /* Actions */
 
@@ -40,7 +46,7 @@ export type ActionParamSchema = Record<
   }
 >;
 
-export type ActionParams = Record<string, unknown>;
+export type ActionParams<T = any> = Record<string, T>;
 
 export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
 export type ActionHandler<T extends ActionParams> = (
@@ -59,10 +65,20 @@ export interface AppletStateMessage<T = any> extends AppletMessage {
   state: T;
 }
 
+export interface AppletResizeMessage extends AppletMessage {
+  type: 'resize';
+  dimensions: { height: number; width: number };
+}
+
 export interface AppletActionMessage<T = any> extends AppletMessage {
   type: 'action';
   actionId: string;
   params: T;
+}
+
+export interface AppletInitMessage extends AppletMessage {
+  type: 'init';
+  headless: boolean;
 }
 
 export class AppletMessage<T = any> {
@@ -95,12 +111,16 @@ export class AppletMessage<T = any> {
 
 export type AppletMessageType =
   | 'action'
+  | 'actions'
   | 'render'
   | 'state'
+  | 'init'
   | 'ready'
   | 'resolve'
   | 'resize';
-export type AppletMessageCallback = (message: AnyAppletMessage) => void;
+export type AppletMessageCallback = (
+  message: AnyAppletMessage
+) => Promise<void> | void;
 
 /* Utils */
 

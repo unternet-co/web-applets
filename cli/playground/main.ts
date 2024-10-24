@@ -19,15 +19,29 @@ const actionsList = document.querySelector(
 const actionForm = document.querySelector('#action-form') as HTMLFormElement;
 const commandForm = document.querySelector('#cmd-form') as HTMLFormElement;
 const commandInput = document.querySelector('#cmd-input') as HTMLInputElement;
+const devtoolsButton = document.querySelector('#devtools') as HTMLInputElement;
+const logElem = document.querySelector('#messages') as HTMLDivElement;
+
+devtoolsButton.addEventListener('click', () => {
+  document.body.classList.toggle('no-devtools');
+});
 
 let openai;
 
 let applet: Applet;
 
+function addLog(from: 'applet' | 'env', name: string, log: string) {
+  console.log(`[${from}: ${name}] ${log}`);
+  logElem.innerHTML += /*html*/ `
+    <div class="message ${from}">
+      <div class="type">${from === 'applet' ? '&gt;' : '&lt;'} ${name}</div>
+      <div class="value">${log}</div>
+    </div>`;
+}
+
 async function main() {
-  const appletHeaders = await applets.getHeaders('/');
-  console.log(appletHeaders);
-  startApplet(appletHeaders[0].url);
+  const appletsDict = await applets.list('/applets');
+  startApplet(Object.keys(appletsDict)[0]);
 }
 
 main();
@@ -90,6 +104,11 @@ function renderForm(action) {
     e.preventDefault();
     const formData = new FormData(actionForm);
     const formContents = Object.fromEntries(formData.entries());
+    addLog(
+      'env',
+      `Action sent: ${action.id}`,
+      `${JSON.stringify(formContents as Record<string, string>)}`
+    );
     await applet.dispatchAction(
       action.id,
       formContents as Record<string, string>
@@ -99,6 +118,7 @@ function renderForm(action) {
 }
 
 function renderState(state) {
+  addLog('applet', 'State updated', JSON.stringify(state, null, 2));
   appletStateDisplay.innerText = JSON.stringify(state, null, 2);
 }
 
@@ -130,6 +150,7 @@ commandForm.addEventListener('submit', async (e: SubmitEvent) => {
     const actionId = await getActionChoice(command);
     const action = applet.actions.find((action) => action.id === actionId)!;
     const params = await getParamsChoice(action, command);
+    addLog('env', `Action sent: ${action.id}`, `${JSON.stringify(params)}`);
     await applet.dispatchAction(actionId, params);
   }
 });

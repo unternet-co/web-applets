@@ -7,15 +7,16 @@
     <script src="./main.ts" type="module" defer></script>
     <link rel="stylesheet" href="./style.css" />
   </head>
-  <body>
+  <body class="dark">
     <header>
       <applet-select></applet-select>
+      <button id="devtools">Toggle Devtools</button>
     </header>
     <main>
       <aside class="actions">
         <h1 class="page">Actions</h1>
         <fieldset id="actions-list"></fieldset>
-        <form id="action-form"></form>
+        <form id="action-form" autocomplete="off"></form>
       </aside>
       <section class="main">
         <div class="applet-container">
@@ -32,8 +33,16 @@
         </form>
       </section>
       <aside class="actions">
-        <h1 class="page">State</h1>
-        <div class="page"><code id="applet-state">{}</code></div>
+        <section>
+          <h1 class="page">State</h1>
+          <div class="page scrollview"><code id="applet-state">{}</code></div>
+        </section>
+        <section>
+          <h1 class="page">Messages</h1>
+          <div class="page scrollview">
+            <div id="messages"></div>
+          </div>
+        </section>
       </aside>
     </main>
   </body>
