@@ -6,30 +6,20 @@
 
 ## What is it?
 
-Web Applets is an open specification for building software that both humans and AI can understand and use together. Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration. Think of them a bit like Claude artifacts, but they do stuff!
+Web Applets is an open specification for building software that both humans and AI can understand and use together. Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration.
+
+Think of them a bit like Claude artifacts, but they do stuff & work anywhere!
 
 ![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
 
-Web Applets are modular pieces of web software that:
-
-- **Can be used directly by humans with rich, graphical interfaces**
-- **Can be understood and operated by AI through a clear protocol**
-- **Run locally in your environment, not on distant servers**
-- **Share context and state with their environment**
-- **Can be freely combined and composed**
-
-Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly.
-
-## Key Features
+Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly. Web applets can do that!
 
 - **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript)
 - **AI-Native Protocol:** Applets expose their state and actions in a way AI can understand and use
 - **Rich Interfaces:** Full support for complex graphical UIs, not just text
 - **Local-First:** Runs in your environment, keeping your data under your control
 - **Composable:** Applets can work together, sharing context and state
-- **Open Standard:** Designed for interoperability, not platform lock-in
-
-Web Applets aims to do for AI-enabled software what the web did for documents - create an open platform where anyone can build, share, and connect applications. We believe the future of software should be built on open collaboration, not tight integration with closed platforms.
+- **Open Standard:** Designed for interoperability across clients, not platform lock-in
 
 ## Example
 
