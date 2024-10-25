@@ -88,14 +88,18 @@ applet.onrender = () => {
 
 You can then load this applet in your web app and send it an action like so:
 
+```js
 const applet = await applets.load('/helloworld.applet');
 applet.onstateupdated = (state) => console.log(state);
 applet.dispatchAction('set_name', { name: 'Web Applets' });
 // { name: 'Web Applets' }
+```
 
 ## Getting started
 
-Install the applets SDK & CLI:
+Here's how to actually make one of these and get it running in your app.
+
+First, install the applets SDK & CLI:
 
 ```bash
 npm i --save @web-applets/sdk
