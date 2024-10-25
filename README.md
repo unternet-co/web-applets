@@ -2,7 +2,7 @@
 
 > An open spec & SDK for creating apps that agents can use.
 
-🔗 [Applets Repo](https://github.com/unternet-co/community-applets) | 🔗 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 🔗 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
+👥 [Community Applets Repo](https://github.com/unternet-co/community-applets) | 💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 💬 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
 
 ## What is it?
 
