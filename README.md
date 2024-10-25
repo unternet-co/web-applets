@@ -8,7 +8,7 @@
 
 **Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration.
 
-Think of them a bit like Claude artifacts, but they do stuff & work anywhere!
+Think of them a bit like Claude artifacts, but they *do stuff* & *work anywhere*!
 
 ![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
 
