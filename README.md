@@ -84,7 +84,7 @@ applet.onrender = () => {
 }
 ```
 
-To use this applet, you need to load it in your host web app using the SDK. Assuming the applet lives in our public directory, here's what that might look like:
+To use this applet, we need to load it in our host web app using the SDK. Assuming the applet lives in our public directory, here's what that might look like:
 
 ```js
 const applet = await applets.load('/helloworld.applet');
@@ -92,6 +92,8 @@ applet.onstateupdated = (state) => console.log(state);
 applet.dispatchAction('set_name', { name: 'Web Applets' });
 // { name: 'Web Applets' }
 ```
+
+For a live example you can download and play with now, check out the [applets chat demo](https://github.com/unternet-co/applets-chat).
 
 ## Getting started
 
