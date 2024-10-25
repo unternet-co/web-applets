@@ -14,7 +14,7 @@ Think of them a bit like Claude artifacts, but they *do stuff* & *work anywhere*
 
 Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly. Web applets can do that!
 
-- **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript)
+- **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript, React, Vue, etc.)
 - **AI-Native Protocol:** Applets expose their state and actions in a way AI can understand and use
 - **Rich Interfaces:** Full support for complex graphical UIs, not just text
 - **Local-First:** Runs in your environment, keeping your data under your control
