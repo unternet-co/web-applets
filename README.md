@@ -84,7 +84,7 @@ applet.onrender = () => {
 }
 ```
 
-You can then load this applet in your web app and send it an action like so:
+To use this applet, you need to load it in your host web app using the SDK. Assuming the applet lives in our public directory, here's what that might look like:
 
 ```js
 const applet = await applets.load('/helloworld.applet');
