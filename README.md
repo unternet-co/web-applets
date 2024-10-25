@@ -23,11 +23,9 @@ Think of any web software you use today - maps, documents, shopping, calendars -
 
 ## Example
 
-Applets are like little standalone websites – you can host them on the web, or in your web app's public folder. Unlike regular websites, applets are imported into a host environment (e.g. your web app or chat client) where you can exchange messages with them to get them to do things.
+Applets are like little standalone websites – you can host them on the web, or in your web app's public folder. Unlike regular websites, applets are imported into a host environment (e.g. your web app or chat client) where you can exchange messages with them to get them to do things. When they're sent an action, they respond with an updated state, and can re-render a view to the user.
 
-Applets declare, in a manifest file, all possible actions that can be taken with them. When they're sent an action, they respond with an updated state, and can re-render a view to the user.
-
-This is a simple example of an applet that displays "Hello, [your name]". At it's core, it's just an html file with a template, a JS file with some functionality, and a JSON manifest.
+This is a simple example of an applet that displays "Hello, [your name]". At it's core, it's just an html file with a template, a JS file with some functionality, and a JSON manifest that tells the host what actions are available.
 
 `index.html`:
 
