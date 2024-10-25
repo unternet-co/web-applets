@@ -23,7 +23,11 @@ Think of any web software you use today - maps, documents, shopping, calendars -
 
 ## Example
 
-This is a simple applet that prints "Hello, [your name]" when given the `set_name` action.
+Applets are like little standalone websites – you can host them on the web, or in your web app's public folder. Unlike regular websites, applets are then imported into a host environment (e.g. your web app or chat client) where they can be mounted in an iframe, and you can send and receive messages from them.
+
+Applets declare, in a manifest file, all possible actions that can be taken with them. When they're sent an action, they respond with an updated state, and can re-render a view to the user.
+
+This is a simple example of an applet that displays "Hello, [your name]". At it's core, it's just an html file with a template, a JS file with some functionality, and a JSON manifest.
 
 `index.html`:
 
@@ -81,6 +85,13 @@ applet.onrender = () => {
   ]
 }
 ```
+
+You can then load this applet in your web app and send it an action like so:
+
+const applet = await applets.load('/helloworld.applet');
+applet.onstateupdated = (state) => console.log(state);
+applet.dispatchAction('set_name', { name: 'Web Applets' });
+// { name: 'Web Applets' }
 
 ## Getting started
 
