@@ -245,7 +245,7 @@ You can use it to present a quick summary of available tools to your model, and 
 
 This is a community project, and we're open to community members discussing the project direction, and submitting code!
 
-To join the conversation, visit the Applets mailing list at [groups.google.com/a/unternet.co/g/community](https://groups.google.com/a/unternet.co/g/community). You can also find more about the company that's kicking off this work at [unternet.co](https://unternet.co)
+To join the conversation, visit the Applets mailing list [here](https://groups.google.com/a/unternet.co/g/community). You can also find more about the company that's kicking off this work at [unternet.co](https://unternet.co)
 
 ## License
 
