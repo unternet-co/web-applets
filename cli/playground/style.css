@@ -81,6 +81,7 @@ applet-select select {
   background: black;
   color: white;
   border-radius: 4px;
+  border: 1px solid #555;
 }
 
 h1 {
@@ -99,6 +100,7 @@ h1 {
 main {
   display: flex;
   flex-grow: 1;
+  min-height: 0;
 }
 
 aside {
