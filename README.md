@@ -99,10 +99,9 @@ For a live example you can download and play with now, check out the [applets ch
 
 Here's how to actually make one of these and get it running in your app.
 
-First, install the applets SDK & CLI:
+First, install the applets CLI:
 
 ```bash
-npm i --save @web-applets/sdk
 npm i --save-dev @web-applets/cli
 ```
 
