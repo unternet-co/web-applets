@@ -1,6 +1,6 @@
 {
   "name": "@web-applets/sdk",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "The Web Applets SDK, for creating & hosting Web Applets.",
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",

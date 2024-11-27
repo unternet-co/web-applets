@@ -3,6 +3,7 @@ export interface AppletManifest {
   name: string;
   description?: string;
   icon?: string;
+  unsafe?: boolean;
   frameless?: boolean;
   entrypoint?: string;
   actions?: AppletAction[];

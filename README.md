@@ -4,6 +4,10 @@
 
 👥 [Community Applets Repo](https://github.com/unternet-co/community-applets) | 💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 💬 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
 
+## Latest updates
+
+- See [Web Applets revision proposal 2024.11](https://github.com/unternet-co/web-applets/issues/15) for information on the next proposed version of Web Applets
+
 ## What is it?
 
 **Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration.

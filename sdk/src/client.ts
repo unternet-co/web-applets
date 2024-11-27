@@ -55,16 +55,22 @@ export async function load(
   opts?: AppletOpts
 ): Promise<Applet> {
   const _opts = Object.assign(defaultOpts, opts ?? {});
+  url = parseUrl(url);
+  const manifest = await loadManifest(`${url}`);
 
   if (!container) {
     container = hiddenContainer;
     _opts.headless = true;
   }
-  if (!_opts.unsafe)
+  if (_opts.unsafe || manifest.unsafe) {
+    container.setAttribute(
+      'sandbox',
+      'allow-scripts allow-forms allow-same-origin'
+    );
+  } else {
     container.setAttribute('sandbox', 'allow-scripts allow-forms');
+  }
 
-  url = parseUrl(url);
-  const manifest = await loadManifest(`${url}`);
   const applet = new Applet();
   applet.manifest = manifest;
   applet.actions = manifest.actions;
@@ -131,7 +137,10 @@ export class Applet<T = unknown> extends EventTarget {
   }
 
   onstateupdated(event: CustomEvent) {}
-  disconnect() {}
+  disconnect() {
+    this.onstateupdated = () => {};
+    this.container.src = 'about:blank';
+  }
 
   async dispatchAction(actionId: string, params: ActionParams) {
     const requestMessage = new AppletMessage('action', {
