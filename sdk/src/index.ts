@@ -1,5 +1,3 @@
-export * from './utils';
-export * from './types';
-export * as applets from './client';
-export { Applet } from './client';
+export * from './shared';
+export * from './client';
 export * from './context';

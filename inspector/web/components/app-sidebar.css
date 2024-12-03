@@ -1,0 +1,5 @@
+app-sidebar {
+  display: block;
+  width: 400px;
+  border-right: 1px solid var(--color-border);
+}

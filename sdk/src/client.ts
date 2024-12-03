@@ -1,68 +1,43 @@
 import {
   AppletAction,
-  AppletHeader,
   AppletMessage,
   ActionParams,
   AppletManifest,
-  AppletMessageType,
-  AppletMessageCallback,
-  AppletStateMessage,
+  AppletDataMessage,
   AppletResizeMessage,
-  AppletInitMessage,
-  AppletManifestDict,
-} from './types';
+  AppletDataEvent,
+} from './shared';
+import { AppletMessageChannel } from './shared';
+import { parseUrl } from './utils';
 
+// Container for initializing applets without an explicit container
 const hiddenContainer = document.createElement('iframe');
 hiddenContainer.style.display = 'none';
 document.body.appendChild(hiddenContainer);
 
-export async function list(url: string): Promise<AppletManifestDict> {
-  url = parseUrl(url);
-
-  try {
-    const request = await fetch(`${url}/manifest.json`);
-    const appManifest = await request.json();
-    const appletUrls = appManifest.applets as string[];
-    const manifests = {};
-
-    const manifestRequests = appletUrls.map(async (appletUrl) => {
-      appletUrl = parseUrl(appletUrl, url);
-      const request = await fetch(`${appletUrl}/manifest.json`);
-      const manifest = await request.json();
-      manifests[appletUrl] = manifest;
-    });
-
-    await Promise.all(manifestRequests);
-    return manifests;
-  } catch {
-    return {};
-  }
-}
-
-interface AppletOpts {
-  headless?: boolean;
+// Options for loading an applet
+interface LoadOpts {
   unsafe?: boolean;
 }
-
-const defaultOpts = {
-  headless: false,
+const defaultOpts: LoadOpts = {
   unsafe: false,
 };
 
-export async function load(
+// Load an applet object from a URL
+async function load(
   url: string,
   container?: HTMLIFrameElement,
   opts?: AppletOpts
 ): Promise<Applet> {
   const _opts = Object.assign(defaultOpts, opts ?? {});
+  if (!container) container = hiddenContainer;
+
   url = parseUrl(url);
   const manifest = await loadManifest(`${url}`);
 
-  if (!container) {
-    container = hiddenContainer;
-    _opts.headless = true;
-  }
-  if (_opts.unsafe || manifest.unsafe) {
+  // If unsafe enabled, allow same origin sandbox
+  // This is required for e.g. YouTube embeds
+  if (_opts.unsafe && manifest.unsafe) {
     container.setAttribute(
       'sandbox',
       'allow-scripts allow-forms allow-same-origin'
@@ -71,188 +46,123 @@ export async function load(
     container.setAttribute('sandbox', 'allow-scripts allow-forms');
   }
 
+  // Load the applet
   const applet = new Applet();
   applet.manifest = manifest;
-  applet.actions = manifest.actions;
+  applet.availableActions = manifest.actions;
   applet.container = container;
-  container.src = applet.manifest.entrypoint;
+  container.src = applet.manifest.start_url;
 
+  //
   return new Promise((resolve) => {
     applet.on('ready', () => {
-      const initMessage = new AppletMessage('init', {
-        headless: _opts.headless,
-      }) as AppletInitMessage;
-      applet.send(initMessage);
       resolve(applet);
     });
   });
 }
 
-export class Applet<T = unknown> extends EventTarget {
-  actions: AppletAction[] = [];
+interface AppletOpts {
   manifest: AppletManifest;
   container: HTMLIFrameElement;
-  #state: T;
+}
+class Applet<T = any> extends AppletMessageChannel {
+  url: string;
+  availableActions: AppletAction[] = [];
+  manifest: AppletManifest;
+  container: HTMLIFrameElement;
+  #data: T;
 
   constructor() {
     super();
+    this.initializeListeners();
+  }
 
-    this.on('state', (message: AppletStateMessage) => {
-      this.#state = message.state;
-      this.#dispatchEvent('stateupdated', message.state);
+  initializeListeners() {
+    this.on('data', (message: AppletDataMessage) => {
+      this.#data = message.data;
+      const dataEvent = new AppletDataEvent({ data: message.data });
+      if (typeof this.ondata === 'function') this.ondata(dataEvent);
+      this.dispatchEvent(dataEvent);
     });
 
     this.on('resize', (message: AppletResizeMessage) => {
-      this.resizeContainer(message.dimensions);
+      const resizeEvent = new AppletResizeEvent({
+        dimensions: message.dimensions,
+      });
+      if (typeof this.onresize === 'function') this.onresize(resizeEvent);
+      this.dispatchEvent(resizeEvent);
     });
   }
 
-  get state() {
-    return this.#state;
+  get data() {
+    return this.#data;
   }
 
-  set state(state: T) {
-    this.#state = state;
-    this.send(new AppletMessage('state', { state }));
+  set data(data: T) {
+    this.#data = data;
+    this.send(new AppletMessage('data', { data }));
   }
 
-  toJson() {
-    return Object.fromEntries(
-      Object.entries(this).filter(([_, value]) => {
-        try {
-          JSON.stringify(value);
-          return true;
-        } catch {
-          return false;
-        }
-      })
-    );
-  }
+  onresize(event: AppletResizeEvent) {}
 
-  resizeContainer(dimensions: { height: number; width: number }) {
-    this.container.style.height = `${dimensions.height + 2}px`;
-    // if (!this.#styleOverrides) {
-    //   this.#container.style.height = `${dimensions.height}px`;
-    // }
-  }
+  ondata(event: AppletDataEvent) {}
 
-  onstateupdated(event: CustomEvent) {}
   disconnect() {
-    this.onstateupdated = () => {};
     this.container.src = 'about:blank';
   }
 
   async dispatchAction(actionId: string, params: ActionParams) {
-    const requestMessage = new AppletMessage('action', {
+    const actionMessage = new AppletMessage('action', {
       actionId,
       params,
     });
-    return await this.send(requestMessage);
+    return await this.send(actionMessage);
   }
+}
 
-  async send(message: AppletMessage) {
-    this.container.contentWindow?.postMessage(message.toJson(), '*');
+// Events
 
-    return new Promise<AppletMessage>((resolve) => {
-      const listener = (messageEvent: MessageEvent) => {
-        const responseMessage = new AppletMessage(
-          messageEvent.data.type,
-          messageEvent.data
-        );
+export interface AppletResizeEventOpts {
+  dimensions: AppletResizeMessage['dimensions'];
+}
+export class AppletResizeEvent extends Event {
+  dimensions: AppletResizeMessage['dimensions'];
 
-        if (
-          responseMessage.type === 'resolve' &&
-          responseMessage.id === message.id
-        ) {
-          window.removeEventListener('message', listener);
-          resolve(responseMessage);
-        }
-      };
-
-      window.addEventListener('message', listener);
+  constructor({ dimensions }: AppletResizeEventOpts) {
+    super('resize', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
     });
-  }
 
-  async on(messageType: AppletMessageType, callback: AppletMessageCallback) {
-    const listener = async (messageEvent: MessageEvent<AppletMessage>) => {
-      if (messageEvent.source !== this.container.contentWindow) return;
-      if (messageEvent.data.type !== messageType) return;
-
-      const message = new AppletMessage(
-        messageEvent.data.type,
-        messageEvent.data
-      );
-
-      await callback(message);
-      this.container.contentWindow?.postMessage(
-        new AppletMessage('resolve', { id: message.id }),
-        '*'
-      );
-    };
-
-    window.addEventListener('message', listener);
-  }
-
-  #dispatchEvent(id: string, detail: any) {
-    if (typeof this[`on${id}`] === 'function') {
-      this[`on${id}`](detail);
-    }
-    this.dispatchEvent(new CustomEvent(id, { detail }));
+    this.dimensions = dimensions;
   }
 }
 
-/* Helpers */
+// Loads a manifest and parses the JSON
+async function loadManifest(baseUrl: string): Promise<AppletManifest> {
+  baseUrl = parseUrl(baseUrl);
 
-function parseUrl(url: string, base?: string) {
-  if (['http', 'https'].includes(url.split('://')[0])) {
-    return url;
-  }
-
-  let path = trimSlashes(url);
-  url = `${base || window.location.origin}/${path}`;
-
-  return url;
-}
-
-function trimSlashes(str: string) {
-  return str.replace(/^\/+|\/+$/g, '');
-}
-
-export async function loadManifest(url: string): Promise<AppletManifest> {
-  url = parseUrl(url);
-  const request = await fetch(`${url}/manifest.json`);
-  const appletManifest = await request.json();
-
-  if (appletManifest.type !== 'applet') {
-    throw new Error("URL doesn't point to a valid applet manifest.");
-  }
-
-  appletManifest.entrypoint = parseUrl(appletManifest.entrypoint, url);
-  return appletManifest;
-}
-
-export async function getHeaders(url: string): Promise<AppletHeader[]> {
-  url = parseUrl(url);
+  let manifest: AppletManifest;
   try {
-    const request = await fetch(`${url}/manifest.json`);
-    const appManifest = await request.json();
-    const appletHeaders = appManifest.applets as AppletHeader[];
-    return appletHeaders ?? [];
-  } catch {
-    return [];
+    const request = await fetch(`${baseUrl}/manifest.json`);
+    manifest = await request.json();
+    // TODO: Add verification this is a valid manifest
+  } catch (e) {
+    console.error(e.message);
   }
+
+  manifest.start_url = manifest.start_url
+    ? parseUrl(manifest.start_url, baseUrl)
+    : baseUrl;
+
+  return manifest;
 }
 
-export async function getManifests(url: string) {
-  url = parseUrl(url);
-  const request = await fetch(`${url}/manifest.json`);
-  const headers = (await request.json()).applets;
-  const manifests = await Promise.all(
-    headers.map(async (header: any) => {
-      const appletUrl = parseUrl(header.url);
-      const request = await fetch(`${appletUrl}/manifest.json`);
-      return await request.json();
-    })
-  );
-  return manifests ?? [];
-}
+// Exports
+
+export const applets = {
+  load,
+};
+
+export { Applet };

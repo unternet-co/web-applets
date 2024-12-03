@@ -1,17 +1,4 @@
-import { AppletAction, type AppletManifest } from './types';
-
-function parseUrl(url: string, base?: string) {
-  if (['http', 'https'].includes(url.split('://')[0])) {
-    return url;
-  }
-
-  let path = url;
-  if (path.startsWith('/')) path = path.slice(1);
-  if (path.endsWith('/')) path = path.slice(0, -1);
-  url = `${base || window.location.origin}/${path}`;
-
-  return url;
-}
+import { AppletAction, type AppletManifest } from './shared';
 
 export async function getAppletsList(url: string) {
   url = parseUrl(url);
@@ -51,4 +38,20 @@ export function createOpenAISchemaForAction(action: AppletAction) {
       additionalProperties: false,
     },
   };
+}
+
+// Adds http/https to URLs, and prepends with window location if relative
+export function parseUrl(url: string, base?: string) {
+  if (['http', 'https'].includes(url.split('://')[0])) {
+    return url;
+  }
+
+  let path = trimSlashes(url);
+  url = `${base || window.location.origin}/${path}`;
+
+  return url;
+}
+
+function trimSlashes(str: string) {
+  return str.replace(/^\/+|\/+$/g, '');
 }

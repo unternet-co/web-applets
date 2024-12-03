@@ -1,44 +1,57 @@
 import {
-  ActionHandlerDict,
   AppletMessage,
-  AppletActionMessage,
-  AppletMessageType,
-  AppletMessageCallback,
   ActionParams,
-  ActionHandler,
-  AppletStateMessage,
-  AppletInitMessage,
-} from './types';
+  AppletDataMessage,
+  AppletMessageChannel,
+  AppletDataEvent,
+} from './shared';
 
-/**
- * Context
- */
+export type ActionHandler<T extends ActionParams> = (
+  params: T
+) => void | Promise<void>;
 
-export class AppletContext<StateType = any> extends EventTarget {
-  client: AppletClient;
+export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
+
+export class AppletContext extends AppletMessageChannel {
   actionHandlers: ActionHandlerDict = {};
-  #state: StateType;
-  headless: boolean = false;
+  #data: any;
 
   connect() {
-    this.client = new AppletClient();
-
-    const startup = async () => {
-      await this.onload();
-      this.client.send(new AppletMessage('ready'));
-      this.dispatchEvent(new CustomEvent('ready'));
-      await this.onready();
-    };
-
+    // When document loads/if it's loaded, call the initialize function
     if (
       document.readyState === 'complete' ||
       document.readyState === 'interactive'
     ) {
-      setTimeout(startup, 1);
+      // Document has loaded already.
+      // Timeout added so if the caller defines the onload function, it will exist by now
+      setTimeout(this.initialize, 1);
     } else {
-      window.addEventListener('DOMContentLoaded', startup);
+      // Document not yet loaded, we'll add an event listener to call when it does
+      window.addEventListener('DOMContentLoaded', this.initialize);
     }
 
+    this.createResizeObserver();
+    this.attachEventListeners();
+
+    return this;
+  }
+
+  async initialize() {
+    // Call the onload function
+    const loadEvent = new AppletLoadEvent();
+    this.dispatchEvent(loadEvent);
+    await this.onload(loadEvent);
+
+    // Tell the client we're ready
+    this.send(new AppletMessage('ready'));
+
+    // Emit a local ready event
+    const readyEvent = new AppletReadyEvent();
+    this.dispatchEvent(readyEvent);
+    await this.onload(readyEvent);
+  }
+
+  createResizeObserver() {
     const resizeObserver = new ResizeObserver((entries) => {
       for (let entry of entries) {
         const message = new AppletMessage('resize', {
@@ -47,46 +60,22 @@ export class AppletContext<StateType = any> extends EventTarget {
             height: entry.contentRect.height,
           },
         });
-        this.client.send(message);
+        this.send(message);
       }
     });
     resizeObserver.observe(document.querySelector('html')!);
+  }
 
-    this.client.on('init', (message: AppletMessage) => {
-      const initMessage = message as AppletInitMessage;
-
-      this.headless = initMessage.headless;
+  attachEventListeners() {
+    this.on('data', (message: AppletDataMessage) => {
+      this.setData(message.data);
     });
 
-    this.client.on('state', (message: AppletMessage) => {
-      if (!isStateMessage(message)) {
-        throw new TypeError("Message doesn't match type StateMessage");
-      }
-
-      // Don't render when state updates match the current state
-      // this retains cursor positions in text fields, for example
-      if (JSON.stringify(message.state) === JSON.stringify(this.#state)) return;
-      this.#state = message.state;
-
-      // BUG: For some reason regular applets were loading headless, when instantiated not on a page reload
-      // if (!this.headless) {
-
-      this.onrender();
-      this.dispatchEvent(new CustomEvent('render'));
-      // }
-    });
-
-    this.client.on('action', async (message: AppletMessage) => {
-      if (!isActionMessage(message)) {
-        throw new TypeError("Message doesn't match type AppletMessage.");
-      }
-
+    this.on('action', async (message: AppletMessage) => {
       if (Object.keys(this.actionHandlers).includes(message.actionId)) {
         await this.actionHandlers[message.actionId](message.params);
       }
     });
-
-    return this;
   }
 
   setActionHandler<T extends ActionParams>(
@@ -96,78 +85,47 @@ export class AppletContext<StateType = any> extends EventTarget {
     this.actionHandlers[actionId] = handler;
   }
 
-  set state(state: StateType) {
-    this.setState(state);
+  defineAction() {}
+
+  set data(data: any) {
+    this.setData(data);
   }
 
-  get state() {
-    return this.#state;
+  get data() {
+    return this.#data;
   }
 
-  async setState(state: StateType, shouldRender?: boolean) {
-    const message = new AppletMessage('state', { state });
-    await this.client.send(message);
-    this.#state = state;
+  async setData(data: any) {
+    const dataMessage = new AppletMessage('data', { data });
+    await this.send(dataMessage);
+    this.#data = data;
 
-    if (shouldRender !== false && !this.headless) {
-      this.onrender();
-      this.dispatchEvent(new CustomEvent('render'));
-    }
+    const dataEvent = new AppletDataEvent({ data });
+    this.dispatchEvent(dataEvent);
+    this.ondata(dataEvent);
   }
 
-  onload(): Promise<void> | void {}
-  onready(): Promise<void> | void {}
-  onrender(): void {}
+  onload(event: AppletLoadEvent): Promise<void> | void {}
+  onready(event: AppletReadyEvent): void {}
+  ondata(event: AppletDataEvent): void {}
 }
 
-function isActionMessage(
-  message: AppletMessage
-): message is AppletActionMessage {
-  return message.type === 'action';
-}
-
-function isStateMessage(message: AppletMessage): message is AppletStateMessage {
-  return message.type === 'state';
-}
-
-/**
- * Client
- */
-
-class AppletClient {
-  on(messageType: AppletMessageType, callback: AppletMessageCallback) {
-    window.addEventListener(
-      'message',
-      async (messageEvent: MessageEvent<AppletMessage>) => {
-        if (messageEvent.data.type !== messageType) return;
-
-        const message = new AppletMessage(
-          messageEvent.data.type,
-          messageEvent.data
-        );
-        await callback(message);
-        window.parent.postMessage(
-          new AppletMessage('resolve', { id: message.id }),
-          '*'
-        );
-      }
-    );
+export class AppletReadyEvent extends Event {
+  constructor() {
+    super('ready', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
+    });
   }
+}
 
-  send(message: AppletMessage) {
-    window.parent.postMessage(message.toJson(), '*');
-
-    return new Promise<void>((resolve) => {
-      const listener = (messageEvent: MessageEvent<AppletMessage>) => {
-        if (
-          messageEvent.data.type === 'resolve' &&
-          messageEvent.data.id === message.id
-        ) {
-          window.removeEventListener('message', listener);
-          resolve();
-        }
-      };
-      window.addEventListener('message', listener);
+export class AppletLoadEvent extends Event {
+  constructor() {
+    super('load', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
     });
   }
 }

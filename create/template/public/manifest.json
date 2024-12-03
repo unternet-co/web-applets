@@ -1,0 +1,10 @@
+{
+  "name": "My Applet",
+  "description": "",
+  "icons": [
+    {
+      "src": "icon-128x128.png"
+    }
+  ],
+  "actions": []
+}

@@ -1,0 +1,13 @@
+app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-xs) var(--space-md);
+  height: 40px;
+}
+
+app-header h1 {
+  font-size: var(--text-lg);
+  display: flex;
+}
