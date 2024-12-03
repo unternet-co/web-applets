@@ -4,10 +4,6 @@
 
 🔗 [Applets Repo](https://github.com/unternet-co/community-applets) | 🔗 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 🔗 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
 
-## Latest updates
-
-- See [Web Applets revision proposal 2024.11](docs/revisions/revision-2024-11.md) for information on the next proposed version of Web Applets
-
 ## What is it?
 
 Web Applets is an open specification for building software that both humans and AI can understand and use together. Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration. Think of them a bit like artifacts, but they do stuff!
@@ -37,7 +33,7 @@ Web Applets aims to do for AI-enabled software what the web did for documents - 
 
 ## Example
 
-This is a simple applet that prints "Hello, [your name]" when given the `set_name` action.
+Let's say we have a simple website that says hello. It might look something like this:
 
 `index.html`:
 
@@ -51,125 +47,52 @@ This is a simple applet that prints "Hello, [your name]" when given the `set_nam
 </html>
 ```
 
+Let's add some Web Applets functionality, so this can respond to a `set_name` message:
+
 `main.js`:
 
 ```js
 import { appletContext } from '@web-applets/sdk';
 
-// Get view element we want to manipulate
-const nameElem = document.getElementById('name');
-
-// Connect to the applet context
+// Connect to the applet context to communicate with the host
 const applet = appletContext.connect();
 
-// When the set_name action is called, change the state
-applet.setActionHandler('set_name', ({ name }) => {
-  applet.setState({ name });
+// Define a 'set_name' action, and make it update the data object with the new name
+applet.defineAction('set_name', {
+  params: {
+    name: {
+      type: string,
+      description: 'The name of the person to be greeted.',
+    },
+  },
+  handler: ({ name }) => applet.data = { name };
 });
 
-// Whenever we get a request to render the view, update the name
-applet.onrender = () => {
-  nameElem.innerText = applet.state?.name;
+// Whenever the data is updated, update the view
+applet.ondata = () => {
+  document.getElementById('name').innerText = applet.data.name;
 };
 ```
 
-`manifest.json`:
-
-```json
-{
-  "type": "applet",
-  "name": "Hello World",
-  "description": "Displays a greeting to the user.",
-  "entrypoint": "index.html",
-  "actions": [
-    {
-      "id": "set_name",
-      "description": "Sets the name of the user to be greeted",
-      "params": {
-        "name": {
-          "type": "string",
-          "description": "The name of the user"
-        }
-      }
-    }
-  ]
-}
-```
+Done! If you load this up in the inspector and introduce yourself, it will respond by greeting you.
 
 ## Getting started
 
-Install the applets SDK & CLI:
+Create a new web app with the applets SDK installed. You can do this quickly using our CLI:
 
 ```bash
-npm i --save @web-applets/sdk
-npm i --save-dev @web-applets/cli
+npx @web-applets/create
 ```
 
-Then, initialize the `applets.config.json` and create a new blank applet:
+Inside the generated folder, you'll find a basic web app setup:
 
-```bash
-npx applets init
-npx applets create <your-applet-name>
-```
-
-This creates an applet folder, with a build system built-in using Vite. You can change this to anything you want. We recommend building at this stage, as the SDK currently needs to be bundled. We're working on adding a statically hosted script to import.
-
-Inside your applet folder, you'll find a basic web app setup:
-
-- `public/manifest.json`: This file describes the Applet, and tells the model what actions are available and what parameters each action takes
+- `public/manifest.json`: A web app manifest, useful when publishing your applet, adding icons, etc.
 - `index.html`: Much like a website, this holds the main page for your applet
 - `src/main.ts`: Declares functions that respond to each action, and a render function that updates the view based on state
 
 > Want to use React? Svelte? Vue? – No problem, just install the dependencies and create an app the way you normally would in a website. So long as you're receiving the action events, it will all just work.
 
-Let's say we want our applet to respond to a "set_name" action and render the user's name. In our `manifest.json` file we can write:
-
-```js
-{
-  // ...
-  "actions": [
-    {
-      "id": "set_name",
-      "description": "Sets the name of the user to be greeted",
-      "params": {
-        "name": {
-          "type": "string",
-          "description": "The name of the user"
-        }
-      }
-    }
-  ]
-}
-```
-
-Now let's update `src/main.ts` to assign an action handler:
-
-```js
-// First, import the SDK
-import { appletContext } from '../../sdk/src';
-
-// Now connect to the applet runtime
-const applet = appletContext.connect();
-
-// Attach the action handler, and update the state
-applet.setActionHandler('set_name', ({ name }) => {
-  applet.setState({ name });
-});
-```
-
-When this state updates, it will inform the client which can then store the state somewhere, for example in a database so the applet will persist between uses.
-
-Finally, we need to render the applet whenever a render signal is received. Again in `main.ts`:
-
-```js
-// ...
-
-applet.onrender = () => {
-  document.body.innerText = `Hello, ${applet.state.name}!`;
-};
-```
-
-Now if you run `npx applets playground`, you should be able to test out your new applet action directly. This applet will now work in any environment where the SDK is installed.
+Now if you run `npx @web-applets/inspector`, you should be able to test out your new applet action directly. This applet will now work in any environment where the SDK is installed.
 
 ![A screenshot showing the 'playground' editing UI, with a web applets showing 'Hello, Web Applets'](docs/assets/web-applets-playground.png)
 
@@ -177,15 +100,11 @@ Now if you run `npx applets playground`, you should be able to test out your new
 
 Using Web Applets is just as easy as creating them!
 
-First, build your applets. By default, this goes into a folder called `dist/`, but you'll likely want to change this in `applets.config.json` to point to wherever you're serving public files from. For example, in a Vite project, edit this to be `./public`.
-
-Then, run:
+Install & import the applets client in your app:
 
 ```bash
-npx applets build
+npm install @web-applets/sdk
 ```
-
-Now in your main app, you can import the applets client:
 
 ```js
 import { applets } from '@web-applets/sdk';
@@ -194,8 +113,8 @@ import { applets } from '@web-applets/sdk';
 Now you can import your applets from wherever they're being served from (note – you can also host them anywhere on the web):
 
 ```js
-const applet = await applets.load('/helloworld.applet'); // replace with a URL if hosted remotely
-applet.onstateupdated = (state) => console.log(state);
+const applet = await applets.load('/helloworld.applet'); // replace with an https URL if hosted remotely
+applet.ondata = (e) => console.log(e.data);
 applet.dispatchAction('set_name', { name: 'Web Applets' });
 ```
 
@@ -207,43 +126,12 @@ document.body.appendChild(container);
 const applet = await applets.load(`/helloworld.applet`, container);
 ```
 
-To load pre-existing saved state into an applet, simply set the state property:
+To load pre-existing saved data into an applet, simply set the data property:
 
 ```js
-applet.state = { name: 'Ada Lovelace' };
+applet.data = { name: 'Ada Lovelace' };
 // console.log: { name: "Ada Lovelace" }
 ```
-
-It may also be helpful to check available applets at a domain, or in your public folder. For that you can extract the applet headers from the App Manifest at the public root (`/manifest.json`), and see the available applets and a shorthand for the actions you can take in them. This is automatically created when you build your applets.
-
-```js
-const applets = await applets.list('/');
-```
-
-This applets object looks like:
-
-```js
-{
-  '/helloworld.applet': {
-    name: 'Hello World',
-    description: 'Displays a greeting to the user.',
-    url: '/applets/helloworld.applet',
-    actions: {
-      set_name: {
-      description: 'Sets the name of the user to be greeted',
-      params: {
-        name: {
-          type: 'string',
-          description: 'The name of the user'
-        }
-      },
-    },
-  },
-  // ...
-};
-```
-
-You can use it to present a quick summary of available tools to your model, and then decide on an applet and action to use.
 
 ## Feedback & Community
 
