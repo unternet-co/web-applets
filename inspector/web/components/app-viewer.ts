@@ -2,6 +2,7 @@ import './app-viewer.css';
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { store } from '../lib/store';
+import '../node_modules/@web-applets/sdk/dist/components/applet-frame';
 import './url-input.css';
 
 @customElement('app-viewer')
@@ -21,6 +22,6 @@ export class AppViewer extends LitElement {
   }
 
   render() {
-    return html`<iframe src=${this.appletUrl}></iframe>`;
+    return html`<applet-frame src=${this.appletUrl}></applet-frame>`;
   }
 }

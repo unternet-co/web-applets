@@ -35,7 +35,7 @@ export type JSONSchemaProperties = Record<
   }
 >;
 
-export type ActionParams<T = any> = Record<string, T>;
+export type ActionParams = Record<string, any>;
 
 /* MessageChannel object (Applet & AppletContext inherit this) */
 

@@ -4,7 +4,8 @@
   "description": "Inspector for testing & developing web applets.",
   "main": "index.js",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "install:local": "npm install --package-import=package.local.json --no-save"
   },
   "author": "",
   "license": "ISC",

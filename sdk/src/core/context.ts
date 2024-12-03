@@ -6,6 +6,7 @@ import {
   AppletDataEvent,
   AppletLoadEvent,
   AppletReadyEvent,
+  JSONSchemaProperties,
 } from './shared';
 
 export type ActionHandler<T extends ActionParams> = (
@@ -16,6 +17,7 @@ export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
 
 export class AppletContext extends AppletMessageChannel {
   actionHandlers: ActionHandlerDict = {};
+  view: HTMLElement;
   #data: any;
 
   connect() {
@@ -34,6 +36,7 @@ export class AppletContext extends AppletMessageChannel {
 
     this.createResizeObserver();
     this.attachEventListeners();
+    this.view = document.querySelector('body');
 
     return this;
   }
@@ -80,14 +83,17 @@ export class AppletContext extends AppletMessageChannel {
     });
   }
 
-  setActionHandler<T extends ActionParams>(
+  setActionHandler<T = ActionParams>(
     actionId: string,
     handler: ActionHandler<T>
   ) {
     this.actionHandlers[actionId] = handler;
   }
 
-  defineAction() {}
+  defineAction<T = ActionParams>(
+    actionId: string,
+    { handler }: ActionDefinition<T>
+  ) {}
 
   set data(data: any) {
     this.setData(data);
@@ -110,6 +116,11 @@ export class AppletContext extends AppletMessageChannel {
   onload(event: AppletLoadEvent): Promise<void> | void {}
   onready(event: AppletReadyEvent): void {}
   ondata(event: AppletDataEvent): void {}
+}
+
+interface ActionDefinition<T> {
+  params?: JSONSchemaProperties;
+  handler: ActionHandler<T>;
 }
 
 export const appletContext = new AppletContext();

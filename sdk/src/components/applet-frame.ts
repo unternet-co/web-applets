@@ -3,30 +3,41 @@ import { Applet, AppletDataEvent, AppletResizeEvent, applets } from '../index';
 // TODO: Add resize event handler, and resize DOM element
 
 class AppletFrame extends HTMLElement {
+  #root: ShadowRoot;
   container?: HTMLIFrameElement;
   applet?: Applet;
   loaded?: boolean;
 
+  observedAttributes = ['src'];
+
   connectedCallback() {
-    this.attachShadow({ mode: 'closed' });
+    this.#root = this.attachShadow({ mode: 'closed' });
 
     this.container = document.createElement('iframe');
-    this.shadowRoot.appendChild(this.container);
+    this.#root.appendChild(this.container);
 
     const styles = document.createElement('style');
     styles.textContent = this.styles;
-    this.shadowRoot.appendChild(styles);
+    this.#root.appendChild(styles);
+
+    const url = this.getAttribute('src');
+    if (url) this.loadApplet(url);
   }
 
-  set url(url: string) {
-    // Yeah, I can't remember why I added the timeout...
-    // But you're too scared to remove it aren't you?
-    setTimeout(() => this.loadApplet(url), 1);
+  set src(value: string) {
+    this.loadApplet(value);
+  }
+
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === 'src') {
+      this.loadApplet(newValue);
+    }
   }
 
   async loadApplet(url: string) {
     if (!this.container) return;
     this.applet = await applets.load(url, this.container);
+    console.log(url);
 
     // When data received, bubble the event up
     this.applet.ondata = (dataEvent: AppletDataEvent) => {
@@ -60,12 +71,12 @@ class AppletFrame extends HTMLElement {
 
   get styles() {
     return /*css*/ `
-      applet-frame {
+      :host {
         display: flex;
         flex-direction: column;
       }
 
-      applet-frame iframe {
+      iframe {
         border: none;
       }
     `;
