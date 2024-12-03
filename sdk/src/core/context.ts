@@ -4,6 +4,8 @@ import {
   AppletDataMessage,
   AppletMessageChannel,
   AppletDataEvent,
+  AppletLoadEvent,
+  AppletReadyEvent,
 } from './shared';
 
 export type ActionHandler<T extends ActionParams> = (
@@ -108,26 +110,6 @@ export class AppletContext extends AppletMessageChannel {
   onload(event: AppletLoadEvent): Promise<void> | void {}
   onready(event: AppletReadyEvent): void {}
   ondata(event: AppletDataEvent): void {}
-}
-
-export class AppletReadyEvent extends Event {
-  constructor() {
-    super('ready', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
-  }
-}
-
-export class AppletLoadEvent extends Event {
-  constructor() {
-    super('load', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
-  }
 }
 
 export const appletContext = new AppletContext();

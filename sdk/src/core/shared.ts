@@ -39,11 +39,16 @@ export type ActionParams<T = any> = Record<string, T>;
 
 /* MessageChannel object (Applet & AppletContext inherit this) */
 
+interface SendMessageOptions {
+  resolves: boolean;
+}
+
 export class AppletMessageChannel extends EventTarget {
   messageTarget: Window;
 
-  async send(message: AppletMessage) {
+  async send(message: AppletMessage, options?: SendMessageOptions) {
     this.messageTarget.postMessage(message.toJson(), '*');
+    if (options && options.resolves === false) return;
 
     // Wait for a resolve message to be sent back before completing await
     return new Promise<AppletMessage>((resolve) => {
@@ -77,23 +82,13 @@ export class AppletMessageChannel extends EventTarget {
       );
 
       // Wait for the callback to complete, then send a 'resolve' event
-      // with the message ID
+      // with the message ID.
       await callback(message);
-      this.messageTarget.postMessage(
-        new AppletMessage('resolve', { id: message.id }),
-        '*'
-      );
+      const resolveMessage = new AppletResolveMessage({ id: message.id });
+      this.send(resolveMessage, { resolves: false });
     };
 
     window.addEventListener('message', listener);
-  }
-
-  emitEvent(id: string, detail: any) {
-    const event = new CustomEvent(id, { detail });
-    if (typeof this[`on${id}`] === 'function') {
-      this[`on${id}`](detail);
-    }
-    this.dispatchEvent(event);
   }
 }
 
@@ -126,6 +121,15 @@ export class AppletMessage {
   }
 }
 
+export class AppletResolveMessage extends AppletMessage {
+  messageId: string;
+
+  constructor({ id }: { id: string }) {
+    super('resolve');
+    this.id = id;
+  }
+}
+
 export class AppletDataMessage<T = any> extends AppletMessage {
   data: T;
 
@@ -148,13 +152,22 @@ export class AppletResizeMessage extends AppletMessage {
   }
 }
 
-export class AppletActionMessage<T = any> extends AppletMessage {
-  type: 'action';
+interface AppletActionMessageOptions {
   actionId: string;
-  params: T;
+  params: any;
+}
+export class AppletActionMessage extends AppletMessage {
+  actionId: string;
+  params: any;
+
+  constructor({ actionId, params }: AppletActionMessageOptions) {
+    super('action');
+    this.actionId = actionId;
+    this.params = params;
+  }
 }
 
-export interface AppletInitMessage extends AppletMessage {
+export class AppletInitMessage extends AppletMessage {
   type: 'init';
 }
 
@@ -184,5 +197,42 @@ export class AppletDataEvent extends Event {
     });
 
     this.data = data;
+  }
+}
+
+export class AppletReadyEvent extends Event {
+  constructor() {
+    super('ready', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
+    });
+  }
+}
+
+export class AppletLoadEvent extends Event {
+  constructor() {
+    super('load', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
+    });
+  }
+}
+
+export interface AppletResizeEventOpts {
+  dimensions: AppletResizeMessage['dimensions'];
+}
+export class AppletResizeEvent extends Event {
+  dimensions: AppletResizeMessage['dimensions'];
+
+  constructor({ dimensions }: AppletResizeEventOpts) {
+    super('resize', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
+    });
+
+    this.dimensions = dimensions;
   }
 }

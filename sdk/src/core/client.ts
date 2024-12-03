@@ -6,9 +6,10 @@ import {
   AppletDataMessage,
   AppletResizeMessage,
   AppletDataEvent,
+  AppletResizeEvent,
 } from './shared';
 import { AppletMessageChannel } from './shared';
-import { parseUrl } from './utils';
+import { parseUrl } from '../lib/utils';
 
 // Container for initializing applets without an explicit container
 const hiddenContainer = document.createElement('iframe');
@@ -117,25 +118,6 @@ class Applet<T = any> extends AppletMessageChannel {
       params,
     });
     return await this.send(actionMessage);
-  }
-}
-
-// Events
-
-export interface AppletResizeEventOpts {
-  dimensions: AppletResizeMessage['dimensions'];
-}
-export class AppletResizeEvent extends Event {
-  dimensions: AppletResizeMessage['dimensions'];
-
-  constructor({ dimensions }: AppletResizeEventOpts) {
-    super('resize', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
-
-    this.dimensions = dimensions;
   }
 }
 

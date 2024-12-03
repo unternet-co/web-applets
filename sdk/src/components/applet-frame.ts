@@ -1,4 +1,4 @@
-import { Applet, applets } from './index.js';
+import { Applet, AppletDataEvent, applets } from '../index';
 
 // TODO: Add resize event handler, and resize DOM element
 
@@ -47,19 +47,18 @@ class AppletFrame extends HTMLElement {
   async loadApplet(url: string) {
     if (!this.container) return;
     this.applet = await applets.load(url, this.container);
-    if (this.applet.manifest.frameless) this.classList.add('frameless');
-    this.applet.onstateupdated = () => {
-      this.dispatchEvent(
-        new CustomEvent('stateupdated', { detail: this.applet!.state })
-      );
+    // if (this.applet.manifest.frameless) this.classList.add('frameless');
+    this.applet.ondata = (dataEvent: AppletDataEvent) => {
+      this.dispatchEvent(dataEvent);
     };
-    this.dispatchEvent(new CustomEvent('load'));
+    this.dispatchEvent(new Event('load'));
   }
 
-  set state(state: any) {
-    if (this.applet) this.applet.state = state;
+  set data(data: any) {
+    if (this.applet) this.applet.data = data;
+    // In case applet hasn't loaded yet
     this.addEventListener('load', () => {
-      this.applet!.state = state;
+      this.applet.data = data;
     });
   }
 }
