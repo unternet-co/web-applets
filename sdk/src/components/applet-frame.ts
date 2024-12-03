@@ -1,4 +1,10 @@
-import { Applet, AppletDataEvent, AppletResizeEvent, applets } from '../index';
+import {
+  Applet,
+  AppletActionsEvent,
+  AppletDataEvent,
+  AppletResizeEvent,
+  applets,
+} from '../index';
 
 // TODO: Add resize event handler, and resize DOM element
 
@@ -37,7 +43,6 @@ class AppletFrame extends HTMLElement {
   async loadApplet(url: string) {
     if (!this.container) return;
     this.applet = await applets.load(url, this.container);
-    console.log(url);
 
     // When data received, bubble the event up
     this.applet.ondata = (dataEvent: AppletDataEvent) => {
@@ -47,6 +52,10 @@ class AppletFrame extends HTMLElement {
     // Resize
     this.applet.onresize = (resizeEvent: AppletResizeEvent) => {
       this.resizeContainer(resizeEvent.dimensions);
+    };
+
+    this.applet.onactions = (e: AppletActionsEvent) => {
+      console.log(e.actions);
     };
 
     // Emit a load event when loading complete

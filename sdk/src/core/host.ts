@@ -4,9 +4,12 @@ import {
   ActionParams,
   AppletManifest,
   AppletDataMessage,
+  AppletInitMessage,
   AppletResizeMessage,
   AppletDataEvent,
   AppletResizeEvent,
+  AppletActionsMessage,
+  AppletActionsEvent,
 } from './shared';
 import { AppletMessageChannel } from './shared';
 import { parseUrl } from '../lib/utils';
@@ -28,7 +31,7 @@ const defaultOpts: LoadOpts = {
 async function load(
   url: string,
   container?: HTMLIFrameElement,
-  opts?: AppletOpts
+  opts?: LoadOpts
 ): Promise<Applet> {
   const _opts = Object.assign(defaultOpts, opts ?? {});
   if (!container) container = hiddenContainer;
@@ -48,34 +51,42 @@ async function load(
   }
 
   // Load the applet
-  const applet = new Applet();
-  applet.manifest = manifest;
-  applet.availableActions = manifest.actions;
-  applet.container = container;
-  container.src = applet.manifest.start_url;
+  const applet = new Applet({
+    manifest,
+    container,
+  });
 
-  //
   return new Promise((resolve) => {
     applet.on('ready', () => {
+      console.log('reddy');
       resolve(applet);
     });
   });
 }
 
-interface AppletOpts {
+interface AppletOptions {
   manifest: AppletManifest;
   container: HTMLIFrameElement;
 }
 class Applet<T = any> extends AppletMessageChannel {
   url: string;
   availableActions: AppletAction[] = [];
-  manifest: AppletManifest;
   container: HTMLIFrameElement;
+  #manifest: AppletManifest;
   #data: T;
 
-  constructor() {
+  constructor(options: AppletOptions) {
     super();
+    this.container = options.container;
+    this.container.src = options.manifest.start_url;
+    this.messageTarget = this.container.contentWindow;
+    this.#manifest = options.manifest;
     this.initializeListeners();
+
+    this.on('ready', () => {
+      console.log('Ready received, sending init');
+      this.send(new AppletInitMessage({ manifest: options.manifest }));
+    });
   }
 
   initializeListeners() {
@@ -93,6 +104,13 @@ class Applet<T = any> extends AppletMessageChannel {
       if (typeof this.onresize === 'function') this.onresize(resizeEvent);
       this.dispatchEvent(resizeEvent);
     });
+
+    this.on('actions', (message: AppletActionsMessage) => {
+      this.availableActions = message.actions;
+      const actionsEvent = new AppletActionsEvent({ actions: message.actions });
+      if (typeof this.onactions === 'function') this.onactions(actionsEvent);
+      this.dispatchEvent(actionsEvent);
+    });
   }
 
   get data() {
@@ -101,11 +119,15 @@ class Applet<T = any> extends AppletMessageChannel {
 
   set data(data: T) {
     this.#data = data;
-    this.send(new AppletMessage('data', { data }));
+    this.send(new AppletDataMessage({ data }));
+  }
+
+  get manifest() {
+    return this.#manifest;
   }
 
   onresize(event: AppletResizeEvent) {}
-
+  onactions(event: AppletActionsEvent) {}
   ondata(event: AppletDataEvent) {}
 
   disconnect() {

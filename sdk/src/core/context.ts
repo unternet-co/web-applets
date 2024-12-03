@@ -7,6 +7,11 @@ import {
   AppletLoadEvent,
   AppletReadyEvent,
   JSONSchemaProperties,
+  AppletInitMessage,
+  AppletManifest,
+  AppletActionsMessage,
+  AppletReadyMessage,
+  AppletAction,
 } from './shared';
 
 export type ActionHandler<T extends ActionParams> = (
@@ -18,9 +23,12 @@ export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
 export class AppletContext extends AppletMessageChannel {
   actionHandlers: ActionHandlerDict = {};
   view: HTMLElement;
+  manifest: AppletManifest;
+  #availableActions: { [key: string]: AppletAction };
   #data: any;
 
   connect() {
+    this.messageTarget = window;
     // When document loads/if it's loaded, call the initialize function
     if (
       document.readyState === 'complete' ||
@@ -28,14 +36,14 @@ export class AppletContext extends AppletMessageChannel {
     ) {
       // Document has loaded already.
       // Timeout added so if the caller defines the onload function, it will exist by now
-      setTimeout(this.initialize, 1);
+      setTimeout(this.initialize.bind(this), 1);
     } else {
       // Document not yet loaded, we'll add an event listener to call when it does
-      window.addEventListener('DOMContentLoaded', this.initialize);
+      window.addEventListener('DOMContentLoaded', this.initialize.bind(this));
     }
 
     this.createResizeObserver();
-    this.attachEventListeners();
+    this.attachListeners();
     this.view = document.querySelector('body');
 
     return this;
@@ -45,15 +53,16 @@ export class AppletContext extends AppletMessageChannel {
     // Call the onload function
     const loadEvent = new AppletLoadEvent();
     this.dispatchEvent(loadEvent);
-    await this.onload(loadEvent);
+    if (typeof this.onload === 'function') await this.onload(loadEvent);
 
     // Tell the client we're ready
-    this.send(new AppletMessage('ready'));
+    console.log('Emit ready');
+    this.send(new AppletReadyMessage());
 
     // Emit a local ready event
     const readyEvent = new AppletReadyEvent();
     this.dispatchEvent(readyEvent);
-    await this.onload(readyEvent);
+    if (typeof this.onready === 'function') await this.onready(readyEvent);
   }
 
   createResizeObserver() {
@@ -71,7 +80,16 @@ export class AppletContext extends AppletMessageChannel {
     resizeObserver.observe(document.querySelector('html')!);
   }
 
-  attachEventListeners() {
+  attachListeners() {
+    this.on('init', (message: AppletInitMessage) => {
+      console.log('init!');
+      this.manifest = message.manifest;
+      this.availableActions = [
+        ...this.availableActions,
+        ...message.manifest.actions,
+      ];
+    });
+
     this.on('data', (message: AppletDataMessage) => {
       this.setData(message.data);
     });
@@ -94,6 +112,17 @@ export class AppletContext extends AppletMessageChannel {
     actionId: string,
     { handler }: ActionDefinition<T>
   ) {}
+
+  set availableActions(actions: AppletAction[]) {
+    for (let action of actions) {
+      this.#availableActions[action.id] = action;
+    }
+    this.send(new AppletActionsMessage({ actions: this.availableActions }));
+  }
+
+  get availableActions(): AppletAction[] {
+    return Object.values(this.#availableActions);
+  }
 
   set data(data: any) {
     this.setData(data);

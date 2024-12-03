@@ -47,6 +47,7 @@ export class AppletMessageChannel extends EventTarget {
   messageTarget: Window;
 
   async send(message: AppletMessage, options?: SendMessageOptions) {
+    console.log('sending', message);
     this.messageTarget.postMessage(message.toJson(), '*');
     if (options && options.resolves === false) return;
 
@@ -72,7 +73,15 @@ export class AppletMessageChannel extends EventTarget {
   }
 
   async on(messageType: AppletMessageType, callback: AppletMessageCallback) {
+    console.log('added listener', messageType);
     const listener = async (messageEvent: MessageEvent<AppletMessage>) => {
+      console.log(
+        messageEvent.source !== this.messageTarget,
+        messageEvent.data.type !== messageType,
+        messageEvent.source,
+        this.messageTarget,
+        messageEvent.data
+      );
       if (messageEvent.source !== this.messageTarget) return;
       if (messageEvent.data.type !== messageType) return;
 
@@ -80,6 +89,8 @@ export class AppletMessageChannel extends EventTarget {
         messageEvent.data.type,
         messageEvent.data
       );
+
+      console.log('received', message);
 
       // Wait for the callback to complete, then send a 'resolve' event
       // with the message ID.
@@ -130,12 +141,27 @@ export class AppletResolveMessage extends AppletMessage {
   }
 }
 
+export class AppletActionsMessage extends AppletMessage {
+  actions: AppletAction[];
+
+  constructor({ actions }: { actions: AppletAction[] }) {
+    super('actions');
+    this.actions = actions;
+  }
+}
+
 export class AppletDataMessage<T = any> extends AppletMessage {
   data: T;
 
   constructor({ data }: { data: T }) {
     super('data');
     this.data = data;
+  }
+}
+
+export class AppletReadyMessage extends AppletMessage {
+  constructor() {
+    super('ready');
   }
 }
 
@@ -168,7 +194,12 @@ export class AppletActionMessage extends AppletMessage {
 }
 
 export class AppletInitMessage extends AppletMessage {
-  type: 'init';
+  manifest: AppletManifest;
+
+  constructor({ manifest }: { manifest: AppletManifest }) {
+    super('init');
+    this.manifest = manifest;
+  }
 }
 
 export type AppletMessageType =
@@ -217,6 +248,20 @@ export class AppletLoadEvent extends Event {
       cancelable: false,
       composed: false,
     });
+  }
+}
+
+export class AppletActionsEvent extends Event {
+  actions: AppletAction[];
+
+  constructor({ actions }: { actions: AppletAction[] }) {
+    super('actions', {
+      bubbles: false,
+      cancelable: false,
+      composed: false,
+    });
+
+    this.actions = actions;
   }
 }
 
