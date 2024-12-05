@@ -27,6 +27,11 @@ export class AppletContext extends EventTarget {
   #actions: { [key: string]: AppletAction } = {};
   #data: any;
 
+  constructor() {
+    super();
+    this.connect();
+  }
+
   connect() {
     this.messageRelay = new AppletMessageRelay(window.parent);
     // When document loads/if it's loaded, call the initialize function
@@ -44,8 +49,6 @@ export class AppletContext extends EventTarget {
 
     this.createResizeObserver();
     this.attachListeners();
-
-    return this;
   }
 
   async initialize() {
