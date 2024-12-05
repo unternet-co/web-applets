@@ -52,6 +52,20 @@ export class AppletContext extends EventTarget {
   }
 
   async initialize() {
+    const manifestLinkElem = document.querySelector('link[rel="manifest"]') as
+      | HTMLLinkElement
+      | undefined;
+    if (!manifestLinkElem) return;
+
+    try {
+      const manifestRequest = await fetch(manifestLinkElem.href);
+      const manifest = await manifestRequest.json();
+      this.manifest = manifest;
+      this.actions = manifest.actions ?? [];
+    } catch (e) {
+      return;
+    }
+
     // Call the onload function
     const loadEvent = new AppletLoadEvent();
     this.dispatchEvent(loadEvent);
@@ -63,7 +77,7 @@ export class AppletContext extends EventTarget {
     // Emit a local ready event
     const readyEvent = new AppletReadyEvent();
     this.dispatchEvent(readyEvent);
-    if (typeof this.onready === 'function') await this.onready(readyEvent);
+    if (typeof this.onready === 'function') this.onready(readyEvent);
   }
 
   createResizeObserver() {
@@ -84,7 +98,7 @@ export class AppletContext extends EventTarget {
   attachListeners() {
     this.messageRelay.on('init', (message: AppletInitMessage) => {
       this.manifest = message.manifest;
-      this.actions = this.manifest.actions;
+      this.actions = this.manifest?.actions || [];
     });
 
     this.messageRelay.on('data', (message: AppletDataMessage) => {
@@ -111,6 +125,7 @@ export class AppletContext extends EventTarget {
   ) {}
 
   set actions(actions: AppletAction[]) {
+    if (!actions) return;
     for (let action of actions) {
       this.#actions[action.id] = action;
     }

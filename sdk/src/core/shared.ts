@@ -1,5 +1,7 @@
 /* Manifest & action definitions */
 
+import { parseUrl } from '../utils';
+
 export interface AppletManifest {
   name?: string;
   short_name?: string;
@@ -36,6 +38,35 @@ export type JSONSchemaProperties = Record<
 >;
 
 export type ActionParams = Record<string, any>;
+
+export async function loadManifest(pageUrl: string): Promise<AppletManifest> {
+  pageUrl = parseUrl(pageUrl);
+
+  let manifest: AppletManifest;
+
+  try {
+    const pageRequest = await fetch(pageUrl);
+    const html = await pageRequest.text();
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    const linkElem = doc.querySelector(
+      'link[rel="manifest"]'
+    ) as HTMLLinkElement;
+
+    const manifestUrl = parseUrl(linkElem.href);
+
+    const manifestRequest = await fetch(manifestUrl);
+
+    manifest = await manifestRequest.json();
+    // TODO: Add verification this is a valid manifest
+  } catch (e) {
+    return;
+  }
+
+  return manifest;
+}
 
 /* AppletMessageRelay */
 
@@ -189,11 +220,8 @@ export class AppletActionMessage extends AppletMessage {
 }
 
 export class AppletInitMessage extends AppletMessage {
-  manifest: AppletManifest;
-
-  constructor({ manifest }: { manifest: AppletManifest }) {
+  constructor() {
     super('init');
-    this.manifest = manifest;
   }
 }
 

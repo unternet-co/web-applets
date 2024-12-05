@@ -1,19 +1,16 @@
-import { AppletAction } from '../core/shared';
+import { AppletAction } from './core/shared';
 
 // Adds http/https to URLs, and prepends with window location if relative
 export function parseUrl(url: string, base?: string) {
-  if (['http', 'https'].includes(url.split('://')[0])) {
-    return url;
-  }
-
-  let path = trimSlashes(url);
-  url = `${base || window.location.origin}/${path}`;
-
-  return url;
+  if (url) url = URL.parse(url, base ?? window.location.href).href;
+  return trimTrailingSlash(url);
 }
 
-function trimSlashes(str: string) {
-  return str.replace(/^\/+|\/+$/g, '');
+function trimTrailingSlash(url: string) {
+  if (url.endsWith('/')) {
+    return url.slice(0, -1);
+  }
+  return url;
 }
 
 export function createOpenAISchemaForAction(action: AppletAction) {
