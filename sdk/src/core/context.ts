@@ -25,7 +25,7 @@ export class AppletContext extends AppletMessageChannel {
   view: HTMLElement;
   manifest: AppletManifest;
   type = 'applet';
-  #actions: { [key: string]: AppletAction };
+  #actions: { [key: string]: AppletAction } = {};
   #data: any;
 
   connect() {
@@ -83,7 +83,7 @@ export class AppletContext extends AppletMessageChannel {
   attachListeners() {
     this.on('init', (message: AppletInitMessage) => {
       this.manifest = message.manifest;
-      this.actions = [...this.actions, ...message.manifest.actions];
+      this.actions = this.manifest.actions;
     });
 
     this.on('data', (message: AppletDataMessage) => {

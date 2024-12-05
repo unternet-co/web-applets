@@ -60,9 +60,7 @@ class AppletFrame extends HTMLElement {
       this.resizeContainer(resizeEvent.dimensions);
     };
 
-    this.applet.onactions = (e: AppletActionsEvent) => {
-      console.log(e.actions);
-    };
+    this.applet.onactions = (e: AppletActionsEvent) => {};
 
     // Emit a load event when loading complete
     this.dispatchEvent(new Event('load'));

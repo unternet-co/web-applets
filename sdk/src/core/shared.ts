@@ -37,18 +37,24 @@ export type JSONSchemaProperties = Record<
 
 export type ActionParams = Record<string, any>;
 
-/* MessageChannel object (Applet & AppletContext inherit this) */
+/* Applet object */
+
+class Applet {
+  messageRelay: AppletMessageRelay;
+}
+
+/* AppletContext */
 
 interface SendMessageOptions {
   resolves: boolean;
 }
 
-export class AppletMessageChannel extends EventTarget {
+export class AppletMessageRelay {
   type: string = '';
-  messageTarget: Window;
+  target: Window;
 
   async send(message: AppletMessage, options?: SendMessageOptions) {
-    this.messageTarget.postMessage(message.toJson(), '*');
+    this.target.postMessage(message.toJson(), '*');
     if (options && options.resolves === false) return;
 
     // Wait for a resolve message to be sent back before completing await

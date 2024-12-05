@@ -84,7 +84,6 @@ class Applet<T = any> extends AppletMessageChannel {
     this.initializeListeners();
 
     this.on('ready', () => {
-      console.log('Ready received, sending init');
       this.send(new AppletInitMessage({ manifest: options.manifest }));
     });
   }
