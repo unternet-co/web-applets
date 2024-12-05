@@ -10,14 +10,15 @@ import {
 
 class AppletFrame extends HTMLElement {
   #root: ShadowRoot;
+  #src?: string;
   container?: HTMLIFrameElement;
   applet?: Applet;
   loaded?: boolean;
 
-  observedAttributes = ['src'];
+  static observedAttributes = ['src'];
 
   connectedCallback() {
-    this.#root = this.attachShadow({ mode: 'closed' });
+    this.#root = this.attachShadow({ mode: 'open' });
 
     this.container = document.createElement('iframe');
     this.#root.appendChild(this.container);
@@ -31,12 +32,17 @@ class AppletFrame extends HTMLElement {
   }
 
   set src(value: string) {
+    this.#src = value;
     this.loadApplet(value);
+  }
+
+  get src() {
+    return this.#src;
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === 'src') {
-      this.loadApplet(newValue);
+      this.src = newValue;
     }
   }
 

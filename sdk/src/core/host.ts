@@ -58,7 +58,6 @@ async function load(
 
   return new Promise((resolve) => {
     applet.on('ready', () => {
-      console.log('reddy');
       resolve(applet);
     });
   });
@@ -70,9 +69,10 @@ interface AppletOptions {
 }
 class Applet<T = any> extends AppletMessageChannel {
   url: string;
-  availableActions: AppletAction[] = [];
+  actions: AppletAction[] = [];
   container: HTMLIFrameElement;
   #manifest: AppletManifest;
+  type = 'host';
   #data: T;
 
   constructor(options: AppletOptions) {
@@ -106,7 +106,7 @@ class Applet<T = any> extends AppletMessageChannel {
     });
 
     this.on('actions', (message: AppletActionsMessage) => {
-      this.availableActions = message.actions;
+      this.actions = message.actions;
       const actionsEvent = new AppletActionsEvent({ actions: message.actions });
       if (typeof this.onactions === 'function') this.onactions(actionsEvent);
       this.dispatchEvent(actionsEvent);

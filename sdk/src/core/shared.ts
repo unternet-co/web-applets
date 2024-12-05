@@ -44,10 +44,10 @@ interface SendMessageOptions {
 }
 
 export class AppletMessageChannel extends EventTarget {
+  type: string = '';
   messageTarget: Window;
 
   async send(message: AppletMessage, options?: SendMessageOptions) {
-    console.log('sending', message);
     this.messageTarget.postMessage(message.toJson(), '*');
     if (options && options.resolves === false) return;
 
@@ -73,24 +73,14 @@ export class AppletMessageChannel extends EventTarget {
   }
 
   async on(messageType: AppletMessageType, callback: AppletMessageCallback) {
-    console.log('added listener', messageType);
     const listener = async (messageEvent: MessageEvent<AppletMessage>) => {
-      console.log(
-        messageEvent.source !== this.messageTarget,
-        messageEvent.data.type !== messageType,
-        messageEvent.source,
-        this.messageTarget,
-        messageEvent.data
-      );
-      if (messageEvent.source !== this.messageTarget) return;
+      if (messageEvent.source === window.self) return;
       if (messageEvent.data.type !== messageType) return;
 
       const message = new AppletMessage(
         messageEvent.data.type,
         messageEvent.data
       );
-
-      console.log('received', message);
 
       // Wait for the callback to complete, then send a 'resolve' event
       // with the message ID.

@@ -24,11 +24,12 @@ export class AppletContext extends AppletMessageChannel {
   actionHandlers: ActionHandlerDict = {};
   view: HTMLElement;
   manifest: AppletManifest;
-  #availableActions: { [key: string]: AppletAction };
+  type = 'applet';
+  #actions: { [key: string]: AppletAction };
   #data: any;
 
   connect() {
-    this.messageTarget = window;
+    this.messageTarget = window.parent;
     // When document loads/if it's loaded, call the initialize function
     if (
       document.readyState === 'complete' ||
@@ -55,8 +56,7 @@ export class AppletContext extends AppletMessageChannel {
     this.dispatchEvent(loadEvent);
     if (typeof this.onload === 'function') await this.onload(loadEvent);
 
-    // Tell the client we're ready
-    console.log('Emit ready');
+    // Tell the host we're ready
     this.send(new AppletReadyMessage());
 
     // Emit a local ready event
@@ -82,12 +82,8 @@ export class AppletContext extends AppletMessageChannel {
 
   attachListeners() {
     this.on('init', (message: AppletInitMessage) => {
-      console.log('init!');
       this.manifest = message.manifest;
-      this.availableActions = [
-        ...this.availableActions,
-        ...message.manifest.actions,
-      ];
+      this.actions = [...this.actions, ...message.manifest.actions];
     });
 
     this.on('data', (message: AppletDataMessage) => {
@@ -113,15 +109,15 @@ export class AppletContext extends AppletMessageChannel {
     { handler }: ActionDefinition<T>
   ) {}
 
-  set availableActions(actions: AppletAction[]) {
+  set actions(actions: AppletAction[]) {
     for (let action of actions) {
-      this.#availableActions[action.id] = action;
+      this.#actions[action.id] = action;
     }
-    this.send(new AppletActionsMessage({ actions: this.availableActions }));
+    this.send(new AppletActionsMessage({ actions: this.actions }));
   }
 
-  get availableActions(): AppletAction[] {
-    return Object.values(this.#availableActions);
+  get actions(): AppletAction[] {
+    return Object.values(this.#actions);
   }
 
   set data(data: any) {

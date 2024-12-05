@@ -8,7 +8,7 @@ import './url-input.css';
 @customElement('app-viewer')
 export class AppViewer extends LitElement {
   @property()
-  appletUrl = '';
+  appletUrl: string = '';
 
   connectedCallback() {
     store.subscribe((data) => {
