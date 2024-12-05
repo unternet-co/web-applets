@@ -52,10 +52,9 @@ Let's add some Web Applets functionality, so this can respond to a `set_name` me
 `main.js`:
 
 ```js
-import { appletContext } from '@web-applets/sdk';
+import { applet } from '@web-applets/sdk';
 
-// Connect to the applet context to communicate with the host
-const applet = appletContext.connect();
+const applet.connect();
 
 // Define a 'set_name' action, and make it update the data object with the new name
 applet.defineAction('set_name', {

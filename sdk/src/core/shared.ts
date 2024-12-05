@@ -37,21 +37,18 @@ export type JSONSchemaProperties = Record<
 
 export type ActionParams = Record<string, any>;
 
-/* Applet object */
-
-class Applet {
-  messageRelay: AppletMessageRelay;
-}
-
-/* AppletContext */
+/* AppletMessageRelay */
 
 interface SendMessageOptions {
   resolves: boolean;
 }
 
 export class AppletMessageRelay {
-  type: string = '';
   target: Window;
+
+  constructor(target: Window) {
+    this.target = target;
+  }
 
   async send(message: AppletMessage, options?: SendMessageOptions) {
     this.target.postMessage(message.toJson(), '*');
@@ -96,6 +93,8 @@ export class AppletMessageRelay {
     };
 
     window.addEventListener('message', listener);
+    // TODO: Return something that I can then call .off or .removeListener, implement the
+    // rest of that event class
   }
 }
 

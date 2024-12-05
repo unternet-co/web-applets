@@ -2,7 +2,6 @@ import {
   AppletMessage,
   ActionParams,
   AppletDataMessage,
-  AppletMessageChannel,
   AppletDataEvent,
   AppletLoadEvent,
   AppletReadyEvent,
@@ -12,6 +11,7 @@ import {
   AppletActionsMessage,
   AppletReadyMessage,
   AppletAction,
+  AppletMessageRelay,
 } from './shared';
 
 export type ActionHandler<T extends ActionParams> = (
@@ -20,16 +20,15 @@ export type ActionHandler<T extends ActionParams> = (
 
 export type ActionHandlerDict = { [key: string]: ActionHandler<any> };
 
-export class AppletContext extends AppletMessageChannel {
+export class AppletContext extends EventTarget {
+  messageRelay: AppletMessageRelay;
   actionHandlers: ActionHandlerDict = {};
-  view: HTMLElement;
   manifest: AppletManifest;
-  type = 'applet';
   #actions: { [key: string]: AppletAction } = {};
   #data: any;
 
   connect() {
-    this.messageTarget = window.parent;
+    this.messageRelay = new AppletMessageRelay(window.parent);
     // When document loads/if it's loaded, call the initialize function
     if (
       document.readyState === 'complete' ||
@@ -45,7 +44,6 @@ export class AppletContext extends AppletMessageChannel {
 
     this.createResizeObserver();
     this.attachListeners();
-    this.view = document.querySelector('body');
 
     return this;
   }
@@ -57,7 +55,7 @@ export class AppletContext extends AppletMessageChannel {
     if (typeof this.onload === 'function') await this.onload(loadEvent);
 
     // Tell the host we're ready
-    this.send(new AppletReadyMessage());
+    this.messageRelay.send(new AppletReadyMessage());
 
     // Emit a local ready event
     const readyEvent = new AppletReadyEvent();
@@ -74,23 +72,23 @@ export class AppletContext extends AppletMessageChannel {
             height: entry.contentRect.height,
           },
         });
-        this.send(message);
+        this.messageRelay.send(message);
       }
     });
     resizeObserver.observe(document.querySelector('html')!);
   }
 
   attachListeners() {
-    this.on('init', (message: AppletInitMessage) => {
+    this.messageRelay.on('init', (message: AppletInitMessage) => {
       this.manifest = message.manifest;
       this.actions = this.manifest.actions;
     });
 
-    this.on('data', (message: AppletDataMessage) => {
+    this.messageRelay.on('data', (message: AppletDataMessage) => {
       this.setData(message.data);
     });
 
-    this.on('action', async (message: AppletMessage) => {
+    this.messageRelay.on('action', async (message: AppletMessage) => {
       if (Object.keys(this.actionHandlers).includes(message.actionId)) {
         await this.actionHandlers[message.actionId](message.params);
       }
@@ -113,7 +111,7 @@ export class AppletContext extends AppletMessageChannel {
     for (let action of actions) {
       this.#actions[action.id] = action;
     }
-    this.send(new AppletActionsMessage({ actions: this.actions }));
+    this.messageRelay.send(new AppletActionsMessage({ actions: this.actions }));
   }
 
   get actions(): AppletAction[] {
@@ -130,7 +128,7 @@ export class AppletContext extends AppletMessageChannel {
 
   async setData(data: any) {
     const dataMessage = new AppletMessage('data', { data });
-    await this.send(dataMessage);
+    await this.messageRelay.send(dataMessage);
     this.#data = data;
 
     const dataEvent = new AppletDataEvent({ data });
@@ -148,4 +146,6 @@ interface ActionDefinition<T> {
   handler: ActionHandler<T>;
 }
 
-export const appletContext = new AppletContext();
+export function getContext() {
+  return new AppletContext();
+}

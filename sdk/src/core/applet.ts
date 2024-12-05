@@ -10,8 +10,8 @@ import {
   AppletResizeEvent,
   AppletActionsMessage,
   AppletActionsEvent,
+  AppletMessageRelay,
 } from './shared';
-import { AppletMessageChannel } from './shared';
 import { parseUrl } from '../lib/utils';
 
 // Container for initializing applets without an explicit container
@@ -28,7 +28,7 @@ const defaultOpts: LoadOpts = {
 };
 
 // Load an applet object from a URL
-async function load(
+export async function load(
   url: string,
   container?: HTMLIFrameElement,
   opts?: LoadOpts
@@ -57,17 +57,18 @@ async function load(
   });
 
   return new Promise((resolve) => {
-    applet.on('ready', () => {
+    applet.messageRelay.on('ready', () => {
       resolve(applet);
     });
   });
 }
 
-interface AppletOptions {
+export interface AppletOptions {
   manifest: AppletManifest;
   container: HTMLIFrameElement;
 }
-class Applet<T = any> extends AppletMessageChannel {
+export class Applet<T = any> extends EventTarget {
+  messageRelay: AppletMessageRelay;
   url: string;
   actions: AppletAction[] = [];
   container: HTMLIFrameElement;
@@ -79,24 +80,26 @@ class Applet<T = any> extends AppletMessageChannel {
     super();
     this.container = options.container;
     this.container.src = options.manifest.start_url;
-    this.messageTarget = this.container.contentWindow;
+    this.messageRelay = new AppletMessageRelay(this.container.contentWindow);
     this.#manifest = options.manifest;
     this.initializeListeners();
 
-    this.on('ready', () => {
-      this.send(new AppletInitMessage({ manifest: options.manifest }));
+    this.messageRelay.on('ready', () => {
+      this.messageRelay.send(
+        new AppletInitMessage({ manifest: options.manifest })
+      );
     });
   }
 
   initializeListeners() {
-    this.on('data', (message: AppletDataMessage) => {
+    this.messageRelay.on('data', (message: AppletDataMessage) => {
       this.#data = message.data;
       const dataEvent = new AppletDataEvent({ data: message.data });
       if (typeof this.ondata === 'function') this.ondata(dataEvent);
       this.dispatchEvent(dataEvent);
     });
 
-    this.on('resize', (message: AppletResizeMessage) => {
+    this.messageRelay.on('resize', (message: AppletResizeMessage) => {
       const resizeEvent = new AppletResizeEvent({
         dimensions: message.dimensions,
       });
@@ -104,7 +107,7 @@ class Applet<T = any> extends AppletMessageChannel {
       this.dispatchEvent(resizeEvent);
     });
 
-    this.on('actions', (message: AppletActionsMessage) => {
+    this.messageRelay.on('actions', (message: AppletActionsMessage) => {
       this.actions = message.actions;
       const actionsEvent = new AppletActionsEvent({ actions: message.actions });
       if (typeof this.onactions === 'function') this.onactions(actionsEvent);
@@ -118,7 +121,7 @@ class Applet<T = any> extends AppletMessageChannel {
 
   set data(data: T) {
     this.#data = data;
-    this.send(new AppletDataMessage({ data }));
+    this.messageRelay.send(new AppletDataMessage({ data }));
   }
 
   get manifest() {
@@ -138,7 +141,7 @@ class Applet<T = any> extends AppletMessageChannel {
       actionId,
       params,
     });
-    return await this.send(actionMessage);
+    return await this.messageRelay.send(actionMessage);
   }
 }
 
@@ -161,11 +164,3 @@ async function loadManifest(baseUrl: string): Promise<AppletManifest> {
 
   return manifest;
 }
-
-// Exports
-
-export const applets = {
-  load,
-};
-
-export { Applet };
