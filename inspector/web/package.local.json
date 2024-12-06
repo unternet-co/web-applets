@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@web-applets/sdk": "file:../../sdk"
-  }
-}

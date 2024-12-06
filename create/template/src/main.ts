@@ -1,3 +1,3 @@
-import { appletContext } from '@web-applets/sdk';
+import { applets } from '@web-applets/sdk';
 
-const applet = appletContext.connect();
+const context = applets.getContext();

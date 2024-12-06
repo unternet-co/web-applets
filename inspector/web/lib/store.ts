@@ -1,7 +1,10 @@
+import { Applet, AppletAction } from '@web-applets/sdk';
+
 type Subscriber = (data: any) => void;
 
-interface StorageData {
+export interface StorageData {
   appletUrl: string;
+  applet?: Applet;
 }
 
 let data: StorageData = {
@@ -16,7 +19,12 @@ const subscribers = new Set<Subscriber>();
 
 function update(newData: object) {
   data = { ...data, ...newData };
-  localStorage.setItem('data', JSON.stringify(data));
+  localStorage.setItem(
+    'data',
+    JSON.stringify({
+      appletUrl: data.appletUrl,
+    })
+  );
   subscribers.forEach((callback) => callback(data));
 }
 

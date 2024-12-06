@@ -13,6 +13,7 @@ function trimTrailingSlash(url: string) {
   return url;
 }
 
+// Creates an OpenAI-compatible schema declaration for an action
 export function createOpenAISchemaForAction(action: AppletAction) {
   return {
     strict: true,
@@ -28,16 +29,3 @@ export function createOpenAISchemaForAction(action: AppletAction) {
     },
   };
 }
-
-// export async function loadAppletManifest(url: string): Promise<AppletManifest> {
-//   url = parseUrl(url);
-//   const request = await fetch(`${url}/manifest.json`);
-//   const appletManifest = await request.json();
-
-//   if (appletManifest.type !== 'applet') {
-//     throw new Error("URL doesn't point to a valid applet manifest.");
-//   }
-
-//   appletManifest.entrypoint = parseUrl(appletManifest.entrypoint, url);
-//   return appletManifest;
-// }

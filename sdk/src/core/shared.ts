@@ -31,9 +31,9 @@ export interface AppletAction {
 export type JSONSchemaProperties = Record<
   string,
   {
-    description: string;
     type: string;
-    properties: JSONSchemaProperties;
+    description?: string;
+    properties?: JSONSchemaProperties;
   }
 >;
 

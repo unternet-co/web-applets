@@ -121,8 +121,20 @@ export class AppletContext extends EventTarget {
 
   defineAction<T = ActionParams>(
     actionId: string,
-    { handler }: ActionDefinition<T>
-  ) {}
+    definition: ActionDefinition<T>
+  ) {
+    const { handler, ...properties } = definition;
+
+    this.actions = [
+      ...this.actions,
+      {
+        id: actionId,
+        ...properties,
+      },
+    ];
+
+    this.setActionHandler(actionId, handler);
+  }
 
   set actions(actions: AppletAction[]) {
     if (!actions) return;
@@ -159,9 +171,9 @@ export class AppletContext extends EventTarget {
   ondata(event: AppletDataEvent): void {}
 }
 
-interface ActionDefinition<T> {
+interface ActionDefinition<T> extends Omit<AppletAction, 'id'> {
   params?: JSONSchemaProperties;
-  handler: ActionHandler<T>;
+  handler?: ActionHandler<T>;
 }
 
 export function getContext() {

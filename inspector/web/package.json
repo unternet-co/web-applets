@@ -13,6 +13,7 @@
     "vite": "^6.0.1"
   },
   "dependencies": {
+    "@web-applets/sdk": "file:../../sdk",
     "lit": "^3.2.1"
   }
 }

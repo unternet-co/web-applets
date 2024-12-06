@@ -8,7 +8,7 @@ import {
 
 // TODO: Add resize event handler, and resize DOM element
 
-class AppletFrame extends HTMLElement {
+export class AppletFrame extends HTMLElement {
   #root: ShadowRoot;
   #src?: string;
   container?: HTMLIFrameElement;

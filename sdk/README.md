@@ -52,12 +52,12 @@ Let's add some Web Applets functionality, so this can respond to a `set_name` me
 `main.js`:
 
 ```js
-import { applet } from '@web-applets/sdk';
+import { applets } from '@web-applets/sdk';
 
-const applet.connect();
+const context = applets.getContext();
 
-// Define a 'set_name' action, and make it update the data object with the new name
-applet.defineAction('set_name', {
+// Define a 'set_name' action, and make it update the shared data object with the new name
+context.defineAction('set_name', {
   params: {
     name: {
       type: string,
@@ -68,7 +68,7 @@ applet.defineAction('set_name', {
 });
 
 // Whenever the data is updated, update the view
-applet.ondata = () => {
+context.ondata = () => {
   document.getElementById('name').innerText = applet.data.name;
 };
 ```
@@ -91,7 +91,7 @@ Inside the generated folder, you'll find a basic web app setup:
 
 > Want to use React? Svelte? Vue? – No problem, just install the dependencies and create an app the way you normally would in a website. So long as you're receiving the action events, it will all just work.
 
-Now if you run `npx @web-applets/inspector`, you should be able to test out your new applet action directly. This applet will now work in any environment where the SDK is installed.
+Now if you run `npx @web-applets/inspector`, you should be able to test out your new applet directly. This applet will now work in any environment where the SDK is installed.
 
 ![A screenshot showing the 'playground' editing UI, with a web applets showing 'Hello, Web Applets'](docs/assets/web-applets-playground.png)
 

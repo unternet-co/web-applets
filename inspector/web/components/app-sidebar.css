@@ -2,4 +2,50 @@ app-sidebar {
   display: block;
   width: 400px;
   border-right: 1px solid var(--color-border);
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%;
+}
+
+app-sidebar label {
+  font-weight: 500;
+}
+
+app-sidebar fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+app-sidebar .status-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  color: #666;
+  font-style: italic;
+  padding: 0;
+  margin: 0;
+}
+
+app-sidebar select {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.schema {
+  margin: 0;
+  background: #eee;
+  padding: 12px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
 }
