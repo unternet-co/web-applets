@@ -27,6 +27,16 @@ export class AppSidebar extends LitElement {
     this.selected = select.selectedIndex;
   }
 
+  handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+    console.log(formData.get('action-id'));
+    const actionId = formData.get('action-id') as string;
+    const params = formData.get('params') as string;
+    window.applet.dispatchAction(actionId, JSON.parse(params));
+  }
+
   render() {
     console.log(this.selected);
     if (!this.actions.length) {
@@ -37,24 +47,27 @@ export class AppSidebar extends LitElement {
       JSON.stringify(this.actions[this.selected].params, null, 2) ?? 'None';
 
     return html`
-      <fieldset>
-        <label>Action ID</label>
-        <action-select
-          .actions=${this.actions}
-          @change=${this.handleSelect.bind(this)}
-        ></action-select>
-      </fieldset>
-      <fieldset>
-        <label>Schema</label>
-        <pre class="schema">${schema}</pre>
-      </fieldset>
-      <fieldset>
-        <label>Params</label>
-        <textarea></textarea>
-      </fieldset>
-      <fieldset>
-        <input type="submit" value="Send action" />
-      </fieldset>
+      <form @submit=${this.handleSubmit.bind(this)}>
+        <fieldset>
+          <label>Action ID</label>
+          <action-select
+            .actions=${this.actions}
+            name="action-id"
+            @change=${this.handleSelect.bind(this)}
+          ></action-select>
+        </fieldset>
+        <fieldset>
+          <label>Schema</label>
+          <pre class="schema">${schema}</pre>
+        </fieldset>
+        <fieldset>
+          <label>Params</label>
+          <textarea rows=${6} name="params">{}</textarea>
+        </fieldset>
+        <fieldset>
+          <input type="submit" value="Dispatch action" />
+        </fieldset>
+      </form>
     `;
   }
 }
@@ -63,12 +76,15 @@ export class AppSidebar extends LitElement {
 export class ActionSelect extends LitElement {
   renderRoot = this;
 
+  @property({ type: String })
+  name: string;
+
   @property({ attribute: false })
   actions: AppletAction[] = [];
 
   render() {
     return html`
-      <select>
+      <select name=${this.name}>
         ${this.actions.map((action) => {
           return html`<option id="action">${action.id}</option>`;
         })}
