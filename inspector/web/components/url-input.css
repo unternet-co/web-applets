@@ -1,0 +1,14 @@
+url-input {
+  align-self: stretch;
+  max-width: 600px;
+  width: 100%;
+}
+
+url-input input {
+  border: 1px solid var(--color-border);
+  background: var(--color-raised);
+  border-radius: var(--rounded-sm);
+  padding: 0 var(--space-sm);
+  height: 100%;
+  width: 100%;
+}

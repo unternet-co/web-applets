@@ -1,9 +1,0 @@
-{
-  "input": {
-    "path": "./applets",
-    "buildDir": "dist"
-  },
-  "output": {
-    "path": "./dist"
-  }
-}

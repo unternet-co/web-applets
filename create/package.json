@@ -1,0 +1,36 @@
+{
+  "name": "@web-applets/create",
+  "author": "Rupert Manfredi <rupert@unternet.co>",
+  "license": "MIT",
+  "description": "The CLI for creating a new web applet",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && npm run postbuild",
+    "prepare": "npm run build",
+    "postbuild": "cp -r template dist && chmod +x ./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "create-web-applet": "dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unternet-co/web-applets.git"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.7.5",
+    "typescript": "^5.6.2"
+  }
+}

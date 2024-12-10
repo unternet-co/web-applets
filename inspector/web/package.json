@@ -1,0 +1,19 @@
+{
+  "name": "@web-applets/inspector",
+  "version": "0.0.1",
+  "description": "Inspector for testing & developing web applets.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^6.0.1"
+  },
+  "dependencies": {
+    "@web-applets/sdk": "file:../../sdk",
+    "lit": "^3.2.1"
+  }
+}
