@@ -62,6 +62,13 @@ app-sidebar textarea {
 }
 
 app-sidebar input[type='submit'] {
-  padding: 4px;
+  padding: 8px;
   font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+app-sidebar input[type='submit']:hover {
+  background: var(--color-border);
 }

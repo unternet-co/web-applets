@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "install:local": "npm install --package-import=package.local.json --no-save"
+    "build": "vite build"
   },
   "author": "",
   "license": "ISC",

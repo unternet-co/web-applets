@@ -1,21 +1,20 @@
 {
-  "name": "@web-applets/create",
+  "name": "@web-applets/inspector",
+  "version": "0.1.0",
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",
-  "description": "The CLI for creating a new web applet",
-  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "description": "",
   "scripts": {
-    "build": "tsc && npm run postbuild",
-    "prepare": "npm run build",
-    "postbuild": "cp -r template dist && chmod +x ./dist/index.js"
+    "build": "tsc && npm run build:web",
+    "build:web": "cd ../web && npm run build && cp -r dist/ ../cli/dist/web"
   },
   "files": [
     "dist"
   ],
   "bin": {
-    "create-web-applet": "dist/index.js"
+    "web-applets-inspector": "dist/index.js"
   },
   "publishConfig": {
     "access": "public"
@@ -26,9 +25,10 @@
   },
   "dependencies": {
     "commander": "^12.1.0",
-    "fs-extra": "^11.2.0"
+    "express": "^4.21.2"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.7.5",
     "typescript": "^5.6.2"

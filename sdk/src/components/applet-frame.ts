@@ -67,14 +67,15 @@ export class AppletFrame extends HTMLElement {
     this.loaded = true;
   }
 
-  // TODO: Handle removing listener
   set data(data: any) {
     if (this.applet && this.loaded) {
       this.applet.data = data;
     } else {
-      this.addEventListener('load', () => {
+      const loadListener = () => {
         this.applet.data = data;
-      });
+        this.removeEventListener('load', loadListener);
+      };
+      this.addEventListener('load', loadListener);
     }
   }
 
@@ -91,6 +92,8 @@ export class AppletFrame extends HTMLElement {
 
       iframe {
         border: none;
+        height: 100%;
+        width: 100%;
       }
     `;
   }
