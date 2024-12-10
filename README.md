@@ -8,7 +8,7 @@
 
 **Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration.
 
-Think of them a bit like Claude artifacts, but they *do stuff* & *work anywhere*!
+Think of them a bit like Claude artifacts, but they _do stuff_ & _work anywhere_!
 
 ![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
 
@@ -94,7 +94,7 @@ Inside the generated folder, you'll find a basic web app setup:
 
 Now if you run `npx @web-applets/inspector`, you should be able to test out your new applet directly. This applet will now work in any environment where the SDK is installed.
 
-![A screenshot showing the 'playground' editing UI, with a web applets showing 'Hello, Web Applets'](docs/assets/web-applets-playground.png)
+![A screenshot showing the 'playground' editing UI, with a web applets showing 'Hello, Web Applets'](docs/assets/web-applets-inspector.png)
 
 ## Integrating Web Applets into your client
 
