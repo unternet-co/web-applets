@@ -18,7 +18,7 @@ program.parse(process.argv);
 export async function create(appletName: string) {
   appletName = appletName ?? 'my-applet';
 
-  const templateDir = path.join(__dirname, '..', 'template');
+  const templateDir = path.join(__dirname, 'template');
   const appletDest = path.join(process.cwd(), appletName);
 
   try {
