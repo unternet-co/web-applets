@@ -2,34 +2,28 @@
 
 > An open spec & SDK for creating apps that agents can use.
 
-🔗 [Applets Repo](https://github.com/unternet-co/community-applets) | 🔗 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 🔗 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
+👥 [Community Applets Repo](https://github.com/unternet-co/community-applets) | 💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community) | 💬 [Applets Chat Demo](https://github.com/unternet-co/applets-chat)
+
+## Latest updates
+
+- See [Web Applets revision proposal 2024.11](https://github.com/unternet-co/web-applets/issues/15) for information on the next proposed version of Web Applets
 
 ## What is it?
 
-Web Applets is an open specification for building software that both humans and AI can understand and use together. Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration. Think of them a bit like artifacts, but they do stuff!
+**Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration.
+
+Think of them a bit like Claude artifacts, but they *do stuff* & *work anywhere*!
 
 ![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
 
-Web Applets are modular pieces of web software that:
+Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly. Web applets can do that!
 
-- **Can be used directly by humans with rich, graphical interfaces**
-- **Can be understood and operated by AI through a clear protocol**
-- **Run locally in your environment, not on distant servers**
-- **Share context and state with their environment**
-- **Can be freely combined and composed**
-
-Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly.
-
-## Key Features
-
-- **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript)
+- **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript, React, Vue, etc.)
 - **AI-Native Protocol:** Applets expose their state and actions in a way AI can understand and use
 - **Rich Interfaces:** Full support for complex graphical UIs, not just text
 - **Local-First:** Runs in your environment, keeping your data under your control
 - **Composable:** Applets can work together, sharing context and state
-- **Open Standard:** Designed for interoperability, not platform lock-in
-
-Web Applets aims to do for AI-enabled software what the web did for documents - create an open platform where anyone can build, share, and connect applications. We believe the future of software should be built on open collaboration, not tight integration with closed platforms.
+- **Open Standard:** Designed for interoperability across clients, not platform lock-in
 
 ## Example
 
@@ -74,6 +68,17 @@ context.ondata = () => {
 ```
 
 Done! If you load this up in the inspector and introduce yourself, it will respond by greeting you.
+
+To use this applet, we need to load it in our host web app using the SDK. Assuming the applet lives in our public directory, here's what that might look like:
+
+```js
+const applet = await applets.load('/helloworld.applet');
+applet.onstateupdated = (state) => console.log(state);
+applet.dispatchAction('set_name', { name: 'Web Applets' });
+// { name: 'Web Applets' }
+```
+
+For a live example you can download and play with now, check out the [applets chat demo](https://github.com/unternet-co/applets-chat).
 
 ## Getting started
 
@@ -136,7 +141,7 @@ applet.data = { name: 'Ada Lovelace' };
 
 This is a community project, and we're open to community members discussing the project direction, and submitting code!
 
-To join the conversation, visit the Applets mailing list at [groups.google.com/a/unternet.co/g/community](https://groups.google.com/a/unternet.co/g/community). You can also find more about the company that's kicking off this work at [unternet.co](https://unternet.co)
+To join the conversation, visit the Applets mailing list [here](https://groups.google.com/a/unternet.co/g/community). You can also find more about the company that's kicking off this work at [unternet.co](https://unternet.co)
 
 ## License
 
