@@ -5,6 +5,7 @@ app-header {
   border-bottom: 1px solid var(--color-border);
   padding: var(--space-xs) var(--space-md);
   height: 40px;
+  flex-shrink: 0;
 }
 
 app-header h1 {

@@ -55,8 +55,8 @@ export async function loadManifest(pageUrl: string): Promise<AppletManifest> {
       'link[rel="manifest"]'
     ) as HTMLLinkElement;
 
-    const manifestUrl = parseUrl(linkElem.href);
-
+    const href = linkElem.getAttribute('href');
+    const manifestUrl = parseUrl(href, pageUrl);
     const manifestRequest = await fetch(manifestUrl);
 
     manifest = await manifestRequest.json();
@@ -231,6 +231,7 @@ export type AppletMessageType =
   | 'data'
   | 'init'
   | 'ready'
+  | 'style'
   | 'resolve'
   | 'resize';
 

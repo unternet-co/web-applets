@@ -29,6 +29,7 @@ app-viewer .data-view {
   background: #eee;
   padding: 8px;
   margin: 0;
+  white-space: pre-wrap;
 }
 
 app-viewer .applet-footer {
