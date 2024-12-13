@@ -1,0 +1,19 @@
+{
+  "name": "My Applet",
+  "description": "",
+  "icons": [
+    {
+      "src": "icon-128x128.png"
+    }
+  ],
+  "actions": [{
+    "name": "set_name",
+    "description": "Sets the name to be greeted",
+    "parameters": {
+      "name": {
+        "type": "string",
+        "description": "The name of the person to be greeted"
+      }
+    }
+  }]
+}
