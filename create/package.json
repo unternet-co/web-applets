@@ -3,7 +3,7 @@
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",
   "description": "The CLI for creating a new web applet",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

@@ -1,7 +1,6 @@
 import { parseUrl } from '../utils';
 import {
   AppletAction,
-  AppletMessage,
   ActionParams,
   AppletManifest,
   AppletDataMessage,

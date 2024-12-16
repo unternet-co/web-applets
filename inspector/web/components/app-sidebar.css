@@ -3,6 +3,7 @@ app-sidebar {
   border-right: 1px solid var(--color-border);
   padding: 13px;
   height: 100%;
+  flex-shrink: 0;
 }
 
 app-sidebar form {

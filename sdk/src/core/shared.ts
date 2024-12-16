@@ -5,16 +5,15 @@ import { parseUrl } from '../utils';
 export interface AppletManifest {
   name?: string;
   short_name?: string;
-  icons: AppletIcons;
+  icons: ManifestIcon[];
   description?: string;
-  icon?: string;
   display?: string;
   start_url?: string;
   unsafe?: boolean;
   actions?: AppletAction[];
 }
 
-export interface AppletIcons {
+export interface ManifestIcon {
   src: string;
   purpose?: string;
   sizes?: string;
@@ -55,12 +54,15 @@ export async function loadManifest(pageUrl: string): Promise<AppletManifest> {
       'link[rel="manifest"]'
     ) as HTMLLinkElement;
 
-    const manifestUrl = parseUrl(linkElem.href);
-
+    const href = linkElem.getAttribute('href');
+    const manifestUrl = parseUrl(href, pageUrl);
     const manifestRequest = await fetch(manifestUrl);
-
     manifest = await manifestRequest.json();
-    // TODO: Add verification this is a valid manifest
+
+    manifest.icons = manifest.icons.map((icon) => {
+      icon.src = parseUrl(icon.src, pageUrl);
+      return icon;
+    });
   } catch (e) {
     return;
   }
@@ -231,6 +233,7 @@ export type AppletMessageType =
   | 'data'
   | 'init'
   | 'ready'
+  | 'style'
   | 'resolve'
   | 'resize';
 
