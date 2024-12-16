@@ -63,8 +63,6 @@ context.ondata = () => {
 };
 ```
 
-Done! If you load this up in the inspector and introduce yourself, it will respond by greeting you.
-
 To use this applet, we need to load it in our host web app using the SDK. Assuming the applet lives in our public directory, here's what that might look like:
 
 ```js
@@ -73,8 +71,6 @@ applet.onstateupdated = (state) => console.log(state);
 applet.dispatchAction('set_name', { name: 'Web Applets' });
 // { name: 'Web Applets' }
 ```
-
-For a live example you can download and play with now, check out the [applets chat demo](https://github.com/unternet-co/applets-chat).
 
 ## Getting started
 
@@ -92,9 +88,11 @@ Inside the generated folder, you'll find a basic web app setup:
 
 > Want to use React? Svelte? Vue? – No problem, just install the dependencies and create an app the way you normally would in a website. So long as you're receiving the action events, it will all just work.
 
-Now if you run `npx @web-applets/inspector`, you should be able to test out your new applet directly. This applet will now work in any environment where the SDK is installed.
+To test out this applet, first start the dev server with `npm run dev`, and take note of the dev server URL. Then, fire up the Web Applets inspector by running `npx @web-applets/inspector`, and enter the dev URL into the URL bar up the top.
 
 ![A screenshot showing the 'playground' editing UI, with a web applets showing 'Hello, Web Applets'](docs/assets/web-applets-inspector.png)
+
+You can build this applet, by running `npm run build`, and host it on any static site host. This applet will now work in any environment where the SDK is installed.
 
 ## Integrating Web Applets into your client
 
