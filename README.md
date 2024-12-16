@@ -54,7 +54,7 @@ context.defineAction('set_name', {
       description: 'The name of the person to be greeted.',
     },
   },
-  handler: ({ name }) => applet.data = { name };
+  handler: ({ name }) => (applet.data = { name }),
 });
 
 // Whenever the data is updated, update the view
