@@ -1,0 +1,24 @@
+{
+  "name": "My Applet",
+  "description": "",
+  "icons": [
+    {
+      "src": "icon-128x128.png"
+    }
+  ],
+  "actions": [{
+    "name": "currency_conversion",
+    "description": "Converts currency",
+    "parameters": {
+      "source_currency": {
+        "type": "string",
+        "description": "Source currency"
+      },
+      "target_currency": {
+        "type": "string",
+        "description": "Target Currency"
+      }
+    }
+  }]
+}
+
