@@ -11,7 +11,6 @@ interface ConverterState {
     lastUpdate: string;
 }
 
-
 interface CurrencyConversionEvent {
     source_currency: string;
     target_currency: string;
@@ -191,6 +190,26 @@ context.defineAction('currency_conversion', {
             };
         } catch (error) {
             console.error('Failed to update currencies:', error);
+        }
+    }
+});
+
+// Add new action
+context.defineAction('convert_all_listed_currencies', {
+    params: {},  // No params needed as it uses the target currency from previous action
+    handler: async () => {
+        try {
+            // Set document-wide conversion to true
+            context.data = {
+                ...context.data,
+                isDocumentWide: true,
+                lastUpdate: new Date().toISOString()
+            };
+
+            // Use the existing convertDocumentCurrencies function
+            convertDocumentCurrencies();
+        } catch (error) {
+            console.error('Failed to convert all currencies:', error);
         }
     }
 });
