@@ -1,0 +1,74 @@
+app-viewer {
+  flex-grow: 1;
+  background: #f4f4f4;
+  padding: 16px;
+  display: flex;
+}
+
+app-viewer .hidden {
+  display: none;
+}
+
+app-viewer .container {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: none;
+  flex-grow: 1;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+applet-frame {
+  flex-grow: 1;
+}
+
+app-viewer .data-view {
+  flex-grow: 1;
+  background: #eee;
+  padding: 8px;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+app-viewer .applet-footer {
+  border-top: 1px solid var(--color-border);
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+app-viewer .applet-footer label {
+  font-size: 13px;
+}
+
+app-viewer .applet-footer .toggle {
+  background: #eee;
+  border: 1px solid var(--color-border);
+  display: flex;
+  padding: 1px;
+  border-radius: 4px;
+  gap: 2px;
+}
+
+app-viewer .applet-footer button {
+  cursor: pointer;
+  border: none;
+  color: #555;
+  border-radius: 2px;
+  padding: 2px 6px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+app-viewer .applet-footer button:hover {
+  background: #ddd;
+}
+
+app-viewer .applet-footer button[data-selected='true'] {
+  background: white;
+  color: black;
+  border-color: var(--color-border);
+}
