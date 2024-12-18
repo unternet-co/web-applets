@@ -2,7 +2,7 @@
 
 > An open spec & SDK for creating apps that agents can use.
 
-💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community)
+👾 [Community Discord](https://discord.gg/2aUvMe8HrC) | 💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community)
 
 ## What is it?
 
