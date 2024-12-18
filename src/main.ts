@@ -1,6 +1,7 @@
 // OPTION: import { ConverterState } from './types'
 
 import { applets } from '@web-applets/sdk';
+import './styles/global.css';
 
 // Types
 interface CurrencyConversionEvent {
@@ -12,42 +13,32 @@ interface SingleValueEvent {
     value: number | null;
 }
 
-interface DocumentWideEvent {
-    enabled: boolean;
-}
 
 // Custom events
 const EVENTS = {
     CURRENCY_CONVERSION: 'currency_conversion',
     SINGLE_VALUE_CHANGE: 'single_value_change',
-    DOCUMENT_WIDE_TOGGLE: 'document_wide_toggle'
 } as const;
 
 
-// Event dispatcher
-class EventDispatcher {
-    static dispatch<T>(eventName: string, detail: T) {
+// Event dispatcher module
+const EventDispatcher = {
+    dispatch(eventName: string, detail: unknown) {
         const event = new CustomEvent(eventName, { detail });
         document.dispatchEvent(event);
-    }
+    },
 
-    static currencyConversion(source_currency: string, target_currency: string) {
-        this.dispatch<CurrencyConversionEvent>(EVENTS.CURRENCY_CONVERSION, {
+    currencyConversion(source_currency: string, target_currency: string) {
+        this.dispatch(EVENTS.CURRENCY_CONVERSION, {
             source_currency,
             target_currency
         });
-    }
+    },
 
-    static singleValueChange(value: number | null) {
-        this.dispatch<SingleValueEvent>(EVENTS.SINGLE_VALUE_CHANGE, { value });
-    }
-
-
-    static documentWideToggle(enabled: boolean) {  // Added this method
-        this.dispatch<DocumentWideEvent>(EVENTS.DOCUMENT_WIDE_TOGGLE, { enabled });
-    }
-}
-
+    singleValueChange(value: number | null) {
+        this.dispatch(EVENTS.SINGLE_VALUE_CHANGE, { value });
+    },
+};
 
 interface RateCache {
     [key: string]: {
@@ -58,29 +49,29 @@ interface RateCache {
 
 // Rate limiter implementation
 // **This is only for FrankfurterAPI's limit (240 calls per hour), it's just a visible counter for the user to have in mind
-class RateLimiter {
-    private cache: Record<string, { rate: number; timestamp: number }> = {};
-    private requestTimes: number[] = [];
-    private readonly CACHE_DURATION = 60 * 60 * 1000;
-    private readonly MAX_REQUESTS_PER_HOUR = 240;
+const RateLimiter = {
+    cache: {} as Record<string, { rate: number; timestamp: number }>,
+    requestTimes: [] as number[],
+    CACHE_DURATION: 60 * 60 * 1000,
+    MAX_REQUESTS_PER_HOUR: 240,
 
-    private getCacheKey(from: string, to: string): string {
+    getCacheKey(from: string, to: string): string {
         return `${from}-${to}`;
-    }
+    },
 
-    private cleanOldRequests() {
+    cleanOldRequests() {
         const oneHourAgo = Date.now() - this.CACHE_DURATION;
         this.requestTimes = this.requestTimes.filter(time => time > oneHourAgo);
-    }
+    },
 
-    private canMakeRequest(): boolean {
+    canMakeRequest(): boolean {
         this.cleanOldRequests();
         return this.requestTimes.length < this.MAX_REQUESTS_PER_HOUR;
-    }
+    },
 
-    private updateRequestCount() {
+    updateRequestCount() {
         this.requestTimes.push(Date.now());
-    }
+    },
 
     async getRate(from: string, to: string): Promise<number> {
         const cacheKey = this.getCacheKey(from, to);
@@ -92,7 +83,6 @@ class RateLimiter {
         try {
             console.log('Fetching fresh rate from API');
             this.updateRequestCount();
-            // Modified API call to ensure we get all rates for the base currency
             const response = await fetch(
                 `https://api.frankfurter.app/latest?base=${from}`
             );
@@ -120,21 +110,18 @@ class RateLimiter {
             }
             throw error;
         }
-    }
+    },
 
     getRequestsRemaining(): number {
         this.cleanOldRequests();
         return this.MAX_REQUESTS_PER_HOUR - this.requestTimes.length;
     }
-}
+};
 
 // TO DO: Expand!
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CNY'];
 
 const context = applets.getContext();
-
-// **See comment on class RateLimiter line 59
-const rateLimiter = new RateLimiter();
 
 
 
@@ -148,6 +135,7 @@ function getCurrencyRegex(currency: string): RegExp {
         'GBP': '£',
         'JPY': '¥',
     };
+
     const symbol = symbols[currency] || currency;
     // Updated regex to match various number formats:
     // - 1,200 (with thousands separator)
@@ -166,6 +154,7 @@ function formatCurrency(value: number, currency: string): string {
         maximumFractionDigits: 2
     }).format(value);
 }
+
 function extractNumber(str: string): number {
     // Remove currency symbols and spaces
     const cleanStr = str.replace(/[^\d.,]/g, '');
@@ -226,7 +215,7 @@ context.defineAction('currency_conversion', {
                 lastUpdate: new Date().toISOString()
             };
 
-            const rate = await rateLimiter.getRate(source_currency, target_currency);
+            const rate = await RateLimiter.getRate(source_currency, target_currency);
 
             context.data = {
                 ...context.data,
@@ -239,27 +228,8 @@ context.defineAction('currency_conversion', {
     }
 });
 
-// convert_all_listed_currencies
-context.defineAction('convert_all_listed_currencies', {
-    params: {},  // No params needed as it uses the target currency from previous action
-    handler: async () => {
-        try {
 
-            context.data = {
-                ...context.data,
-                isDocumentWide: true,
-                lastUpdate: new Date().toISOString()
-            };
-
-
-            convertDocumentCurrencies();
-        } catch (error) {
-            console.error('Failed to convert all currencies:', error);
-        }
-    }
-});
-
-// Initial state is 1:1 default and it is replaced by initialization see line 447
+// Initial state is 1:1 default and it is replaced by initialization  --for now it's FrankfurterAPI.
 context.data = {
     fromCurrency: 'USD',
     toCurrency: 'EUR',
@@ -282,7 +252,7 @@ async function handleCurrencyConversion(event: CustomEvent<CurrencyConversionEve
 
     try {
         // Get the new rate
-        const rate = await rateLimiter.getRate(source_currency, target_currency);
+        const rate = await RateLimiter.getRate(source_currency, target_currency);
         console.log('Received rate:', rate, 'for', source_currency, 'to', target_currency);
 
         if (!rate) {
@@ -315,82 +285,27 @@ function handleSingleValueChange(event: CustomEvent<SingleValueEvent>) {
     };
 }
 
-function handleDocumentWideToggle(event: CustomEvent<DocumentWideEvent>) {
-    context.data = {
-        ...context.data,
-        isDocumentWide: event.detail.enabled,
-        lastUpdate: new Date().toISOString()
-    };
-}
-
-// Document-wide conversion
-function convertDocumentCurrencies() {
-    const { fromCurrency, isDocumentWide } = context.data;
-    if (!isDocumentWide) return;
-
-    const regex = getCurrencyRegex(fromCurrency);
-    const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT,
-        null
-    );
-
-    const nodesToUpdate: { node: Text; matches: RegExpMatchArray }[] = [];
-    let node: Text | null;
-
-    while (node = walker.nextNode() as Text) {
-        const matches = node.nodeValue?.match(regex);
-        if (matches) {
-            nodesToUpdate.push({ node, matches });
-        }
-    }
-
-    nodesToUpdate.forEach(({ node, matches }) => {
-        let newValue = node.nodeValue || '';
-        matches.forEach(match => {
-            const originalValue = extractNumber(match);
-            const convertedValue = convertValue(originalValue);
-            const formatted = formatCurrency(convertedValue, context.data.toCurrency);
-            newValue = newValue.replace(
-                match,
-                `${match} (${formatted})`
-            );
-        });
-
-        const span = document.createElement('span');
-        span.innerHTML = newValue;
-        span.style.fontWeight = 'bold';
-        node.parentNode?.replaceChild(span, node);
-    });
-}
-
 // UI Functions
+
 function setupConverterUI() {
     const container = document.createElement('div');
     container.id = 'currency-converter';
-    container.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 0 0 8px 8px;
-        padding: 12px;
-        z-index: 10000;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    `;
-
     document.body.appendChild(container);
     return container;
 }
-
 function renderConverter(container: HTMLElement) {
-    const { fromCurrency, toCurrency, singleValue, isDocumentWide, lastUpdate } = context.data;
+    const { fromCurrency, toCurrency, singleValue } = context.data;
 
     container.innerHTML = `
         <div class="flex flex-col gap-2">
             <div class="flex gap-2 items-center">
+                <input 
+                    type="number" 
+                    id="singleValue" 
+                    placeholder="Amount"
+                    value="${singleValue || ''}"
+                    class="w-24"
+                >
                 <select id="fromCurrency">
                     ${CURRENCIES.map(curr =>
         `<option value="${curr}" ${curr === fromCurrency ? 'selected' : ''}>
@@ -398,7 +313,7 @@ function renderConverter(container: HTMLElement) {
                         </option>`
     ).join('')}
                 </select>
-                →
+                <button class="convert-button" id="convertButton">→</button>
                 <select id="toCurrency">
                     ${CURRENCIES.map(curr =>
         `<option value="${curr}" ${curr === toCurrency ? 'selected' : ''}>
@@ -407,33 +322,9 @@ function renderConverter(container: HTMLElement) {
     ).join('')}
                 </select>
             </div>
-            
-            <div class="flex gap-2 items-center">
-                <input 
-                    type="number" 
-                    id="singleValue" 
-                    placeholder="Enter amount"
-                    value="${singleValue || ''}"
-                    class="w-24"
-                >
-                <span>${singleValue ? formatCurrency(convertValue(singleValue), toCurrency) : ''}</span>
+            <div class="converted-value" id="result">
+                ${singleValue ? formatCurrency(convertValue(singleValue), toCurrency) : ''}
             </div>
-
-            <div class="flex gap-2 items-center">
-                <label>
-                    <input 
-                        type="checkbox" 
-                        id="documentWide"
-                        ${isDocumentWide ? 'checked' : ''}
-                    >
-                    Convert all ${fromCurrency} values in page
-                </label>
-            </div>
-
-            <small class="text-gray-500">
-                Last update: ${new Date(lastUpdate).toLocaleString()}
-                (${rateLimiter.getRequestsRemaining()} API requests remaining this hour)
-            </small>
         </div>
     `;
 
@@ -441,51 +332,44 @@ function renderConverter(container: HTMLElement) {
 }
 
 function setupEventListeners(container: HTMLElement) {
-    console.log('Setting up event listeners');
+    const input = container.querySelector('#singleValue') as HTMLInputElement;
+    const button = container.querySelector('#convertButton') as HTMLButtonElement;
+    const resultDiv = container.querySelector('#result');
 
-    // Get elements
-    const fromSelect = container.querySelector('#fromCurrency') as HTMLSelectElement;
-    const toSelect = container.querySelector('#toCurrency') as HTMLSelectElement;
-    const valueInput = container.querySelector('#singleValue') as HTMLInputElement;
-    const documentWideCheckbox = container.querySelector('#documentWide') as HTMLInputElement;
-
-    // Remove old listeners if any
-    const newFromSelect = fromSelect.cloneNode(true) as HTMLSelectElement;
-    const newToSelect = toSelect.cloneNode(true) as HTMLSelectElement;
-    const newValueInput = valueInput.cloneNode(true) as HTMLInputElement;
-    const newDocumentWideCheckbox = documentWideCheckbox?.cloneNode(true) as HTMLInputElement;
-
-    fromSelect.parentNode?.replaceChild(newFromSelect, fromSelect);
-    toSelect.parentNode?.replaceChild(newToSelect, toSelect);
-    valueInput.parentNode?.replaceChild(newValueInput, valueInput);
-    if (documentWideCheckbox && newDocumentWideCheckbox) {
-        documentWideCheckbox.parentNode?.replaceChild(newDocumentWideCheckbox, documentWideCheckbox);
+    if (!input || !button || !resultDiv) {
+        console.error('Required elements not found');
+        return;
     }
 
-    // Add new listeners
-    newFromSelect.addEventListener('change', (e) => {
-        EventDispatcher.currencyConversion(
-            (e.target as HTMLSelectElement).value,
-            context.data.toCurrency
-        );
+    let debounceTimer: NodeJS.Timeout;
+
+    // 1. Button click handler
+    button.addEventListener('click', () => {
+        performConversion();
     });
 
-    newToSelect.addEventListener('change', (e) => {
-        EventDispatcher.currencyConversion(
-            context.data.fromCurrency,
-            (e.target as HTMLSelectElement).value
-        );
+    // 2. Enter key handler
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            performConversion();
+        }
     });
 
-    newValueInput.addEventListener('input', (e) => {
-        const value = (e.target as HTMLInputElement).value;
-        EventDispatcher.singleValueChange(value ? parseFloat(value) : null);
+    // 3. Debounced input handler
+    input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            performConversion();
+        }, 500);
     });
 
-    if (newDocumentWideCheckbox) {
-        newDocumentWideCheckbox.addEventListener('change', (e) => {
-            EventDispatcher.documentWideToggle((e.target as HTMLInputElement).checked);
-        });
+    function performConversion() {
+        const value = input.value;
+        if (value && resultDiv) {
+            const result = convertValue(parseFloat(value));
+            resultDiv.textContent = formatCurrency(result, context.data.toCurrency);
+        }
     }
 }
 
@@ -498,18 +382,13 @@ function initializeEventListeners() {
     document.addEventListener(EVENTS.SINGLE_VALUE_CHANGE,
         (e: Event) => handleSingleValueChange(e as CustomEvent<SingleValueEvent>));
 
-
-    document.addEventListener(EVENTS.DOCUMENT_WIDE_TOGGLE,  // Added this listener
-        (e: Event) => handleDocumentWideToggle(e as CustomEvent<DocumentWideEvent>));
-
 }
 
-// Initialize the application
 // Initialize the application
 async function init() {
     try {
         // Get initial exchange rate from API
-        const initialRate = await rateLimiter.getRate('USD', 'EUR');
+        const initialRate = await RateLimiter.getRate('USD', 'EUR');
 
         // Set initial state with actual rate from API
         context.data = {
@@ -527,13 +406,6 @@ async function init() {
         // Setup UI
         const container = setupConverterUI();
 
-        // Set up data change handler
-        context.ondata = () => {
-            renderConverter(container);
-            if (context.data.isDocumentWide) {
-                convertDocumentCurrencies();
-            }
-        };
     } catch (error) {
         console.error('Failed to initialize exchange rate:', error);
         // Fallback to a default state if API call fails
@@ -550,10 +422,7 @@ async function init() {
         initializeEventListeners();
         const container = setupConverterUI();
         context.ondata = () => {
-            renderConverter(container);
-            if (context.data.isDocumentWide) {
-                convertDocumentCurrencies();
-            }
+            renderConverter(container)
         };
     }
 }
@@ -565,9 +434,6 @@ const container = setupConverterUI();
 // Set up data change handler
 context.ondata = () => {
     renderConverter(container);
-    if (context.data.isDocumentWide) {
-        convertDocumentCurrencies();
-    }
 };
 
 

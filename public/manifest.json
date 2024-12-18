@@ -19,11 +19,6 @@
         "description": "Target Currency"
       }
     }
-  },
-  {
-    "name": "convert_all_listed_currencies",
-    "description": "Converts all listed currencies in a rendered page using the previously set target currency",
-    "parameters": {}
   }
 ]
 }

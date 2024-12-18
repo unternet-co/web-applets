@@ -5,134 +5,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="manifest" href="/manifest.json" />
-  <title>International Marketplace</title>
-  <style>
-    html,
-    body {
-      padding: 0;
-      margin: 0;
-    }
+  <title>Currency Converter</title>
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-      background-color: #f3f3f3;
-      padding: 20px;
-    }
+  <!-- Font imports -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=B612+Mono:400,700&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
 
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
+  <link rel="stylesheet" href="src/styles/global.css">
 
-    .product-card {
-      background: white;
-      padding: 15px;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .product-card img {
-      width: 100%;
-      height: 200px;
-      object-fit: contain;
-    }
-
-    .price {
-      font-size: 20px;
-      font-weight: bold;
-      color: #B12704;
-    }
-
-    .shipping {
-      color: #565959;
-      font-size: 14px;
-    }
-
-    .deal {
-      display: inline-block;
-      background: #CC0C39;
-      color: white;
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 2px;
-      margin-bottom: 8px;
-    }
-
-    .cart-summary {
-      margin-top: 30px;
-      background: white;
-      padding: 20px;
-      border-radius: 4px;
-    }
-  </style>
   <script src="./src/main.ts" type="module" defer></script>
 </head>
 
 <body>
-  <h1>International Marketplace</h1>
-  <p>Prices shown in multiple currencies based on seller location</p>
-
-  <div class="product-grid">
-    <div class="product-card">
-      <span class="deal">Deal of the Day</span>
-      <img src="/api/placeholder/200/200" alt="Wireless Headphones">
-      <h3>Premium Wireless Headphones</h3>
-      <div class="price">$299.99</div>
-      <div class="original-price"><s>$399.99</s></div>
-      <div class="shipping">+ $15.99 shipping to Spain</div>
-    </div>
-
-    <div class="product-card">
-      <img src="/api/placeholder/200/200" alt="Smartwatch">
-      <h3>Smart Watch Series 5</h3>
-      <div class="price">€249.99</div>
-      <div class="shipping">Free shipping within EU</div>
-    </div>
-
-    <div class="product-card">
-      <img src="/api/placeholder/200/200" alt="Camera">
-      <h3>Digital Camera Pro X</h3>
-      <div class="price">£599.99</div>
-      <div class="shipping">+ £9.99 international shipping</div>
-    </div>
-
-    <div class="product-card">
-      <span class="deal">Lightning Deal</span>
-      <img src="/api/placeholder/200/200" alt="Gaming Console">
-      <h3>NextGen Gaming Console</h3>
-      <div class="price">¥49,999</div>
-      <div class="original-price"><s>¥59,999</s></div>
-      <div class="shipping">+ ¥1,500 shipping</div>
-    </div>
-
-    <div class="product-card">
-      <img src="/api/placeholder/200/200" alt="Laptop">
-      <h3>Ultra-Slim Laptop Pro</h3>
-      <div class="price">$1,299.99</div>
-      <div class="shipping">+ $29.99 international shipping</div>
-    </div>
-
-    <div class="product-card">
-      <img src="/api/placeholder/200/200" alt="Tablet">
-      <h3>Pro Tablet 12.9"</h3>
-      <div class="price">€899.99</div>
-      <div class="original-price"><s>€999.99</s></div>
-      <div class="shipping">Free shipping within EU</div>
-    </div>
-  </div>
-
-  <div class="cart-summary">
-    <h2>Shopping Cart Summary</h2>
-    <div>Subtotal (3 items): $1,899.97</div>
-    <div>Shipping & Handling: $45.98</div>
-    <div style="margin-top: 10px; font-weight: bold;">
-      Total: $1,945.95
-    </div>
-    <div style="color: #565959; font-size: 14px; margin-top: 5px;">
-      Additional import fees may apply
-    </div>
+  <div id="currency-converter">
   </div>
 </body>
 
