@@ -1,4 +1,4 @@
-interface ConverterState {
+export interface ConverterState {
     fromCurrency: string;
     toCurrency: string;
     exchangeRate: number;
@@ -7,7 +7,7 @@ interface ConverterState {
     lastUpdate: string;
 }
 
-interface ConverterActions {
+export interface ConverterActions {
     setFromCurrency: {
         currency: string;
     };

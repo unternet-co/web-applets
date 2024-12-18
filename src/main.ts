@@ -1,16 +1,8 @@
-// import { ConverterState, ConverterActions } from './types'
+// OPTION: import { ConverterState } from './types'
+
 import { applets } from '@web-applets/sdk';
 
 // Types
-interface ConverterState {
-    fromCurrency: string;
-    toCurrency: string;
-    exchangeRate: number;
-    singleValue: number | null;
-    isDocumentWide: boolean;
-    lastUpdate: string;
-}
-
 interface CurrencyConversionEvent {
     source_currency: string;
     target_currency: string;
@@ -50,7 +42,8 @@ class EventDispatcher {
         this.dispatch<SingleValueEvent>(EVENTS.SINGLE_VALUE_CHANGE, { value });
     }
 
-    static documentWideToggle(enabled: boolean) {
+
+    static documentWideToggle(enabled: boolean) {  // Added this method
         this.dispatch<DocumentWideEvent>(EVENTS.DOCUMENT_WIDE_TOGGLE, { enabled });
     }
 }
@@ -64,6 +57,7 @@ interface RateCache {
 }
 
 // Rate limiter implementation
+// **This is only for FrankfurterAPI's limit (240 calls per hour), it's just a visible counter for the user to have in mind
 class RateLimiter {
     private cache: Record<string, { rate: number; timestamp: number }> = {};
     private requestTimes: number[] = [];
@@ -90,28 +84,28 @@ class RateLimiter {
 
     async getRate(from: string, to: string): Promise<number> {
         const cacheKey = this.getCacheKey(from, to);
+        console.log('Getting rate for:', from, 'to', to, 'Cache key:', cacheKey);
+
         const cachedData = this.cache[cacheKey];
         const now = Date.now();
 
-        if (cachedData && (now - cachedData.timestamp) < this.CACHE_DURATION) {
-            return cachedData.rate;
-        }
-
-        if (!this.canMakeRequest()) {
-            if (cachedData) {
-                return cachedData.rate;
-            }
-            throw new Error('Rate limit reached and no cached data available');
-        }
-
         try {
+            console.log('Fetching fresh rate from API');
             this.updateRequestCount();
+            // Modified API call to ensure we get all rates for the base currency
             const response = await fetch(
-                `https://api.frankfurter.app/latest?from=${from}&to=${to}`
+                `https://api.frankfurter.app/latest?base=${from}`
             );
             const data = await response.json();
-            const rate = data.rates[to];
+            console.log('API response:', data);
 
+            const rate = data.rates[to];
+            if (!rate) {
+                console.error('No rate found in API response for', to);
+                throw new Error(`No rate found for ${from} to ${to}`);
+            }
+
+            console.log('Got new rate:', rate);
             this.cache[cacheKey] = {
                 rate,
                 timestamp: now
@@ -119,7 +113,9 @@ class RateLimiter {
 
             return rate;
         } catch (error) {
-            if (cachedData) {
+            console.error('API error:', error);
+            if (cachedData && (now - cachedData.timestamp) < this.CACHE_DURATION) {
+                console.log('Using still-valid cached rate:', cachedData.rate);
                 return cachedData.rate;
             }
             throw error;
@@ -132,17 +128,19 @@ class RateLimiter {
     }
 }
 
-
+// TO DO: Expand!
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CNY'];
 
 const context = applets.getContext();
 
-// TODO: expected 0 arguments but got 1
-// const context = applets.getContext<ConverterState>();
+// **See comment on class RateLimiter line 59
 const rateLimiter = new RateLimiter();
 
 
+
+
 // Utility functions
+
 function getCurrencyRegex(currency: string): RegExp {
     const symbols: Record<string, string> = {
         'USD': '\\$',
@@ -151,16 +149,63 @@ function getCurrencyRegex(currency: string): RegExp {
         'JPY': '¥',
     };
     const symbol = symbols[currency] || currency;
-    return new RegExp(`(${symbol}\\s*\\d+(\\.\\d{2})?|\\d+(\\.\\d{2})?\\s*${symbol})`, 'g');
+    // Updated regex to match various number formats:
+    // - 1,200 (with thousands separator)
+    // - 1200.30 (with decimal point)
+    // - 1200 (plain number)
+    // - Can have currency symbol before or after
+    return new RegExp(`(${symbol}\\s*\\d{1,3}(,\\d{3})*(\\.\\d{2})?|\\d{1,3}(,\\d{3})*(\\.\\d{2})?\\s*${symbol})`, 'g');
 }
 
 
+function formatCurrency(value: number, currency: string): string {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value);
+}
 function extractNumber(str: string): number {
-    const num = str.replace(/[^\d.]/g, '');
-    return parseFloat(num);
+    // Remove currency symbols and spaces
+    const cleanStr = str.replace(/[^\d.,]/g, '');
+
+    // Check if we have both comma and decimal point
+    if (cleanStr.includes(',') && cleanStr.includes('.')) {
+        // If comma comes after decimal, treat comma as decimal
+        // If comma comes before decimal, treat comma as thousand separator
+        const commaIndex = cleanStr.indexOf(',');
+        const decimalIndex = cleanStr.indexOf('.');
+
+        if (commaIndex > decimalIndex) {
+            // European format: 1.299,99
+            return parseFloat(cleanStr.replace('.', '').replace(',', '.'));
+        } else {
+            // US format: 1,299.99
+            return parseFloat(cleanStr.replace(/,/g, ''));
+        }
+    }
+
+    // If we only have comma
+    if (cleanStr.includes(',')) {
+        // If the comma appears to be a thousand separator (followed by 3 digits)
+        const parts = cleanStr.split(',');
+        if (parts[parts.length - 1].length === 3) {
+            // It's likely a thousand separator (e.g., 1,299)
+            return parseFloat(cleanStr.replace(/,/g, ''));
+        } else {
+            // It's likely a decimal point (e.g., 1,99)
+            return parseFloat(cleanStr.replace(',', '.'));
+        }
+    }
+
+    // If we only have decimal point or plain number
+    return parseFloat(cleanStr);
 }
 
-// Define the currency_conversion action according to the manifest
+// Actions
+
+//currency_conversion
 context.defineAction('currency_conversion', {
     params: {
         source_currency: {
@@ -194,19 +239,19 @@ context.defineAction('currency_conversion', {
     }
 });
 
-// Add new action
+// convert_all_listed_currencies
 context.defineAction('convert_all_listed_currencies', {
     params: {},  // No params needed as it uses the target currency from previous action
     handler: async () => {
         try {
-            // Set document-wide conversion to true
+
             context.data = {
                 ...context.data,
                 isDocumentWide: true,
                 lastUpdate: new Date().toISOString()
             };
 
-            // Use the existing convertDocumentCurrencies function
+
             convertDocumentCurrencies();
         } catch (error) {
             console.error('Failed to convert all currencies:', error);
@@ -214,22 +259,16 @@ context.defineAction('convert_all_listed_currencies', {
     }
 });
 
-// Initial state
+// Initial state is 1:1 default and it is replaced by initialization see line 447
 context.data = {
     fromCurrency: 'USD',
     toCurrency: 'EUR',
-    exchangeRate: 1.25,
+    exchangeRate: 1.00,
     singleValue: null,
     isDocumentWide: false,
     lastUpdate: new Date().toISOString()
 };
 
-function formatCurrency(value: number, currency: string): string {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency
-    }).format(value);
-}
 
 function convertValue(value: number): number {
     return value * context.data.exchangeRate;
@@ -239,23 +278,32 @@ function convertValue(value: number): number {
 // Event handlers
 async function handleCurrencyConversion(event: CustomEvent<CurrencyConversionEvent>) {
     const { source_currency, target_currency } = event.detail;
+    console.log('Starting conversion:', source_currency, 'to', target_currency);
+
     try {
-        context.data = {
+        // Get the new rate
+        const rate = await rateLimiter.getRate(source_currency, target_currency);
+        console.log('Received rate:', rate, 'for', source_currency, 'to', target_currency);
+
+        if (!rate) {
+            console.error('Received invalid rate:', rate);
+            return;
+        }
+
+        // Update context in one atomic operation
+        const newContext = {
             ...context.data,
             fromCurrency: source_currency,
             toCurrency: target_currency,
-            lastUpdate: new Date().toISOString()
-        };
-
-        const rate = await rateLimiter.getRate(source_currency, target_currency);
-
-        context.data = {
-            ...context.data,
             exchangeRate: rate,
             lastUpdate: new Date().toISOString()
         };
+        console.log('Updating context:', newContext);
+        context.data = newContext;
+
     } catch (error) {
-        console.error('Failed to update currencies:', error);
+        console.error('Error in currency conversion:', error);
+        console.log('Failed state:', { source_currency, target_currency });
     }
 }
 
@@ -274,8 +322,6 @@ function handleDocumentWideToggle(event: CustomEvent<DocumentWideEvent>) {
         lastUpdate: new Date().toISOString()
     };
 }
-
-
 
 // Document-wide conversion
 function convertDocumentCurrencies() {
@@ -395,34 +441,54 @@ function renderConverter(container: HTMLElement) {
 }
 
 function setupEventListeners(container: HTMLElement) {
+    console.log('Setting up event listeners');
+
+    // Get elements
     const fromSelect = container.querySelector('#fromCurrency') as HTMLSelectElement;
     const toSelect = container.querySelector('#toCurrency') as HTMLSelectElement;
     const valueInput = container.querySelector('#singleValue') as HTMLInputElement;
     const documentWideCheckbox = container.querySelector('#documentWide') as HTMLInputElement;
 
-    fromSelect?.addEventListener('change', (e) => {
+    // Remove old listeners if any
+    const newFromSelect = fromSelect.cloneNode(true) as HTMLSelectElement;
+    const newToSelect = toSelect.cloneNode(true) as HTMLSelectElement;
+    const newValueInput = valueInput.cloneNode(true) as HTMLInputElement;
+    const newDocumentWideCheckbox = documentWideCheckbox?.cloneNode(true) as HTMLInputElement;
+
+    fromSelect.parentNode?.replaceChild(newFromSelect, fromSelect);
+    toSelect.parentNode?.replaceChild(newToSelect, toSelect);
+    valueInput.parentNode?.replaceChild(newValueInput, valueInput);
+    if (documentWideCheckbox && newDocumentWideCheckbox) {
+        documentWideCheckbox.parentNode?.replaceChild(newDocumentWideCheckbox, documentWideCheckbox);
+    }
+
+    // Add new listeners
+    newFromSelect.addEventListener('change', (e) => {
         EventDispatcher.currencyConversion(
             (e.target as HTMLSelectElement).value,
             context.data.toCurrency
         );
     });
 
-    toSelect?.addEventListener('change', (e) => {
+    newToSelect.addEventListener('change', (e) => {
         EventDispatcher.currencyConversion(
             context.data.fromCurrency,
             (e.target as HTMLSelectElement).value
         );
     });
 
-    valueInput?.addEventListener('input', (e) => {
+    newValueInput.addEventListener('input', (e) => {
         const value = (e.target as HTMLInputElement).value;
         EventDispatcher.singleValueChange(value ? parseFloat(value) : null);
     });
 
-    documentWideCheckbox?.addEventListener('change', (e) => {
-        EventDispatcher.documentWideToggle((e.target as HTMLInputElement).checked);
-    });
+    if (newDocumentWideCheckbox) {
+        newDocumentWideCheckbox.addEventListener('change', (e) => {
+            EventDispatcher.documentWideToggle((e.target as HTMLInputElement).checked);
+        });
+    }
 }
+
 
 // Initialize event listeners
 function initializeEventListeners() {
@@ -432,36 +498,82 @@ function initializeEventListeners() {
     document.addEventListener(EVENTS.SINGLE_VALUE_CHANGE,
         (e: Event) => handleSingleValueChange(e as CustomEvent<SingleValueEvent>));
 
-    document.addEventListener(EVENTS.DOCUMENT_WIDE_TOGGLE,
+
+    document.addEventListener(EVENTS.DOCUMENT_WIDE_TOGGLE,  // Added this listener
         (e: Event) => handleDocumentWideToggle(e as CustomEvent<DocumentWideEvent>));
+
 }
 
 // Initialize the application
-function init() {
-    // Set initial state
-    context.data = {
-        fromCurrency: 'USD',
-        toCurrency: 'EUR',
-        exchangeRate: 1.25,
-        singleValue: null,
-        isDocumentWide: false,
-        lastUpdate: new Date().toISOString()
-    };
+// Initialize the application
+async function init() {
+    try {
+        // Get initial exchange rate from API
+        const initialRate = await rateLimiter.getRate('USD', 'EUR');
 
-    // Initialize event listeners
-    initializeEventListeners();
+        // Set initial state with actual rate from API
+        context.data = {
+            fromCurrency: 'USD',
+            toCurrency: 'EUR',
+            exchangeRate: initialRate,
+            singleValue: null,
+            isDocumentWide: false,
+            lastUpdate: new Date().toISOString()
+        };
 
-    // Setup UI
-    const container = setupConverterUI();
+        // Initialize event listeners
+        initializeEventListeners();
 
-    // Set up data change handler
-    context.ondata = () => {
-        renderConverter(container);
-        if (context.data.isDocumentWide) {
-            convertDocumentCurrencies();
-        }
-    };
+        // Setup UI
+        const container = setupConverterUI();
+
+        // Set up data change handler
+        context.ondata = () => {
+            renderConverter(container);
+            if (context.data.isDocumentWide) {
+                convertDocumentCurrencies();
+            }
+        };
+    } catch (error) {
+        console.error('Failed to initialize exchange rate:', error);
+        // Fallback to a default state if API call fails
+        context.data = {
+            fromCurrency: 'USD',
+            toCurrency: 'EUR',
+            exchangeRate: 1.0, // Neutral fallback
+            singleValue: null,
+            isDocumentWide: false,
+            lastUpdate: new Date().toISOString()
+        };
+
+        // Still initialize the UI even if rate fetch fails
+        initializeEventListeners();
+        const container = setupConverterUI();
+        context.ondata = () => {
+            renderConverter(container);
+            if (context.data.isDocumentWide) {
+                convertDocumentCurrencies();
+            }
+        };
+    }
 }
 
+
+// Setup UI
+const container = setupConverterUI();
+
+// Set up data change handler
+context.ondata = () => {
+    renderConverter(container);
+    if (context.data.isDocumentWide) {
+        convertDocumentCurrencies();
+    }
+};
+
+
 // Start the application
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    init().catch(error => {
+        console.error('Failed to initialize the application:', error);
+    });
+});
