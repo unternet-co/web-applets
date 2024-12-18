@@ -1,0 +1,159 @@
+/* global.css */
+
+/* Theme Variables - Can be overridden by parent application if needed */
+:root {
+    --bg: #ffffff;
+    --text: #333333;
+    --border: #e0e0e0;
+    --accent: #0066cc;
+    --hover: #f5f5f5;
+    --input-bg: #ffffff;
+    --arrow: #666666;
+}
+
+/* Dark theme detection - Can be disabled by parent styles if needed */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #1e1e1e;
+        --text: #d4d4d4;
+        --border: #323232;
+        --accent: #007acc;
+        --hover: #2a2d2e;
+        --input-bg: #3c3c3c;
+        --arrow: #6a9955;
+    }
+}
+
+/* Main Container */
+#currency-converter,
+#timezone-converter {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px;
+    font-family: 'B612 Mono', 'Share Tech Mono', 'Courier Prime', 'Courier New', monospace;
+    letter-spacing: 0.5px;
+    
+    display: inline-block;
+    min-width: 500px;
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    overflow: visible;
+    box-sizing: border-box;
+    margin: 10px;
+}
+
+/* Form Elements */
+select,
+input[type="number"],
+input[type="time"] {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 4px;
+    outline: none;
+    font-family: 'Share Tech Mono', 'B612 Mono', monospace;
+    letter-spacing: 1px;
+    font-size: 14px;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* Specific input widths */
+input[type="number"] {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+/* Adjusted time input width */
+input[type="time"] {
+    min-width: 110px; /* Increased from 80px */
+    width: auto;      /* Allow content to determine width */
+    max-width: 130px; /* Increased from 100px */
+}
+
+/* Wider select for timezones */
+select {
+    min-width: 180px;
+    max-width: none;
+    width: auto;
+}
+
+/* Interactive States */
+select:hover,
+input[type="number"]:hover,
+input[type="time"]:hover {
+    background: var(--hover);
+}
+
+select:focus,
+input[type="number"]:focus,
+input[type="time"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Convert Button */
+.convert-button {
+    background: none;
+    border: none;
+    color: var(--arrow);
+    font-size: 1.2em;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.convert-button:hover {
+    transform: scale(1.1);
+}
+
+.convert-button:active {
+    transform: scale(0.95);
+}
+
+/* Layout Utilities */
+.flex {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.flex-col {
+    width: 100%;
+}
+
+/* Result Display */
+.converted-value {
+    min-height: 1.5em;
+    min-width: 100px;
+    text-align: left;
+    margin-top: 8px;
+    color: var(--accent);
+    font-family: 'Share Tech Mono', 'B612 Mono', monospace;
+    letter-spacing: 1.2px;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Optgroup and Option styling */
+optgroup {
+    font-weight: bold;
+    font-style: normal;
+}
+
+option {
+    padding: 4px 8px;
+}

@@ -1,19 +1,49 @@
 {
-  "name": "My Applet",
-  "description": "",
+  "name": "Timezone Converter",
+  "description": "Convert times between different timezones with automatic local timezone detection",
+  "version": "1.0.0",
   "icons": [
     {
-      "src": "icon-128x128.png"
+      "src": "icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
     }
   ],
-  "actions": [{
-    "name": "set_name",
-    "description": "Sets the name to be greeted",
-    "parameters": {
-      "name": {
-        "type": "string",
-        "description": "The name of the person to be greeted"
+  "actions": [
+    {
+      "name": "timezone_conversion",
+      "description": "Convert time between two timezones",
+      "parameters": {
+        "source_timezone": {
+          "type": "string",
+          "description": "Source timezone (e.g., 'America/New_York', 'Europe/London')",
+          "required": true
+        },
+        "target_timezone": {
+          "type": "string",
+          "description": "Target timezone to convert to",
+          "required": true
+        },
+        "time_value": {
+          "type": "string",
+          "description": "Time to convert in HH:mm format (24-hour)",
+          "required": false
+        }
+      }
+    },
+    {
+      "name": "get_current_time",
+      "description": "Get current time in specified timezone",
+      "parameters": {
+        "timezone": {
+          "type": "string",
+          "description": "Timezone to get current time for",
+          "required": true
+        }
       }
     }
-  }]
+  ],
+  "permissions": [
+    "timezones"
+  ]
 }

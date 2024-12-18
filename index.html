@@ -5,26 +5,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="manifest" href="/manifest.json" />
-  <title>My Applet</title>
-  <style>
-    html,
-    body {
-      padding: 0;
-      margin: 0;
-    }
+  <title>Time Zone Converter</title>
 
-    body {
-      font-family: system-ui;
-    }
-  </style>
-  <script src="/src/main.js" type="module" defer></script>
+  <!-- Font imports -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=B612+Mono:400,700&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="src/styles/global.css">
+
+  <script src="./src/main.ts" type="module" defer></script>
 </head>
 
 <body>
-
-  <body>
-    Hello! <span id="name">whoever you are</span>.
-  </body>
+  <div id="time-zone-converter">
+  </div>
 </body>
 
 </html>
