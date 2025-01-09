@@ -21,6 +21,12 @@ Think of any web software you use today - maps, documents, shopping, calendars -
 - **Composable:** Applets can work together, sharing context and state
 - **Open Standard:** Designed for interoperability across clients, not platform lock-in
 
+## Why?
+
+[Unternet](https://unternet.co) is building a new, intelligent client for the web. As part of that, we needed a way to parse a user's natural language command, conduct an action, and display a UI. Plus, we wanted anyone to be able to build these actions as third-party plugins and distribute them. The simplest way of doing this was to extend the web, by developing a message-passing protocol that allows an embedded iframe to communicate to a parent app.
+
+We figured it may as well be open-source so others can build on this too!
+
 ## Example
 
 Let's say we have a simple website that says hello. It might look something like this:
