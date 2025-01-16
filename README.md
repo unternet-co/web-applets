@@ -65,16 +65,18 @@ const context = applets.getContext();
 context.defineAction('set_name', {
   params: {
     name: {
-      type: string,
+      type: 'string',
       description: 'The name of the person to be greeted.',
     },
   },
-  handler: ({ name }) => (applet.data = { name }),
+  handler: ({ name }) => {
+    context.data = { name }
+  },
 });
 
 // Whenever the data is updated, update the view
 context.ondata = () => {
-  document.getElementById('name').innerText = applet.data.name;
+  document.getElementById('name').innerText = context.data.name;
 };
 ```
 
