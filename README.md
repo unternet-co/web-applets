@@ -1,35 +1,44 @@
 # Web Applets
 
-> An open spec & SDK for creating apps that agents can use.
+> An open spec & SDK for creating web apps that agents can use.
 
 👾 [Community Discord](https://discord.gg/2aUvMe8HrC) | 💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community)
 
+[![Mozilla builders logo](docs/assets/builders.png)](https://builders.mozilla.org/)
+
+Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
+
 ## What is it?
 
-**Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of software designed for human-AI collaboration.
-
-Think of them a bit like Claude artifacts, but they _do stuff_ & _work anywhere_!
+**Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of web software designed for human-AI collaboration.
 
 ![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
 
-Think of any web software you use today - maps, documents, shopping, calendars - and imagine if instead of visiting these as separate websites, you could pull them into your own environment where both you and AI could use them together seamlessly. Web applets can do that!
-
-- **Built on Web Standards:** Create applets using familiar web technologies (HTML, CSS, JavaScript, React, Vue, etc.)
-- **AI-Native Protocol:** Applets expose their state and actions in a way AI can understand and use
-- **Rich Interfaces:** Full support for complex graphical UIs, not just text
-- **Local-First:** Runs in your environment, keeping your data under your control
-- **Composable:** Applets can work together, sharing context and state
-- **Open Standard:** Designed for interoperability across clients, not platform lock-in
-
 ## Why?
 
-[Unternet](https://unternet.co) is building a new, intelligent client for the web. As part of that, we needed a way to parse a user's natural language command, conduct an action, and display a UI. Plus, we wanted anyone to be able to build these actions as third-party plugins and distribute them. The simplest way of doing this was to extend the web, by developing a message-passing protocol that allows an embedded iframe to communicate to a parent app.
+[Unternet](https://unternet.co) is building a new, intelligent user agent that can do things for you across the web. As part of that effort, we needed a way to actuate an embedded web app. You can do this with a computer use model like [this one](https://docs.anthropic.com/en/docs/build-with-claude/computer-use), but they kind of suck in practice for user-facing work &mdash; they're error-prone, require blocking the UI & clicking on it, and have fundamental latency limits that are way too high. Why make a computer talk to another computer via a clumsy web interface when they can just talk directly?
 
-We figured it may as well be open-source so others can build on this too!
+Web Applets lets you define a simple, computer-readable API for a web app running in a browser, webview, or iframe. You can send it actions as JSON objects, which an LLM can easily create (see [OpenAI's structured JSON endpoint](https://openai.com/index/introducing-structured-outputs-in-the-api/)), and they can update their UI instantly in-place. Plus, you can expose the internal state of the applets to the model so you can do cool stuff like chat to a map.
 
-## Example
+We wanted anyone to be able to build these actions into their own third-party applets and distribute them. So, we extended the web & made it available to everyone!
 
-Let's say we have a simple website that says hello. It might look something like this:
+## Getting started
+
+Create a new web app using our CLI:
+
+```bash
+npx @web-applets/create
+```
+
+Inside the generated folder, you'll find a basic web app setup:
+
+- `public/manifest.json`: A web app manifest, useful when publishing your applet, adding icons, etc.
+- `index.html`: Much like a website, this holds the main page for your applet
+- `src/main.ts`: Declares functions that respond to each action, and a render function that updates the view based on state
+
+> Want to use React? Svelte? Vue? – No problem, just install the dependencies and create an app the way you normally would in a website. So long as you're receiving the action events, it will all just work.
+
+Now let's build out a basic web applet that will say hello when we send it an action:
 
 `index.html`:
 
@@ -43,7 +52,7 @@ Let's say we have a simple website that says hello. It might look something like
 </html>
 ```
 
-Let's add some Web Applets functionality, so this can respond to a `set_name` message:
+Let's add some Web Applets functionality, so this can respond to a `set_name` action:
 
 `main.js`:
 
@@ -69,31 +78,6 @@ context.ondata = () => {
 };
 ```
 
-To use this applet, we need to load it in our host web app using the SDK. Assuming the applet lives in our public directory, here's what that might look like:
-
-```js
-const applet = await applets.load('/helloworld.applet');
-applet.onstateupdated = (state) => console.log(state);
-applet.dispatchAction('set_name', { name: 'Web Applets' });
-// { name: 'Web Applets' }
-```
-
-## Getting started
-
-Create a new web app with the applets SDK installed. You can do this quickly using our CLI:
-
-```bash
-npx @web-applets/create
-```
-
-Inside the generated folder, you'll find a basic web app setup:
-
-- `public/manifest.json`: A web app manifest, useful when publishing your applet, adding icons, etc.
-- `index.html`: Much like a website, this holds the main page for your applet
-- `src/main.ts`: Declares functions that respond to each action, and a render function that updates the view based on state
-
-> Want to use React? Svelte? Vue? – No problem, just install the dependencies and create an app the way you normally would in a website. So long as you're receiving the action events, it will all just work.
-
 To test out this applet, first start the dev server with `npm run dev`, and take note of the dev server URL. Then, fire up the Web Applets inspector by running `npx @web-applets/inspector`, and enter the dev URL into the URL bar up the top.
 
 ![A screenshot showing the 'playground' editing UI, with a web applets showing 'Hello, Web Applets'](docs/assets/web-applets-inspector.png)
@@ -102,9 +86,9 @@ You can build this applet, by running `npm run build`, and host it on any static
 
 ## Integrating Web Applets into your client
 
-Using Web Applets is just as easy as creating them!
+In order to run, web applets need to be embedded in an environment that supports the Web Applets protocol. This might look like a browser (email me if you're interested!), or an electron app with `<webview>` tags, or sometthing as simple as a web-based AI chat client using iframes.
 
-Install & import the applets client in your app:
+First, install & import the applets SDK in your client app:
 
 ```bash
 npm install @web-applets/sdk
@@ -114,12 +98,12 @@ npm install @web-applets/sdk
 import { applets } from '@web-applets/sdk';
 ```
 
-Now you can import your applets from wherever they're being served from (note – you can also host them anywhere on the web):
+Now you can import your applets from wherever they're being served from (note – you can also host them locally, or anywhere on the web):
 
 ```js
-const applet = await applets.load('/helloworld.applet'); // replace with an https URL if hosted remotely
+const applet = await applets.load('https://applets.unternet.co/maps');
 applet.ondata = (e) => console.log(e.data);
-applet.dispatchAction('set_name', { name: 'Web Applets' });
+applet.dispatchAction('set_name', { name: 'Web Applets' }); // console.log: { name: "Ada Lovelace" }
 ```
 
 The above applet is actually running headless, but we can get it to display by attaching it to a container. For the loading step, instead run:
@@ -133,8 +117,7 @@ const applet = await applets.load(`/helloworld.applet`, container);
 To load pre-existing saved data into an applet, simply set the data property:
 
 ```js
-applet.data = { name: 'Ada Lovelace' };
-// console.log: { name: "Ada Lovelace" }
+applet.data = { name: 'Ada Lovelace' }; // console.log: { name: "Ada Lovelace" }
 ```
 
 ## Feedback & Community
