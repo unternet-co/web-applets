@@ -76,7 +76,10 @@ context.defineAction('set_name', {
 
 // Whenever the data is updated, update the view
 context.ondata = () => {
-  document.getElementById('name').innerText = context.data.name;
+  const nameElement = document.getElementById('name');
+  if (nameElement) {
+    nameElement.innerText = context.data.name;
+  }
 };
 ```
 
