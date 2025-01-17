@@ -16,7 +16,7 @@ Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 
 ## Why?
 
-[Unternet](https://unternet.co) is building a new, intelligent user agent that can do things for you across the web. As part of that effort, we needed a way to actuate an embedded web app. You can do this with a computer use model like [this one](https://docs.anthropic.com/en/docs/build-with-claude/computer-use), but they kind of suck in practice for user-facing work &mdash; they're error-prone, require blocking the UI & clicking on it, and have fundamental latency limits that are way too high. Why make a computer talk to another computer via a clumsy web interface when they can just talk directly?
+[Unternet](https://unternet.co) is building a new, intelligent user agent that can do things for you across the web. As part of that effort, we needed a way to actuate an embedded web app. You can do this with a computer use model, but for many use cases it's not suitable to point and click around in a virtual browser. Why make a computer talk to another computer via a clumsy web interface when they can just talk directly?
 
 Web Applets lets you define a simple, computer-readable API for a web app running in a browser, webview, or iframe. You can send it actions as JSON objects, which an LLM can easily create (see [OpenAI's structured JSON endpoint](https://openai.com/index/introducing-structured-outputs-in-the-api/)), and they can update their UI instantly in-place. Plus, you can expose the internal state of the applets to the model so you can do cool stuff like chat to a map.
 
