@@ -112,6 +112,7 @@ export class AppletMessageRelay {
     const listener = async (messageEvent: MessageEvent<AppletMessage>) => {
       if (messageEvent.source === window.self) return;
       if (messageEvent.data.type !== messageType) return;
+      if (messageEvent.source !== this.target) return;
 
       const message = new AppletMessage(
         messageEvent.data.type,
