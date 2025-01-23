@@ -5,7 +5,7 @@ import {
   AppletDataEvent,
   AppletLoadEvent,
   AppletReadyEvent,
-  JSONSchemaProperties,
+  JSONSchema,
   AppletInitMessage,
   AppletManifest,
   AppletActionsMessage,
@@ -172,8 +172,9 @@ export class AppletContext extends EventTarget {
   ondata(event: AppletDataEvent): void {}
 }
 
+// For defining an action in JS
 interface ActionDefinition<T> extends Omit<AppletAction, 'id'> {
-  params?: JSONSchemaProperties;
+  parameters?: JSONSchema;
   handler?: ActionHandler<T>;
 }
 

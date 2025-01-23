@@ -24,17 +24,25 @@ export interface AppletAction {
   id: string;
   name?: string;
   description?: string;
-  params?: JSONSchemaProperties;
+  parameters?: JSONSchema;
 }
 
-export type JSONSchemaProperties = Record<
-  string,
-  {
-    type: string;
-    description?: string;
-    properties?: JSONSchemaProperties;
-  }
->;
+export interface JSONSchema {
+  type:
+    | 'object'
+    | 'string'
+    | 'number'
+    | 'integer'
+    | 'array'
+    | 'boolean'
+    | 'null';
+  description?: string;
+  properties?: {
+    [key: string]: JSONSchema;
+  };
+  required?: string[];
+  additionalProperties?: boolean;
+}
 
 export type ActionParams = Record<string, any>;
 

@@ -1,3 +1,4 @@
+import { type JSONSchema } from './core/shared';
 import { AppletAction } from './core/shared';
 
 // Adds http/https to URLs, and prepends with window location if relative
@@ -28,21 +29,4 @@ function trimTrailingSlash(url: string) {
     return url.slice(0, -1);
   }
   return url;
-}
-
-// Creates an OpenAI-compatible schema declaration for an action
-export function createOpenAISchemaForAction(action: AppletAction) {
-  return {
-    strict: true,
-    name: 'action_schema',
-    schema: {
-      type: 'object',
-      required: Object.keys(action),
-      properties: {
-        id: { type: 'string' },
-        params: action.params,
-      },
-      additionalProperties: false,
-    },
-  };
 }
