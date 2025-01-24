@@ -52,7 +52,30 @@ Now let's build out a basic web applet that will say hello when we send it an ac
 </html>
 ```
 
-Let's add some Web Applets functionality, so this can respond to a `set_name` action:
+Let's add some Web Applets functionality, so this can respond to a `set_name` action. You can do this by adding actions that a model can call, with each on accepting a parameters object that we can describe using JSONSchema.
+
+`public/manifest.json`:
+
+```js
+{
+  // ...
+  "actions": [
+    {
+      "id": "set_name",
+      "description": "Sets the name of the user.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      }
+    }
+  ]
+}
+```
 
 `public/manifest.json`:
 
@@ -84,7 +107,11 @@ import { applets } from '@web-applets/sdk';
 const context = applets.getContext();
 
 // Define a 'set_name' action, and make it update the shared data object with the new name
+<<<<<<< HEAD
+context.setActionHandler('set_name', ({ name }) => {
+=======
 context.addActionHandler('set_name', ({ name }) => {
+>>>>>>> main
   context.data = { name };
 });
 
