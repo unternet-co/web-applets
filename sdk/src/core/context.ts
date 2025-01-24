@@ -47,7 +47,6 @@ export class AppletContext extends EventTarget {
       window.addEventListener('DOMContentLoaded', this.initialize.bind(this));
     }
 
-    this.createResizeObserver();
     this.attachListeners();
   }
 
@@ -78,6 +77,8 @@ export class AppletContext extends EventTarget {
     const readyEvent = new AppletReadyEvent();
     this.dispatchEvent(readyEvent);
     if (typeof this.onready === 'function') this.onready(readyEvent);
+
+    this.createResizeObserver();
   }
 
   createResizeObserver() {
