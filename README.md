@@ -77,28 +77,6 @@ Let's add some Web Applets functionality, so this can respond to a `set_name` ac
 }
 ```
 
-`public/manifest.json`:
-
-```json
-{
-  // ...
-  "actions": [
-    {
-      "id": "set_name",
-      "description": "Sets the name of the user.",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      }
-    }
-  ]
-}
-```
-
 `main.js`:
 
 ```js
@@ -107,11 +85,7 @@ import { applets } from '@web-applets/sdk';
 const context = applets.getContext();
 
 // Define a 'set_name' action, and make it update the shared data object with the new name
-<<<<<<< HEAD
 context.setActionHandler('set_name', ({ name }) => {
-=======
-context.addActionHandler('set_name', ({ name }) => {
->>>>>>> main
   context.data = { name };
 });
 
