@@ -56,7 +56,7 @@ Let's add some Web Applets functionality, so this can respond to a `set_name` ac
 
 `public/manifest.json`:
 
-```json
+```js
 {
   // ...
   "actions": [
