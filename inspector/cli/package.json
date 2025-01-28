@@ -1,6 +1,6 @@
 {
   "name": "@web-applets/inspector",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",
   "main": "dist/index.js",
