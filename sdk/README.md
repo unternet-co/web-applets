@@ -32,7 +32,7 @@ npx @web-applets/create
 
 Inside the generated folder, you'll find a basic web app setup:
 
-- `public/manifest.json`: A web app manifest, useful when publishing your applet, adding icons, etc.
+- `public/manifest.json`: A web app manifest, where you can define initial actions, add icons, etc.
 - `index.html`: Much like a website, this holds the main page for your applet
 - `src/main.ts`: Declares functions that respond to each action, and a render function that updates the view based on state
 
@@ -52,7 +52,30 @@ Now let's build out a basic web applet that will say hello when we send it an ac
 </html>
 ```
 
-Let's add some Web Applets functionality, so this can respond to a `set_name` action:
+Let's add some Web Applets functionality, so this can respond to a `set_name` action. You can do this by adding actions that a model can call, with each on accepting a parameters object that we can describe using JSONSchema.
+
+`public/manifest.json`:
+
+```js
+{
+  // ...
+  "actions": [
+    {
+      "id": "set_name",
+      "description": "Sets the name of the user.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      }
+    }
+  ]
+}
+```
 
 `main.js`:
 
@@ -62,16 +85,8 @@ import { applets } from '@web-applets/sdk';
 const context = applets.getContext();
 
 // Define a 'set_name' action, and make it update the shared data object with the new name
-context.defineAction('set_name', {
-  params: {
-    name: {
-      type: 'string',
-      description: 'The name of the person to be greeted.',
-    },
-  },
-  handler: ({ name }) => {
-    context.data = { name }
-  },
+context.setActionHandler('set_name', ({ name }) => {
+  context.data = { name };
 });
 
 // Whenever the data is updated, update the view
