@@ -53,7 +53,10 @@ export async function load(
   //   container.setAttribute('sandbox', 'allow-scripts allow-forms');
   // }
 
-  container.setAttribute('sandbox', 'allow-scripts allow-forms');
+  container.setAttribute(
+    'sandbox',
+    'allow-scripts allow-forms allow-same-origin'
+  );
   container.src = url;
 
   const applet = new Applet(manifest, container.contentWindow);

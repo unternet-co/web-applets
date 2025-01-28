@@ -38,13 +38,12 @@ export class AppSidebar extends LitElement {
   }
 
   render() {
-    console.log(this.selected);
     if (!this.actions.length) {
       return html`<p class="status-message">No actions available.</p>`;
     }
 
     const schema =
-      JSON.stringify(this.actions[this.selected].params, null, 2) ?? 'None';
+      JSON.stringify(this.actions[this.selected].parameters, null, 2) ?? 'None';
 
     return html`
       <form @submit=${this.handleSubmit.bind(this)}>
