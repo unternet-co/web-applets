@@ -14,6 +14,9 @@ export class AppSidebar extends LitElement {
   @property({ attribute: false })
   actions: AppletAction[] = [];
 
+  @property({ type: String })
+  schemaError: string = '';
+
   connectedCallback() {
     store.subscribe((data: StorageData) => {
       if (!data.applet) return;
@@ -25,6 +28,35 @@ export class AppSidebar extends LitElement {
   handleSelect(e: InputEvent) {
     const select = e.target as HTMLSelectElement;
     this.selected = select.selectedIndex;
+  }
+
+  handleSchemaChange(e: InputEvent) {
+    const textarea = e.target as HTMLTextAreaElement;
+
+    const trimmed = textarea.value.trim();
+
+    if (!trimmed) {
+      this.schemaError = '';
+      textarea.setCustomValidity('');
+      return;
+    }
+    try {
+      const parsed = JSON.parse(trimmed);
+      const formatted = JSON.stringify(parsed, null, 2);
+
+      textarea.value = formatted;
+      this.schemaError = '';
+      textarea.setCustomValidity('');
+    } catch (err) {
+      this.schemaError = err.message;
+      textarea.setCustomValidity('Invalid JSON');
+    }
+  }
+
+  handleSchemaFocus(e: InputEvent) {
+    const textarea = e.target as HTMLTextAreaElement;
+
+    textarea.setCustomValidity('');
   }
 
   handleSubmit(e: SubmitEvent) {
@@ -61,7 +93,17 @@ export class AppSidebar extends LitElement {
         </fieldset>
         <fieldset>
           <label>Params</label>
-          <textarea rows=${6} name="params">{}</textarea>
+          <textarea
+            rows=${6}
+            name="params"
+            @focus=${this.handleSchemaFocus}
+            @change=${this.handleSchemaChange.bind(this)}
+          >
+{}</textarea
+          >
+          ${this.schemaError
+            ? html`<div class="error-message">${this.schemaError}</div>`
+            : ''}
         </fieldset>
         <fieldset>
           <input type="submit" value="Dispatch action" />

@@ -75,3 +75,10 @@ app-sidebar input[type='submit'] {
 app-sidebar input[type='submit']:hover {
   background: var(--color-border);
 }
+
+app-sidebar .error-message {
+  padding: 4px;
+  border-radius: 3px;
+  color: #f44336;
+  border: solid 1px #f44336;
+}
