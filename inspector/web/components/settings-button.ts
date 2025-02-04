@@ -1,18 +1,46 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import "./settings-button.css";
+import { html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { StorageData, store } from '../lib/store';
+import './settings-button.css';
 
-@customElement("settings-button")
+@customElement('settings-button')
 export class SettingsButton extends LitElement {
   @property({ type: Boolean })
   open: boolean = false;
+
+  @property({ type: String })
+  apiToken: string = '';
 
   createRenderRoot() {
     return this;
   }
 
+  connectedCallback() {
+    store.subscribe((data) => {
+      this.apiToken = data.settings?.apiToken;
+    });
+    super.connectedCallback();
+  }
+
   onSave(e: SubmitEvent) {
     e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const input = form.elements.namedItem('apiToken') as HTMLInputElement;
+    const apiToken = input.value;
+    const settings = store.get().settings;
+
+    store.update({ settings: { apiToken, ...settings } });
+
+    this.toggleDialog();
+  }
+
+  onClear(e: SubmitEvent) {
+    e.preventDefault();
+
+    const settings = store.get().settings;
+    delete settings.apiToken;
+
+    store.update({ settings: settings });
   }
 
   onDismiss() {
@@ -23,7 +51,7 @@ export class SettingsButton extends LitElement {
 
   toggleDialog() {
     const dialog = this.querySelector<HTMLDialogElement>(
-      "[data-settings-dialog]"
+      '[data-settings-dialog]'
     );
     if (dialog.open) {
       dialog.close();
@@ -84,14 +112,23 @@ export class SettingsButton extends LitElement {
           </button>
         </div>
         <div class="dialog-content">
-          <form
-            id="settings-form"
-            class="settings-form"
-            @submit="${this.onSave}"
-          >
-            <label for="apiToken">API token</label>
-            <input id="apiToken" name="apiToken" />
-          </form>
+          ${this.apiToken
+            ? html`
+                <div class="saved-values">
+                  <div class="read-only-value">••••••••••••••••</div>
+                  <button @click="${this.onClear}">Clear</button>
+                </div>
+              `
+            : html`
+                <form
+                  id="settings-form"
+                  class="settings-form"
+                  @submit="${this.onSave}"
+                >
+                  <label for="apiToken">API token</label>
+                  <input id="apiToken" name="apiToken" />
+                </form>
+              `}
         </div>
         <div class="dialog-footer">
           <button type="submit" form="settings-form">Save</button>

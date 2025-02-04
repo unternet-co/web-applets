@@ -110,3 +110,35 @@ settings-button input {
   padding-inline: var(--space-sm);
   width: 100%;
 }
+
+settings-button .saved-values {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-xs);
+}
+
+settings-button .read-only-value {
+  border: 1px solid var(--color-border);
+  background: var(--color-raised);
+  border-radius: var(--rounded-sm);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-sm);
+  width: 100%;
+}
+
+settings-button .saved-values button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  color: #555;
+  border-radius: var(--rounded-sm);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-sm);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+}
+
+settings-button .saved-values button:hover {
+  background: #ddd;
+}
