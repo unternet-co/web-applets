@@ -3,7 +3,7 @@ import { Applet, AppletAction } from '@web-applets/sdk';
 type Subscriber = (data: any) => void;
 
 type Settings = {
-  apiToken?: string;
+  openAIAPIToken?: string;
 };
 
 export interface StorageData {

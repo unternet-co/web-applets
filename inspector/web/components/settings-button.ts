@@ -9,7 +9,7 @@ export class SettingsButton extends LitElement {
   open: boolean = false;
 
   @property({ type: String })
-  apiToken: string = '';
+  openAIAPIToken: string = '';
 
   createRenderRoot() {
     return this;
@@ -17,7 +17,7 @@ export class SettingsButton extends LitElement {
 
   connectedCallback() {
     store.subscribe((data) => {
-      this.apiToken = data.settings?.apiToken;
+      this.openAIAPIToken = data.settings?.openAIAPIToken;
     });
     super.connectedCallback();
   }
@@ -25,11 +25,11 @@ export class SettingsButton extends LitElement {
   onSave(e: SubmitEvent) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const input = form.elements.namedItem('apiToken') as HTMLInputElement;
-    const apiToken = input.value;
+    const input = form.elements.namedItem('openAIAPIToken') as HTMLInputElement;
+    const openAIAPIToken = input.value;
     const settings = store.get().settings;
 
-    store.update({ settings: { apiToken, ...settings } });
+    store.update({ settings: { openAIAPIToken, ...settings } });
 
     this.toggleDialog();
   }
@@ -38,7 +38,7 @@ export class SettingsButton extends LitElement {
     e.preventDefault();
 
     const settings = store.get().settings;
-    delete settings.apiToken;
+    delete settings.openAIAPIToken;
 
     store.update({ settings: settings });
   }
@@ -112,11 +112,14 @@ export class SettingsButton extends LitElement {
           </button>
         </div>
         <div class="dialog-content">
-          ${this.apiToken
+          ${this.openAIAPIToken
             ? html`
-                <div class="saved-values">
-                  <div class="read-only-value">••••••••••••••••</div>
-                  <button @click="${this.onClear}">Clear</button>
+                <div class="read-only-settings">
+                  <label>OpenAI API token</label>
+                  <div class="value-row">
+                    <div class="value">••••••••••••••••</div>
+                    <button @click="${this.onClear}">Clear</button>
+                  </div>
                 </div>
               `
             : html`
@@ -125,8 +128,8 @@ export class SettingsButton extends LitElement {
                   class="settings-form"
                   @submit="${this.onSave}"
                 >
-                  <label for="apiToken">API token</label>
-                  <input id="apiToken" name="apiToken" />
+                  <label for="openAIAPIToken">OpenAI API token</label>
+                  <input id="openAIAPIToken" name="openAIAPIToken" />
                 </form>
               `}
         </div>

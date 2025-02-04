@@ -91,7 +91,8 @@ settings-button dialog h2 {
   margin-inline-end: var(--space-md);
 }
 
-settings-button .settings-form {
+settings-button .settings-form,
+settings-button .read-only-settings {
   padding-block: var(--space-sm);
   display: flex;
   flex-direction: column;
@@ -111,13 +112,13 @@ settings-button input {
   width: 100%;
 }
 
-settings-button .saved-values {
+settings-button .value-row {
   display: flex;
   flex-direction: row;
   gap: var(--space-xs);
 }
 
-settings-button .read-only-value {
+settings-button .value {
   border: 1px solid var(--color-border);
   background: var(--color-raised);
   border-radius: var(--rounded-sm);
@@ -126,14 +127,14 @@ settings-button .read-only-value {
   width: 100%;
 }
 
-settings-button .saved-values button {
+settings-button .value-row button {
   display: flex;
   align-items: center;
   cursor: pointer;
   border: none;
   color: #555;
   border-radius: var(--rounded-sm);
-  padding-block: var(--space-sm);
+  padding-block: calc(var(--space-sm) - 1px);
   padding-inline: var(--space-sm);
   font-weight: 500;
   border: 1px solid var(--color-border);
