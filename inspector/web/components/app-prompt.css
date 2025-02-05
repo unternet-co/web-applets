@@ -1,0 +1,45 @@
+app-prompt {
+  background: #f4f4f4;
+  padding-inline: 16px;
+  padding-block-end: 16px;
+}
+
+app-prompt form {
+  position: relative;
+}
+
+app-prompt input {
+  width: 100%;
+  padding-block: var(--space-md);
+  padding-inline: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+app-prompt .loader {
+  position: absolute;
+  inset-block-start: var(--space-sm);
+  inset-inline-end: var(--space-sm);
+  stroke-dasharray: 40 56;
+  stroke-dashoffset: 0;
+  animation: spin 1.5s linear infinite, dashOffset 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dashOffset {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -96;
+  }
+}

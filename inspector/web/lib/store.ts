@@ -2,13 +2,21 @@ import { Applet, AppletAction } from '@web-applets/sdk';
 
 type Subscriber = (data: any) => void;
 
+type Settings = {
+  openAIAPIToken?: string;
+};
+
 export interface StorageData {
   appletUrl: string;
   applet?: Applet;
+  settings?: Settings;
+  settingsDialogOpen: boolean;
 }
 
 let data: StorageData = {
   appletUrl: '',
+  settings: {},
+  settingsDialogOpen: false,
 };
 
 if (localStorage.getItem('data')) {
@@ -23,6 +31,7 @@ function update(newData: object) {
     'data',
     JSON.stringify({
       appletUrl: data.appletUrl,
+      settings: data.settings,
     })
   );
   subscribers.forEach((callback) => callback(data));

@@ -10,3 +10,9 @@ app-root main {
   display: flex;
   height: 100%;
 }
+
+app-root .column {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}

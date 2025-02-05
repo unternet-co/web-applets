@@ -12,7 +12,9 @@
     "vite": "^6.0.1"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^1.1.9",
     "@web-applets/sdk": "file:../../sdk",
+    "ai": "^4.1.18",
     "lit": "^3.2.1"
   }
 }

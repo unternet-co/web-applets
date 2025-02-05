@@ -1,0 +1,124 @@
+settings-dialog dialog {
+  display: none;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  padding: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  width: 400px;
+  min-height: 200px;
+}
+
+settings-dialog dialog[open] {
+  display: flex;
+  pointer-events: auto;
+}
+
+settings-dialog .dialog-header,
+settings-dialog .dialog-content,
+settings-dialog .dialog-footer {
+  padding-block: var(--space-xs);
+  padding-inline: var(--space-md);
+}
+
+settings-dialog .dialog-header {
+  border-block-end: 1px solid var(--color-border);
+  position: relative;
+}
+
+settings-dialog .close-dialog-button {
+  display: flex;
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: 2px;
+  background-color: transparent;
+  padding: 0;
+  border: none;
+}
+
+settings-dialog .close-dialog-button:hover {
+  background: #ddd;
+  border: solid 1x var(--color-border);
+  border-radius: 6px;
+}
+
+settings-dialog .dialog-content {
+  flex-grow: 1;
+}
+
+settings-dialog .dialog-footer {
+  border-block-start: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 6px;
+}
+
+settings-dialog .dialog-footer button {
+  display: flex;
+  cursor: pointer;
+  border: none;
+  color: #555;
+  border-radius: 2px;
+  padding-block: 6px;
+  padding-inline: 6px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+settings-dialog .dialog-footer button:hover {
+  background: #ddd;
+}
+
+settings-dialog .dialog-header h2 {
+  font-size: var(--text-lg);
+  margin-block: var(--space-md);
+  margin-inline-end: var(--space-md);
+}
+
+settings-dialog form {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-xs);
+  padding-block: var(--space-sm);
+}
+
+settings-dialog fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: var(--space-sm);
+}
+
+settings-dialog label {
+  font-weight: 500;
+}
+
+settings-dialog input {
+  border: 1px solid var(--color-border);
+  background: var(--color-raised);
+  border-radius: var(--rounded-sm);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-sm);
+  width: 100%;
+}
+
+settings-dialog .clear-button {
+  align-self: end;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  color: #555;
+  border-radius: var(--rounded-sm);
+  padding-block: var(--space-sm);
+  padding-inline: var(--space-sm);
+  font-weight: 500;
+  border: 1px solid var(--color-border);
+}
+
+settings-dialog .clear-button:hover {
+  background: #ddd;
+}
