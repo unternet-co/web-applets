@@ -80,7 +80,7 @@ export class AppletFrame extends HTMLElement {
   }
 
   resizeContainer(dimensions: { height: number; width: number }) {
-    this.container.style.height = `${dimensions.height + 2}px`;
+    this.style.height = `${dimensions.height}px`;
   }
 
   get styles() {
@@ -88,6 +88,7 @@ export class AppletFrame extends HTMLElement {
       :host {
         display: flex;
         flex-direction: column;
+        height: 350px;
       }
 
       iframe {

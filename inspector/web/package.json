@@ -1,6 +1,5 @@
 {
   "name": "@web-applets/inspector",
-  "version": "0.0.1",
   "description": "Inspector for testing & developing web applets.",
   "main": "index.js",
   "scripts": {
