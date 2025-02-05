@@ -10,11 +10,13 @@ export interface StorageData {
   appletUrl: string;
   applet?: Applet;
   settings?: Settings;
+  settingsDialogOpen: boolean;
 }
 
 let data: StorageData = {
   appletUrl: '',
   settings: {},
+  settingsDialogOpen: false,
 };
 
 if (localStorage.getItem('data')) {

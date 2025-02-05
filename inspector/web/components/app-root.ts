@@ -4,6 +4,7 @@ import './app-root.css';
 import './app-header';
 import './app-viewer';
 import './app-sidebar';
+import './settings-dialog';
 
 @customElement('app-root')
 export class UrlInput extends LitElement {
@@ -18,6 +19,7 @@ export class UrlInput extends LitElement {
         <app-sidebar></app-sidebar>
         <app-viewer></app-viewer>
       </main>
+      <settings-dialog></settings-dialog>
     `;
   }
 }
