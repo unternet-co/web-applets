@@ -1,10 +1,10 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import "./app-header.css";
-import "./url-input";
-import "./settings-button";
+import { html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import './app-header.css';
+import './url-input';
+import './settings-button';
 
-@customElement("app-header")
+@customElement('app-header')
 export class UrlInput extends LitElement {
   createRenderRoot() {
     return this;
