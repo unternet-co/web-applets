@@ -2,7 +2,7 @@
 
 > An open spec & SDK for creating web apps that agents can use.
 
-🌐 [Website](https://unternet.co) 👾 [Community Discord](https://discord.gg/VsMuEKmqvt) | 💌 [Mailing List](https://buttondown.com/unternet)
+🌐 [Docs](https://unternet.co/docs) | 👾 [Community Discord](https://discord.gg/VsMuEKmqvt) | 💌 [Mailing List](https://buttondown.com/unternet)
 
 [![Mozilla builders logo](docs/assets/builders.png)](https://builders.mozilla.org/)
 
