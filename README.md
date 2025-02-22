@@ -2,7 +2,7 @@
 
 > An open spec & SDK for creating web apps that agents can use.
 
-👾 [Community Discord](https://discord.gg/2aUvMe8HrC) | 💌 [Mailing List](https://groups.google.com/a/unternet.co/g/community)
+🌐 [Website](https://unternet.co) 👾 [Community Discord](https://discord.gg/VsMuEKmqvt) | 💌 [Mailing List](https://buttondown.com/unternet)
 
 [![Mozilla builders logo](docs/assets/builders.png)](https://builders.mozilla.org/)
 
@@ -21,9 +21,9 @@ Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 
 This is a community project, and we're open to community members discussing the project direction, and submitting code!
 
-- Join the [Applets mailing list](https://groups.google.com/a/unternet.co/g/community).
+- Join the [mailing list](https://buttondown.com/unternet).
 - Follow [our blog](https://unternet.co/blog) for regular updates
-- Join [our discord](https://discord.gg/NRAdjzAm)
+- Join [our discord](https://discord.gg/VsMuEKmqvt)
 
 ## License
 
