@@ -3,7 +3,6 @@ import {
   AppletActionsEvent,
   AppletDataEvent,
   AppletResizeEvent,
-  applets,
 } from '../index';
 
 // TODO: Add resize event handler, and resize DOM element
@@ -11,9 +10,9 @@ import {
 export class AppletFrame extends HTMLElement {
   #root: ShadowRoot;
   #src?: string;
+  #applet?: Applet;
   container?: HTMLIFrameElement;
-  applet?: Applet;
-  loaded?: boolean;
+  ready?: boolean;
 
   static observedAttributes = ['src'];
 
@@ -48,7 +47,9 @@ export class AppletFrame extends HTMLElement {
 
   async loadApplet(url: string) {
     if (!this.container) return;
-    this.applet = await applets.load(url, this.container);
+
+    this.container.src = url;
+    this.#applet = new Applet(this.container.contentWindow);
 
     // When data received, bubble the event up
     this.applet.ondata = (dataEvent: AppletDataEvent) => {
@@ -62,20 +63,24 @@ export class AppletFrame extends HTMLElement {
 
     this.applet.onactions = (e: AppletActionsEvent) => {};
 
-    // Emit a load event when loading complete
-    this.dispatchEvent(new Event('load'));
-    this.loaded = true;
+    // Emit ready load event when loading complete
+    this.dispatchEvent(new Event('ready'));
+    this.ready = true;
+  }
+
+  get applet() {
+    return this.#applet;
   }
 
   set data(data: any) {
-    if (this.applet && this.loaded) {
+    if (this.applet && this.ready) {
       this.applet.data = data;
     } else {
-      const loadListener = () => {
+      const listener = () => {
         this.applet.data = data;
-        this.removeEventListener('load', loadListener);
+        this.removeEventListener('ready', listener);
       };
-      this.addEventListener('load', loadListener);
+      this.addEventListener('ready', listener);
     }
   }
 

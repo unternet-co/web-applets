@@ -1,11 +1,11 @@
-export * from './core/shared';
-export * from './core/applet';
-export * from './core/context';
+export { Applet } from './core/host';
+export { applet } from './core/applet-scope';
 
-import { load } from './core/applet';
-import { getContext } from './core/context';
-
-export const applets = {
-  load,
-  getContext,
-};
+export {
+  type AppletMessage,
+  type AppletAction,
+  type AppletActionMessage,
+  type AppletActionsEvent,
+  type AppletDataEvent,
+  type AppletResizeEvent,
+} from './core/shared';

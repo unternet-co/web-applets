@@ -1,7 +1,5 @@
 /* Manifest & action definitions */
 
-import { parseUrl } from '../utils';
-
 export interface AppletManifest {
   name?: string;
   short_name?: string;
@@ -10,7 +8,7 @@ export interface AppletManifest {
   display?: string;
   start_url?: string;
   unsafe?: boolean;
-  actions?: AppletAction[];
+  actions?: AppletActionMap;
 }
 
 export interface ManifestIcon {
@@ -20,92 +18,35 @@ export interface ManifestIcon {
   type?: string;
 }
 
+export type AppletActionMap = { [id: string]: AppletAction };
+
 export interface AppletAction {
-  id: string;
   name?: string;
   description?: string;
   parameters?: JSONSchema;
 }
 
-export interface JSONSchema {
-  type:
-    | 'object'
-    | 'string'
-    | 'number'
-    | 'integer'
-    | 'array'
-    | 'boolean'
-    | 'null';
-  description?: string;
-  properties?: {
-    [key: string]: JSONSchema;
-  };
-  required?: string[];
-  additionalProperties?: boolean;
-}
+/* Transport */
 
-export type ActionParams = Record<string, any>;
-
-export async function loadManifest(pageUrl: string): Promise<AppletManifest> {
-  pageUrl = parseUrl(pageUrl);
-
-  let manifest: AppletManifest;
-
-  try {
-    const pageRequest = await fetch(pageUrl);
-    const html = await pageRequest.text();
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    const linkElem = doc.querySelector(
-      'link[rel="manifest"]'
-    ) as HTMLLinkElement;
-
-    const href = linkElem.getAttribute('href');
-    const manifestUrl = parseUrl(href, pageUrl);
-    const manifestRequest = await fetch(manifestUrl);
-    manifest = await manifestRequest.json();
-
-    manifest.icons = manifest.icons.map((icon) => {
-      icon.src = parseUrl(icon.src, pageUrl);
-      return icon;
-    });
-  } catch (e) {
-    return;
-  }
-
-  return manifest;
-}
-
-/* AppletMessageRelay */
-
-interface SendMessageOptions {
-  resolves: boolean;
-}
-
-export class AppletMessageRelay {
+export class AppletMessageTransport {
   target: Window;
 
   constructor(target: Window) {
     this.target = target;
   }
 
-  async send(message: AppletMessage, options?: SendMessageOptions) {
-    this.target.postMessage(message.toJson(), '*');
-    if (options && options.resolves === false) return;
+  async send(message: AppletMessage) {
+    this.target.postMessage(message, '*');
+    if (message.type === 'response') return;
 
     // Wait for a resolve message to be sent back before completing await
     return new Promise<AppletMessage>((resolve) => {
       const listener = (messageEvent: MessageEvent) => {
-        const responseMessage = new AppletMessage(
-          messageEvent.data.type,
-          messageEvent.data
-        );
+        const responseMessage = messageEvent.data as AppletResponseMessage;
 
         if (
-          responseMessage.type === 'resolve' &&
-          responseMessage.id === message.id
+          responseMessage.type === 'response' &&
+          responseMessage.requestId === message.id
         ) {
           window.removeEventListener('message', listener);
           resolve(responseMessage);
@@ -116,139 +57,33 @@ export class AppletMessageRelay {
     });
   }
 
-  async on(messageType: AppletMessageType, callback: AppletMessageCallback) {
+  async on(
+    messageType: AppletMessage['type'],
+    callback: (message: AppletMessage) => Promise<void> | void
+  ) {
     const listener = async (messageEvent: MessageEvent<AppletMessage>) => {
       if (messageEvent.source === window.self) return;
       if (messageEvent.data.type !== messageType) return;
       if (messageEvent.source !== this.target) return;
 
-      const message = new AppletMessage(
-        messageEvent.data.type,
-        messageEvent.data
-      );
+      const message = messageEvent.data;
 
       // Wait for the callback to complete, then send a 'resolve' event
       // with the message ID.
       await callback(message);
-      const resolveMessage = new AppletResolveMessage({ id: message.id });
-      this.send(resolveMessage, { resolves: false });
+      const responseMessage: AppletResponseMessage = {
+        id: crypto.randomUUID(),
+        type: 'response',
+        requestId: message.id,
+      };
+      this.send(responseMessage);
     };
 
     window.addEventListener('message', listener);
     // TODO: Return something that I can then call .off or .removeListener, implement the
-    // rest of that event class
+    // rest of that event class1
   }
 }
-
-/* Messages */
-
-export class AppletMessage {
-  type: AppletMessageType;
-  id: string;
-  timeStamp: number;
-  [key: string]: any;
-
-  constructor(type: AppletMessageType, values?: { [key: string]: any }) {
-    this.timeStamp = Date.now();
-    this.type = type;
-    this.id = crypto.randomUUID();
-    if (values) Object.assign(this, values);
-  }
-
-  toJson() {
-    return Object.fromEntries(
-      Object.entries(this).filter(([_, value]) => {
-        try {
-          JSON.stringify(value);
-          return true;
-        } catch {
-          return false;
-        }
-      })
-    );
-  }
-}
-
-export class AppletResolveMessage extends AppletMessage {
-  messageId: string;
-
-  constructor({ id }: { id: string }) {
-    super('resolve');
-    this.id = id;
-  }
-}
-
-export class AppletActionsMessage extends AppletMessage {
-  actions: AppletAction[];
-
-  constructor({ actions }: { actions: AppletAction[] }) {
-    super('actions');
-    this.actions = actions;
-  }
-}
-
-export class AppletDataMessage<T = any> extends AppletMessage {
-  data: T;
-
-  constructor({ data }: { data: T }) {
-    super('data');
-    this.data = data;
-  }
-}
-
-export class AppletReadyMessage extends AppletMessage {
-  constructor() {
-    super('ready');
-  }
-}
-
-export class AppletResizeMessage extends AppletMessage {
-  dimensions: { height: number; width: number };
-
-  constructor({
-    dimensions,
-  }: {
-    dimensions: AppletResizeMessage['dimensions'];
-  }) {
-    super('resize');
-    this.dimensions = dimensions;
-  }
-}
-
-interface AppletActionMessageOptions {
-  actionId: string;
-  params: any;
-}
-export class AppletActionMessage extends AppletMessage {
-  actionId: string;
-  params: any;
-
-  constructor({ actionId, params }: AppletActionMessageOptions) {
-    super('action');
-    this.actionId = actionId;
-    this.params = params;
-  }
-}
-
-export class AppletInitMessage extends AppletMessage {
-  constructor() {
-    super('init');
-  }
-}
-
-export type AppletMessageType =
-  | 'action'
-  | 'actions'
-  | 'data'
-  | 'init'
-  | 'ready'
-  | 'style'
-  | 'resolve'
-  | 'resize';
-
-export type AppletMessageCallback = (
-  message: AppletMessage
-) => Promise<void> | void;
 
 /* Events */
 
@@ -266,30 +101,27 @@ export class AppletDataEvent extends Event {
   }
 }
 
+interface AppletReadyEventOptions {
+  manifest?: AppletManifest;
+}
 export class AppletReadyEvent extends Event {
-  constructor() {
+  manifest?: AppletManifest;
+
+  constructor(options?: AppletReadyEventOptions) {
     super('ready', {
       bubbles: false,
       cancelable: false,
       composed: false,
     });
-  }
-}
 
-export class AppletLoadEvent extends Event {
-  constructor() {
-    super('load', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
+    this.manifest = options.manifest;
   }
 }
 
 export class AppletActionsEvent extends Event {
-  actions: AppletAction[];
+  actions: AppletActionMap;
 
-  constructor({ actions }: { actions: AppletAction[] }) {
+  constructor({ actions }: { actions: AppletActionMap }) {
     super('actions', {
       bubbles: false,
       cancelable: false,
@@ -315,4 +147,68 @@ export class AppletResizeEvent extends Event {
 
     this.dimensions = dimensions;
   }
+}
+
+/* Messages */
+
+export type AppletMessage =
+  | AppletResponseMessage
+  | AppletActionsMessage
+  | AppletDataMessage
+  | AppletReadyMessage
+  | AppletResizeMessage
+  | AppletActionMessage;
+
+export interface BaseAppletMessage {
+  id: string;
+}
+
+export interface AppletResponseMessage extends BaseAppletMessage {
+  type: 'response';
+  requestId: string;
+}
+
+export interface AppletActionsMessage extends BaseAppletMessage {
+  type: 'actions';
+  actions: AppletActionMap;
+}
+
+export interface AppletDataMessage<T = any> extends BaseAppletMessage {
+  type: 'data';
+  data: T;
+}
+
+export interface AppletReadyMessage extends BaseAppletMessage {
+  type: 'ready';
+  manifest?: AppletManifest;
+}
+
+export interface AppletResizeMessage extends BaseAppletMessage {
+  type: 'resize';
+  dimensions: { height: number; width: number };
+}
+
+export interface AppletActionMessage extends BaseAppletMessage {
+  type: 'action';
+  actionId: string;
+  arguments: any;
+}
+
+/* Utility */
+
+export interface JSONSchema {
+  type:
+    | 'object'
+    | 'string'
+    | 'number'
+    | 'integer'
+    | 'array'
+    | 'boolean'
+    | 'null';
+  description?: string;
+  properties?: {
+    [key: string]: JSONSchema;
+  };
+  required?: string[];
+  additionalProperties?: boolean;
 }

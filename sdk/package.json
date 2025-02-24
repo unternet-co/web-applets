@@ -18,10 +18,13 @@
     "url": "git+https://github.com/unternet-co/web-applets.git"
   },
   "scripts": {
-    "build": "tsc && cp ../README.md ./README.md",
+    "build": "npm run build:module && npm run build:shim",
+    "build:module": "tsc && cp ../README.md ./README.md",
+    "build:shim": "node ./bin/build.js",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
+    "esbuild": "^0.25.0",
     "typescript": "^5.6.2"
   }
 }
