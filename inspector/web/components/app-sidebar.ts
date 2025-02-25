@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
-import { AppletAction } from '@web-applets/sdk';
+import { AppletAction, AppletActionMap } from '@web-applets/sdk';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
@@ -12,7 +12,7 @@ export class AppSidebar extends LitElement {
   selected: number = 0;
 
   @property({ attribute: false })
-  actions: AppletAction[] = [];
+  actions: AppletActionMap = {};
 
   @property({ type: String })
   schemaError: string = '';
@@ -27,7 +27,7 @@ export class AppSidebar extends LitElement {
 
   handleSelect(e: InputEvent) {
     const select = e.target as HTMLSelectElement;
-    this.selected = select.selectedIndex;
+    this.selected = Object.keys(this.actions)[select.selectedIndex];
   }
 
   handleSchemaChange(e: InputEvent) {
@@ -66,16 +66,20 @@ export class AppSidebar extends LitElement {
     console.log(formData.get('action-id'));
     const actionId = formData.get('action-id') as string;
     const params = formData.get('params') as string;
-    window.applet.dispatchAction(actionId, JSON.parse(params));
+    window.applet.sendAction(actionId, JSON.parse(params));
   }
 
   render() {
-    if (!this.actions.length) {
+    if (!this.actions || Object.keys(this.actions).length === 0) {
       return html`<p class="status-message">No actions available.</p>`;
     }
 
     const schema =
-      JSON.stringify(this.actions[this.selected].parameters, null, 2) ?? 'None';
+      JSON.stringify(
+        Object.values(this.actions)[this.selected]?.parameters,
+        null,
+        2
+      ) ?? 'None';
 
     return html`
       <form @submit=${this.handleSubmit.bind(this)}>
@@ -92,7 +96,7 @@ export class AppSidebar extends LitElement {
           <pre class="schema">${schema}</pre>
         </fieldset>
         <fieldset>
-          <label>Params</label>
+          <label>Parameters</label>
           <textarea
             rows=${6}
             name="params"
@@ -121,13 +125,13 @@ export class ActionSelect extends LitElement {
   name: string;
 
   @property({ attribute: false })
-  actions: AppletAction[] = [];
+  actions: AppletActionMap;
 
   render() {
     return html`
       <select name=${this.name}>
-        ${this.actions.map((action) => {
-          return html`<option id="action">${action.id}</option>`;
+        ${Object.keys(this.actions).map((actionId) => {
+          return html`<option id="action">${actionId}</option>`;
         })}
       </select>
     `;

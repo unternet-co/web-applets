@@ -31,7 +31,6 @@ export class AppViewer extends LitElement {
     const frame = document.querySelector('applet-frame') as AppletFrame;
     if (!frame) return;
     frame.onload = () => {
-      console.log('onload', window.applet?.data, this.data);
       store.update({ applet: frame.applet });
       window.applet = frame.applet;
       window.applet.ondata = (e) => (this.data = e.data);

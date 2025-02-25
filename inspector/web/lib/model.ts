@@ -1,8 +1,7 @@
-import { Applet } from '@web-applets/sdk';
-
 import { createOpenAI } from '@ai-sdk/openai';
 import { store } from './store';
 import { generateObject, jsonSchema } from 'ai';
+import { Applet } from '@web-applets/sdk';
 
 function getSystemPrompt(applet: Applet) {
   const prompt = `\
@@ -21,13 +20,15 @@ function getResponseSchema(applet: Applet) {
       tools: {
         type: 'array',
         items: {
-          anyOf: applet.actions.map((action) => {
+          anyOf: Object.keys(applet.actions).map((actionId) => {
+            const action = applet.actions[actionId];
+
             const schema: any = {
               type: 'object',
               properties: {
                 id: {
                   type: 'string',
-                  enum: [action.id],
+                  enum: [actionId],
                 },
               },
               additionalProperties: false,

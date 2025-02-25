@@ -1,11 +1,12 @@
-export { Applet } from './core/host';
-export { applet } from './core/applet-scope';
+import './components/applet-frame';
+import { AppletFactory } from './main/applet-factory';
+export * from './types';
+
+export const applets = new AppletFactory();
 
 export {
-  type AppletMessage,
-  type AppletAction,
-  type AppletActionMessage,
-  type AppletActionsEvent,
-  type AppletDataEvent,
-  type AppletResizeEvent,
-} from './core/shared';
+  AppletReadyEvent,
+  AppletActionsEvent,
+  AppletDataEvent,
+  AppletResizeEvent,
+} from './events';

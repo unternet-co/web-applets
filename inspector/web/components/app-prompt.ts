@@ -37,7 +37,7 @@ export class AppPrompt extends LitElement {
 
     const action = await model.getModelResponse(value, window.applet);
 
-    window.applet.dispatchAction(action.id, action.arguments);
+    window.applet.sendAction(action.id, action.arguments);
 
     this.promptState = 'idle';
   }

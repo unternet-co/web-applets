@@ -1,4 +1,4 @@
-import { Applet, AppletAction } from '@web-applets/sdk';
+import { Applet } from '@web-applets/sdk';
 
 type Subscriber = (data: any) => void;
 

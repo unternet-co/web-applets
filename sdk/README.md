@@ -123,7 +123,7 @@ Now you can import your applets from wherever they're being served from (note â€
 ```js
 const applet = await applets.load('https://applets.unternet.co/maps');
 applet.ondata = (e) => console.log(e.data);
-applet.dispatchAction('set_name', { name: 'Web Applets' }); // console.log: { name: "Ada Lovelace" }
+applet.sendAction('set_name', { name: 'Web Applets' }); // console.log: { name: "Ada Lovelace" }
 ```
 
 The above applet is actually running headless, but we can get it to display by attaching it to a container. For the loading step, instead run:

@@ -1,0 +1,2 @@
+export const RESPONSE_MESSAGE_TIMEOUT = 10 * 1000;
+export const APPLET_CONNECT_TIMEOUT = 10 * 1000;

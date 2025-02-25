@@ -3,6 +3,7 @@ import {
   AppletActionsEvent,
   AppletDataEvent,
   AppletResizeEvent,
+  applets,
 } from '../index';
 
 // TODO: Add resize event handler, and resize DOM element
@@ -25,9 +26,7 @@ export class AppletFrame extends HTMLElement {
     const styles = document.createElement('style');
     styles.textContent = this.styles;
     this.#root.appendChild(styles);
-
-    const url = this.getAttribute('src');
-    if (url) this.loadApplet(url);
+    this.src = this.getAttribute('src');
   }
 
   set src(value: string) {
@@ -36,7 +35,7 @@ export class AppletFrame extends HTMLElement {
   }
 
   get src() {
-    return this.#src;
+    return this.#src || '';
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -49,23 +48,31 @@ export class AppletFrame extends HTMLElement {
     if (!this.container) return;
 
     this.container.src = url;
-    this.#applet = new Applet(this.container.contentWindow);
+    const window = this.container.contentWindow;
+    if (!window) return;
+    // setTimeout(async () => {
+    console.log('loading applet');
+    this.#applet = await applets.connect(window);
 
     // When data received, bubble the event up
-    this.applet.ondata = (dataEvent: AppletDataEvent) => {
+    this.#applet.ondata = (dataEvent: AppletDataEvent) => {
       this.dispatchEvent(dataEvent);
     };
 
     // Resize
-    this.applet.onresize = (resizeEvent: AppletResizeEvent) => {
+    this.#applet.onresize = (resizeEvent: AppletResizeEvent) => {
       this.resizeContainer(resizeEvent.dimensions);
     };
 
-    this.applet.onactions = (e: AppletActionsEvent) => {};
+    this.#applet.onactions = (e: AppletActionsEvent) => {};
 
     // Emit ready load event when loading complete
-    this.dispatchEvent(new Event('ready'));
-    this.ready = true;
+    console.log('loaded!');
+    this.dispatchEvent(new Event('load'));
+    if (this['load'] && typeof this['load'] === 'function') {
+      this.onload(new Event('load'));
+    }
+    // }, 1000);
   }
 
   get applet() {
@@ -77,10 +84,10 @@ export class AppletFrame extends HTMLElement {
       this.applet.data = data;
     } else {
       const listener = () => {
-        this.applet.data = data;
-        this.removeEventListener('ready', listener);
+        if (this.applet) this.applet.data = data;
+        this.removeEventListener('load', listener);
       };
-      this.addEventListener('ready', listener);
+      this.addEventListener('load', listener);
     }
   }
 
