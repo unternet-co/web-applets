@@ -27,7 +27,7 @@ export class AppSidebar extends LitElement {
 
   handleSelect(e: InputEvent) {
     const select = e.target as HTMLSelectElement;
-    this.selected = Object.keys(this.actions)[select.selectedIndex];
+    this.selected = select.selectedIndex;
   }
 
   handleSchemaChange(e: InputEvent) {
