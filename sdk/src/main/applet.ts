@@ -23,7 +23,13 @@ export class Applet<DataType = any> extends EventTarget {
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
   #messagePort: MessagePort;
-  postMessage: MessagePort['postMessage'];
+  #postMessage: MessagePort['postMessage'];
+
+  onmessage: (event: MessageEvent) => void;
+  onready: (event: AppletReadyEvent) => void;
+  onresize: (event: AppletResizeEvent) => void;
+  onactions: (event: AppletActionsEvent) => void;
+  ondata: (event: AppletDataEvent) => void;
 
   constructor(targetWindow: Window) {
     super();
@@ -59,7 +65,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#messagePort = messageChannel.port1;
     this.#messagePort.onmessage = this.#handleMessage.bind(this);
     this.#window.postMessage(connectMessage, '*', [messageChannel.port2]);
-    this.postMessage = this.#messagePort.postMessage.bind(this.#messagePort);
+    this.#postMessage = this.#messagePort.postMessage.bind(this.#messagePort);
   }
 
   #handleMessage(messageEvent: MessageEvent) {
@@ -103,7 +109,7 @@ export class Applet<DataType = any> extends EventTarget {
     };
 
     return new Promise((resolve, reject) => {
-      this.postMessage(actionMessage);
+      this.#postMessage(actionMessage);
 
       const timeout = setTimeout(reject, RESPONSE_MESSAGE_TIMEOUT);
 
@@ -134,7 +140,7 @@ export class Applet<DataType = any> extends EventTarget {
       type: 'data',
       data,
     };
-    this.postMessage(dataMessage);
+    this.#postMessage(dataMessage);
   }
 
   get window() {
@@ -150,9 +156,4 @@ export class Applet<DataType = any> extends EventTarget {
   get actions() {
     return this.#actions;
   }
-
-  onready(event: AppletReadyEvent) {}
-  onresize(event: AppletResizeEvent) {}
-  onactions(event: AppletActionsEvent) {}
-  ondata(event: AppletDataEvent) {}
 }

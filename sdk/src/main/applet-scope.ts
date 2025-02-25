@@ -23,7 +23,11 @@ export class AppletScope<DataType = any> extends EventTarget {
   #actions: AppletActionMap;
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
-  postMessage: MessagePort['postMessage'];
+  #postMessage: MessagePort['postMessage'];
+
+  onmessage: (event: MessageEvent) => void;
+  onready: (event: AppletReadyEvent) => void;
+  ondata: (event: AppletDataEvent) => void;
 
   constructor() {
     super();
@@ -40,7 +44,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       ) {
         debug.log('AppletScope', 'Recieved message', event.data);
         const port = event.ports[0];
-        this.postMessage = port.postMessage.bind(port);
+        this.#postMessage = port.postMessage.bind(port);
         port.onmessage = this.#handleMessage.bind(this);
         this.removeEventListener('message', appletConnectListener);
         this.#initialize();
@@ -48,13 +52,11 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
     window.addEventListener('message', appletConnectListener);
 
-    if (!this.postMessage) {
-      const registerMessage: AppletRegisterMessage = {
-        type: 'appletregister',
-      };
-      window.parent.postMessage(registerMessage, '*');
-      debug.log('AppletScope', 'Send message', registerMessage);
-    }
+    const registerMessage: AppletRegisterMessage = {
+      type: 'appletregister',
+    };
+    window.parent.postMessage(registerMessage, '*');
+    debug.log('AppletScope', 'Send message', registerMessage);
   }
 
   async #initialize() {
@@ -67,7 +69,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       type: 'ready',
       manifest: this.#manifest,
     };
-    this.postMessage(readyMessage);
+    this.#postMessage(readyMessage);
     debug.log('AppletScope', 'Send message', readyMessage);
 
     // Emit a local ready event
@@ -110,7 +112,7 @@ export class AppletScope<DataType = any> extends EventTarget {
         type: 'actioncomplete',
         id: message.id,
       };
-      this.postMessage(actionCompleteMessage);
+      this.#postMessage(actionCompleteMessage);
     }
   }
 
@@ -124,7 +126,7 @@ export class AppletScope<DataType = any> extends EventTarget {
             height: entry.contentRect.height,
           },
         };
-        this.postMessage(resizeMessage);
+        this.#postMessage(resizeMessage);
       }
     });
     resizeObserver.observe(document.querySelector('html')!);
@@ -177,7 +179,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       actions: this.#actions,
     };
 
-    this.postMessage(actionsMessage);
+    this.#postMessage(actionsMessage);
   }
 
   get actions(): AppletActionMap {
@@ -199,7 +201,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       type: 'data',
       data,
     };
-    this.postMessage(dataMessage);
+    this.#postMessage(dataMessage);
 
     const dataEvent = new AppletDataEvent({ data });
     this.#dispatchEventAndHandler(dataEvent);
@@ -208,7 +210,4 @@ export class AppletScope<DataType = any> extends EventTarget {
   get data(): DataType {
     return this.#data;
   }
-
-  onready(event: AppletReadyEvent): void {}
-  ondata(event: AppletDataEvent): void {}
 }
