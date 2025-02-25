@@ -1,0 +1,23 @@
+{
+  "name": "My Applet",
+  "description": "",
+  "icons": [
+    {
+      "src": "icon-128x128.png"
+    }
+  ],
+  "actions": {
+    "set_name": {
+      "description": "Sets the name of the user.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["name"]
+      }
+    }
+  }
+}
