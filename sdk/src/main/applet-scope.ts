@@ -48,11 +48,13 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
     window.addEventListener('message', appletConnectListener);
 
-    const registerMessage: AppletRegisterMessage = {
-      type: 'appletregister',
-    };
-    window.parent.postMessage(registerMessage, '*');
-    debug.log('AppletScope', 'Send message', registerMessage);
+    if (!this.postMessage) {
+      const registerMessage: AppletRegisterMessage = {
+        type: 'appletregister',
+      };
+      window.parent.postMessage(registerMessage, '*');
+      debug.log('AppletScope', 'Send message', registerMessage);
+    }
   }
 
   async #initialize() {

@@ -27,6 +27,7 @@ export class Applet<DataType = any> extends EventTarget {
 
   constructor(targetWindow: Window) {
     super();
+    debug.log('Applet', 'Constructor called');
     this.#window = targetWindow;
     this.#dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
 
