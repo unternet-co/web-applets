@@ -59,7 +59,6 @@ export class AppletScope<DataType = any> extends EventTarget {
     const manifest = await this.loadManifest();
     this.#manifest = manifest || {};
     this.#actions = manifest?.actions || {};
-    console.log(this.#manifest, this.#actions);
 
     // Tell the host we're ready
     const readyMessage: AppletReadyMessage = {

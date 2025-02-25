@@ -49,13 +49,13 @@ export class Applet<DataType = any> extends EventTarget {
   }
 
   #createMessageChannel() {
+    if (this.#messagePort) this.#messagePort.close();
     const messageChannel = new MessageChannel();
     const connectMessage: AppletConnectMessage = {
       type: 'appletconnect',
     };
     debug.log('Applet', 'Send message', connectMessage);
     this.#messagePort = messageChannel.port1;
-    // this.#messagePort.onmessage = () => console.log('messaga!!!');
     this.#messagePort.onmessage = this.#handleMessage.bind(this);
     this.#window.postMessage(connectMessage, '*', [messageChannel.port2]);
     this.postMessage = this.#messagePort.postMessage.bind(this.#messagePort);

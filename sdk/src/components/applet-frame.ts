@@ -50,8 +50,7 @@ export class AppletFrame extends HTMLElement {
     this.container.src = url;
     const window = this.container.contentWindow;
     if (!window) return;
-    // setTimeout(async () => {
-    console.log('loading applet');
+
     this.#applet = await applets.connect(window);
 
     // When data received, bubble the event up
@@ -67,12 +66,10 @@ export class AppletFrame extends HTMLElement {
     this.#applet.onactions = (e: AppletActionsEvent) => {};
 
     // Emit ready load event when loading complete
-    console.log('loaded!');
     this.dispatchEvent(new Event('load'));
     if (this['load'] && typeof this['load'] === 'function') {
       this.onload(new Event('load'));
     }
-    // }, 1000);
   }
 
   get applet() {

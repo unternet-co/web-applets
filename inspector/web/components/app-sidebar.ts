@@ -63,7 +63,6 @@ export class AppSidebar extends LitElement {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    console.log(formData.get('action-id'));
     const actionId = formData.get('action-id') as string;
     const params = formData.get('params') as string;
     window.applet.sendAction(actionId, JSON.parse(params));
