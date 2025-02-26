@@ -1,5 +1,5 @@
 import { Applet, AppletEvent, applets } from '../index';
-import { dispatchEventAndHandler } from '../utils';
+import { dispatchEventAndHandler } from '../lib/utils';
 
 export class AppletFrame extends HTMLElement {
   #root: ShadowRoot;

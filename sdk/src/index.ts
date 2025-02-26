@@ -1,5 +1,5 @@
 import './elements/applet-frame';
-import { AppletFactory } from './main/applet-factory';
+import { AppletFactory } from './applets/index';
 export * from './types/public';
 
 export const applets = new AppletFactory();

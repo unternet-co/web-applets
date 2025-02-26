@@ -1,5 +1,5 @@
-import { Applet as AppletClass } from '../main/applet';
-import { AppletScope as AppletScopeClass } from '../main/applet-scope';
+import { Applet as AppletClass } from '../applets/applet';
+import { AppletScope as AppletScopeClass } from '../applets/applet-scope';
 
 export type Applet = InstanceType<typeof AppletClass>;
 export type AppletScope = InstanceType<typeof AppletScopeClass>;
