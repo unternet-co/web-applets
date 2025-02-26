@@ -115,7 +115,13 @@ export class Applet<DataType = any> extends EventTarget {
     return new Promise((resolve, reject) => {
       this.#postMessage(actionMessage);
 
-      const timeout = setTimeout(reject, RESPONSE_MESSAGE_TIMEOUT);
+      const timeout = setTimeout(() => {
+        reject(
+          new AppletExecutionError(
+            `Applet action handler failed to complete before timeout (${RESPONSE_MESSAGE_TIMEOUT}ms)`
+          )
+        );
+      }, RESPONSE_MESSAGE_TIMEOUT);
 
       const callback = (messageEvent: MessageEvent) => {
         const message = messageEvent.data as AppletMessage;
