@@ -1,20 +1,23 @@
 import { debug } from '../debug';
-import { AppletDataEvent, AppletReadyEvent } from '../events';
+import { AppletEvent } from '../events';
 import {
-  AppletActionCompleteMessage,
-  AppletActionDefinition,
-  AppletActionHandler,
-  AppletActionHandlerMap,
-  AppletActionMap,
   AppletActionMessage,
   AppletActionsMessage,
   AppletDataMessage,
-  AppletManifest,
   AppletMessage,
   AppletReadyMessage,
   AppletRegisterMessage,
   AppletResizeMessage,
-} from '../types';
+  AppletActionErrorMessage,
+  AppletActionCompleteMessage,
+} from '../types/protocol';
+import {
+  AppletManifest,
+  AppletActionHandler,
+  AppletActionHandlerMap,
+  AppletActionMap,
+  AppletActionDefinition,
+} from '../types/public';
 import { dispatchEventAndHandler } from '../utils';
 
 export class AppletScope<DataType = any> extends EventTarget {
@@ -26,8 +29,8 @@ export class AppletScope<DataType = any> extends EventTarget {
   #postMessage: MessagePort['postMessage'];
 
   onmessage: (event: MessageEvent) => void;
-  onready: (event: AppletReadyEvent) => void;
-  ondata: (event: AppletDataEvent) => void;
+  onload: (event: AppletEvent) => void;
+  ondata: (event: AppletEvent) => void;
 
   constructor() {
     super();
@@ -65,18 +68,16 @@ export class AppletScope<DataType = any> extends EventTarget {
     this.#actions = manifest?.actions || {};
 
     // Tell the host we're ready
-    const readyMessage: AppletReadyMessage = {
-      type: 'ready',
+    const initMessage: AppletReadyMessage = {
+      type: 'initialize',
       manifest: this.#manifest,
     };
-    this.#postMessage(readyMessage);
-    debug.log('AppletScope', 'Send message', readyMessage);
+    this.#postMessage(initMessage);
+    debug.log('AppletScope', 'Send message', initMessage);
 
-    // Emit a local ready event
-    const readyEvent = new AppletReadyEvent();
-    this.#dispatchEventAndHandler(readyEvent);
+    const loadEvent = new AppletEvent('load');
+    this.#dispatchEventAndHandler(loadEvent);
 
-    // Watch document for resizing
     this.#createResizeObserver();
   }
 
@@ -106,13 +107,22 @@ export class AppletScope<DataType = any> extends EventTarget {
 
   async #handleActionMessage(message: AppletActionMessage) {
     if (Object.keys(this.#actionHandlers).includes(message.actionId)) {
-      await this.#actionHandlers[message.actionId](message.arguments);
-
-      const actionCompleteMessage: AppletActionCompleteMessage = {
-        type: 'actioncomplete',
-        id: message.id,
-      };
-      this.#postMessage(actionCompleteMessage);
+      try {
+        await this.#actionHandlers[message.actionId](message.arguments);
+        const actionCompleteMessage: AppletActionCompleteMessage = {
+          type: 'actioncomplete',
+          id: message.id,
+        };
+        this.#postMessage(actionCompleteMessage);
+      } catch (e) {
+        const actionErrorMessage: AppletActionErrorMessage = {
+          type: 'actionerror',
+          id: message.id,
+          message: `Error executing action handler '${message.actionId}'`,
+        };
+        this.#postMessage(actionErrorMessage);
+        console.error(e);
+      }
     }
   }
 
@@ -121,10 +131,8 @@ export class AppletScope<DataType = any> extends EventTarget {
       for (let entry of entries) {
         const resizeMessage: AppletResizeMessage = {
           type: 'resize',
-          dimensions: {
-            width: entry.contentRect.width,
-            height: entry.contentRect.height,
-          },
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
         };
         this.#postMessage(resizeMessage);
       }
@@ -203,7 +211,7 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
     this.#postMessage(dataMessage);
 
-    const dataEvent = new AppletDataEvent({ data });
+    const dataEvent = new AppletEvent('data', { data });
     this.#dispatchEventAndHandler(dataEvent);
   }
 

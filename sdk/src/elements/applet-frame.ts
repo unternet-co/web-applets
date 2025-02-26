@@ -1,19 +1,18 @@
-import {
-  Applet,
-  AppletActionsEvent,
-  AppletDataEvent,
-  AppletResizeEvent,
-  applets,
-} from '../index';
-
-// TODO: Add resize event handler, and resize DOM element
+import { Applet, AppletEvent, applets } from '../index';
+import { dispatchEventAndHandler } from '../utils';
 
 export class AppletFrame extends HTMLElement {
   #root: ShadowRoot;
   #src?: string;
   #applet?: Applet;
+  #dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
   container?: HTMLIFrameElement;
   ready?: boolean;
+
+  onload: (event: AppletEvent) => Promise<void> | void;
+  onactions: (event: AppletEvent) => Promise<void> | void;
+  ondata: (event: AppletEvent) => Promise<void> | void;
+  onwindow: (event: AppletEvent) => Promise<void> | void;
 
   static observedAttributes = ['src'];
 
@@ -54,19 +53,25 @@ export class AppletFrame extends HTMLElement {
     this.#applet = await applets.connect(window);
 
     // When data received, bubble the event up
-    this.#applet.ondata = (dataEvent: AppletDataEvent) => {
-      this.dispatchEvent(dataEvent);
+    this.#applet.ondata = (event: AppletEvent) => {
+      this.#dispatchEventAndHandler(event);
     };
 
     // Resize
-    this.#applet.onresize = (resizeEvent: AppletResizeEvent) => {
-      this.resizeContainer(resizeEvent.dimensions);
+    this.#applet.onresize = (event: AppletEvent) => {
+      this.resizeContainer({
+        width: this.#applet.width,
+        height: this.#applet.height,
+      });
+      this.#dispatchEventAndHandler(event);
     };
 
-    this.#applet.onactions = (e: AppletActionsEvent) => {};
+    this.#applet.onactions = (event: AppletEvent) => {
+      this.#dispatchEventAndHandler(event);
+    };
 
     // Emit ready load event when loading complete
-    this.dispatchEvent(new Event('load'));
+    this.#dispatchEventAndHandler(new AppletEvent('load'));
     if (this['load'] && typeof this['load'] === 'function') {
       this.onload(new Event('load'));
     }

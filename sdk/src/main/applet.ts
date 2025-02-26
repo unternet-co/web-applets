@@ -1,20 +1,19 @@
 import { RESPONSE_MESSAGE_TIMEOUT } from '../constants';
 import { dispatchEventAndHandler } from '../utils';
+import { AppletEvent } from '../events';
 import {
-  AppletActionsEvent,
-  AppletDataEvent,
-  AppletReadyEvent,
-  AppletResizeEvent,
-} from '../events';
-import {
-  AppletActionMap,
+  AppletActionErrorMessage,
   AppletActionMessage,
+  AppletActionsMessage,
   AppletConnectMessage,
   AppletDataMessage,
-  AppletManifest,
   AppletMessage,
-} from '../types';
+  AppletReadyMessage,
+  AppletResizeMessage,
+} from '../types/protocol';
 import { debug } from '../debug';
+import { AppletExecutionError } from '../errors';
+import { AppletActionMap, AppletManifest } from '../types/public';
 
 export class Applet<DataType = any> extends EventTarget {
   #window: Window;
@@ -24,12 +23,13 @@ export class Applet<DataType = any> extends EventTarget {
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
   #messagePort: MessagePort;
   #postMessage: MessagePort['postMessage'];
+  width: number;
+  height: number;
 
-  onmessage: (event: MessageEvent) => void;
-  onready: (event: AppletReadyEvent) => void;
-  onresize: (event: AppletResizeEvent) => void;
-  onactions: (event: AppletActionsEvent) => void;
-  ondata: (event: AppletDataEvent) => void;
+  onload: (event: AppletEvent) => void;
+  onresize: (event: AppletEvent) => void;
+  onactions: (event: AppletEvent) => void;
+  ondata: (event: AppletEvent) => void;
 
   constructor(targetWindow: Window) {
     super();
@@ -73,27 +73,31 @@ export class Applet<DataType = any> extends EventTarget {
     debug.log('Applet', 'Recieved message', message);
 
     switch (message.type) {
-      case 'ready':
-        this.#manifest = message.manifest;
-        this.#actions = message.manifest.actions;
-        const readyEvent = new AppletReadyEvent();
-        this.#dispatchEventAndHandler(readyEvent);
+      case 'initialize':
+        const readyMessage = message as AppletReadyMessage;
+        this.#manifest = readyMessage.manifest;
+        this.#actions = readyMessage.manifest.actions;
+        const loadEvent = new AppletEvent('load');
+        this.#dispatchEventAndHandler(loadEvent);
         break;
       case 'data':
-        this.#data = message.data;
-        const dataEvent = new AppletDataEvent({ data: message.data });
+        const dataMessage = message as AppletDataMessage;
+        this.#data = dataMessage.data;
+        const dataEvent = new AppletEvent('data', { data: message.data });
         this.#dispatchEventAndHandler(dataEvent);
         break;
       case 'resize':
-        const resizeEvent = new AppletResizeEvent({
-          dimensions: message.dimensions,
-        });
+        const resizeMessage = message as AppletResizeMessage;
+        this.width = resizeMessage.width;
+        this.height = resizeMessage.height;
+        const resizeEvent = new AppletEvent('resize');
         this.#dispatchEventAndHandler(resizeEvent);
         break;
       case 'actions':
-        this.#actions = message.actions;
-        const actionsEvent = new AppletActionsEvent({
-          actions: message.actions,
+        const actionsMessage = message as AppletActionsMessage;
+        this.#actions = actionsMessage.actions;
+        const actionsEvent = new AppletEvent('actions', {
+          actions: actionsMessage.actions,
         });
         this.#dispatchEventAndHandler(actionsEvent);
         break;
@@ -116,13 +120,19 @@ export class Applet<DataType = any> extends EventTarget {
       const callback = (messageEvent: MessageEvent) => {
         const message = messageEvent.data as AppletMessage;
         if (
-          message.type === 'actioncomplete' &&
+          ['actionresponse', 'actionerror'].includes(message.type) &&
           'id' in message &&
           message.id === actionMessage.id
         ) {
-          resolve();
           this.#messagePort.removeEventListener('message', callback);
           clearTimeout(timeout);
+
+          if (message.type === 'actionerror') {
+            const actionErrorMessage = message as AppletActionErrorMessage;
+            reject(new AppletExecutionError(actionErrorMessage.message));
+          } else {
+            resolve();
+          }
         }
       };
 

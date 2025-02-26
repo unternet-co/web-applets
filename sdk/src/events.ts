@@ -1,63 +1,22 @@
-import { AppletActionMap, AppletManifest, AppletResizeMessage } from './types';
+import {
+  AppletActionMap,
+  AppletEventInit,
+  AppletEventType,
+  AppletManifest,
+} from './types/public';
 
-export class AppletDataEvent extends Event {
-  data: any;
+export class AppletEvent extends Event {
+  data?: any;
+  actions?: AppletActionMap;
 
-  constructor({ data }: { data: any }) {
-    super('data', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
+  constructor(type: AppletEventType, init?: AppletEventInit | undefined) {
+    super(type, {
+      bubbles: init?.bubbles,
+      composed: init?.composed,
+      cancelable: init?.cancelable,
     });
 
-    this.data = data;
-  }
-}
-
-interface AppletReadyEventInit {
-  manifest?: AppletManifest;
-}
-export class AppletReadyEvent extends Event {
-  manifest?: AppletManifest;
-
-  constructor(init?: AppletReadyEventInit | undefined) {
-    super('ready', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
-
-    if (init) this.manifest = init.manifest;
-  }
-}
-
-export class AppletActionsEvent extends Event {
-  actions: AppletActionMap;
-
-  constructor({ actions }: { actions: AppletActionMap }) {
-    super('actions', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
-
-    this.actions = actions;
-  }
-}
-
-export interface AppletResizeEventInit {
-  dimensions: AppletResizeMessage['dimensions'];
-}
-export class AppletResizeEvent extends Event {
-  dimensions: AppletResizeMessage['dimensions'];
-
-  constructor({ dimensions }: AppletResizeEventInit) {
-    super('resize', {
-      bubbles: false,
-      cancelable: false,
-      composed: false,
-    });
-
-    this.dimensions = dimensions;
+    this.data = init.data;
+    this.actions = init.actions;
   }
 }
