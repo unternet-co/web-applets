@@ -20,6 +20,7 @@ export class AppSidebar extends LitElement {
   connectedCallback() {
     store.subscribe((data: StorageData) => {
       if (!data.applet) return;
+      this.actions = data.applet.actions;
       data.applet.onactions = (e) => (this.actions = e.actions);
     });
     super.connectedCallback();

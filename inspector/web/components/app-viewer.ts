@@ -24,12 +24,14 @@ export class AppViewer extends LitElement {
   mode: string = 'gui';
 
   @property({ attribute: false })
-  data: object = {};
+  data: any = {};
 
   connectedCallback() {
-    store.subscribe(({ appletUrl, data }: StorageData) => {
-      this.appletUrl = appletUrl;
-      this.data = data;
+    store.subscribe((data: StorageData) => {
+      this.appletUrl = data.appletUrl;
+      if (!data.applet) return;
+      this.data = data.applet.data;
+      data.applet.ondata = () => (this.data = data.applet.data);
     });
     super.connectedCallback();
   }

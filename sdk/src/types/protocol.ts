@@ -11,6 +11,8 @@ export interface AppletConnectMessage {
 export interface AppletRegisterMessage {
   type: 'register';
   manifest?: AppletManifest;
+  actions?: AppletActionMap;
+  data?: any;
 }
 
 export interface AppletActionMessage extends AppletMessage {

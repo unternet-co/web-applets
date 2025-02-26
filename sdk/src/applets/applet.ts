@@ -23,8 +23,8 @@ export class Applet<DataType = any> extends EventTarget {
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
   #messagePort: MessagePort;
   #postMessage: MessagePort['postMessage'];
-  width: number;
-  height: number;
+  #width: number;
+  #height: number;
 
   onconnect: (event: AppletEvent) => void;
   onresize: (event: AppletEvent) => void;
@@ -76,32 +76,45 @@ export class Applet<DataType = any> extends EventTarget {
       case 'register':
         const registerMessage = message as AppletRegisterMessage;
         this.#manifest = registerMessage.manifest;
-        this.#actions = registerMessage.manifest.actions;
         const connectEvent = new AppletEvent('connect');
         this.#dispatchEventAndHandler(connectEvent);
+        this.#actions = registerMessage.actions;
+        this.#dispatchActionsEvent(registerMessage.actions);
+        this.#data = registerMessage.data;
+        this.#dispatchDataEvent(registerMessage.data);
         break;
       case 'data':
         const dataMessage = message as AppletDataMessage;
         this.#data = dataMessage.data;
-        const dataEvent = new AppletEvent('data', { data: message.data });
-        this.#dispatchEventAndHandler(dataEvent);
+        this.#dispatchDataEvent(registerMessage.data);
         break;
       case 'resize':
         const resizeMessage = message as AppletResizeMessage;
-        this.width = resizeMessage.width;
-        this.height = resizeMessage.height;
+        this.#width = resizeMessage.width;
+        this.#height = resizeMessage.height;
         const resizeEvent = new AppletEvent('resize');
         this.#dispatchEventAndHandler(resizeEvent);
         break;
       case 'actions':
         const actionsMessage = message as AppletActionsMessage;
         this.#actions = actionsMessage.actions;
-        const actionsEvent = new AppletEvent('actions', {
-          actions: actionsMessage.actions,
-        });
-        this.#dispatchEventAndHandler(actionsEvent);
+        this.#dispatchActionsEvent(actionsMessage.actions);
         break;
     }
+  }
+
+  #dispatchDataEvent(data: any) {
+    const actionsEvent = new AppletEvent('data', {
+      data,
+    });
+    this.#dispatchEventAndHandler(actionsEvent);
+  }
+
+  #dispatchActionsEvent(actions: AppletActionMap) {
+    const actionsEvent = new AppletEvent('actions', {
+      actions,
+    });
+    this.#dispatchEventAndHandler(actionsEvent);
   }
 
   async sendAction(actionId: string, args: any): Promise<void> {
@@ -171,5 +184,13 @@ export class Applet<DataType = any> extends EventTarget {
 
   get actions() {
     return this.#actions;
+  }
+
+  get width(): number {
+    return this.#width;
+  }
+
+  get height(): number {
+    return this.#height;
   }
 }
