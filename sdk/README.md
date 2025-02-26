@@ -15,7 +15,7 @@ Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 - [Motivation](https://unternet.co/docs/web-applets/introduction)
 - [Getting started with building an applet](https://unternet.co/docs/web-applets/creating-an-applet)
 
-![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
+![Demo of a web applets chatbot](./assets/applets-chat-demo.gif)
 
 ## Feedback & Community
 

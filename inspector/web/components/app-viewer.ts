@@ -3,9 +3,15 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { store } from '../lib/store';
 import '@web-applets/sdk/dist/components/applet-frame';
-import { AppletFrame } from '@web-applets/sdk/dist/components/applet-frame';
+import { AppletFrame } from '@web-applets/sdk/dist/elements/applet-frame';
 import './url-input.css';
 import { Applet } from '@web-applets/sdk';
+
+declare global {
+  interface Window {
+    applet: Applet;
+  }
+}
 
 @customElement('app-viewer')
 export class AppViewer extends LitElement {
@@ -68,11 +74,5 @@ ${JSON.stringify(this.data, null, 2)}</pre
         ${footer}
       </div>
     `;
-  }
-}
-
-declare global {
-  interface Window {
-    applet: Applet;
   }
 }
