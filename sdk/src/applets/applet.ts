@@ -8,7 +8,7 @@ import {
   AppletConnectMessage,
   AppletDataMessage,
   AppletMessage,
-  AppletReadyMessage,
+  AppletRegisterMessage,
   AppletResizeMessage,
 } from '../types/protocol';
 import { debug } from '../lib/debug';
@@ -26,7 +26,7 @@ export class Applet<DataType = any> extends EventTarget {
   width: number;
   height: number;
 
-  onload: (event: AppletEvent) => void;
+  onconnect: (event: AppletEvent) => void;
   onresize: (event: AppletEvent) => void;
   onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
@@ -45,7 +45,7 @@ export class Applet<DataType = any> extends EventTarget {
       if (
         messageEvent.source === this.#window &&
         'type' in messageEvent.data &&
-        messageEvent.data.type === 'appletregister'
+        messageEvent.data.type === 'appletconnect'
       ) {
         debug.log('Applet', 'Recieved message', messageEvent.data);
         this.#createMessageChannel();
@@ -73,12 +73,12 @@ export class Applet<DataType = any> extends EventTarget {
     debug.log('Applet', 'Recieved message', message);
 
     switch (message.type) {
-      case 'initialize':
-        const readyMessage = message as AppletReadyMessage;
-        this.#manifest = readyMessage.manifest;
-        this.#actions = readyMessage.manifest.actions;
-        const loadEvent = new AppletEvent('load');
-        this.#dispatchEventAndHandler(loadEvent);
+      case 'register':
+        const registerMessage = message as AppletRegisterMessage;
+        this.#manifest = registerMessage.manifest;
+        this.#actions = registerMessage.manifest.actions;
+        const connectEvent = new AppletEvent('connect');
+        this.#dispatchEventAndHandler(connectEvent);
         break;
       case 'data':
         const dataMessage = message as AppletDataMessage;

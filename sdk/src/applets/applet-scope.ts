@@ -5,11 +5,11 @@ import {
   AppletActionsMessage,
   AppletDataMessage,
   AppletMessage,
-  AppletReadyMessage,
   AppletRegisterMessage,
   AppletResizeMessage,
   AppletActionErrorMessage,
   AppletActionCompleteMessage,
+  AppletConnectMessage,
 } from '../types/protocol';
 import {
   AppletManifest,
@@ -28,8 +28,8 @@ export class AppletScope<DataType = any> extends EventTarget {
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
   #postMessage: MessagePort['postMessage'];
 
-  onmessage: (event: MessageEvent) => void;
-  onload: (event: AppletEvent) => void;
+  onconnect: (event: AppletEvent) => void;
+  onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
 
   constructor() {
@@ -55,8 +55,8 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
     window.addEventListener('message', appletConnectListener);
 
-    const registerMessage: AppletRegisterMessage = {
-      type: 'appletregister',
+    const registerMessage: AppletConnectMessage = {
+      type: 'appletconnect',
     };
     window.parent.postMessage(registerMessage, '*');
     debug.log('AppletScope', 'Send message', registerMessage);
@@ -67,16 +67,16 @@ export class AppletScope<DataType = any> extends EventTarget {
     this.#manifest = manifest || {};
     this.#actions = manifest?.actions || {};
 
-    // Tell the host we're ready
-    const initMessage: AppletReadyMessage = {
-      type: 'initialize',
+    // Register the applet
+    const registerMessage: AppletRegisterMessage = {
+      type: 'register',
       manifest: this.#manifest,
     };
-    this.#postMessage(initMessage);
-    debug.log('AppletScope', 'Send message', initMessage);
+    this.#postMessage(registerMessage);
+    debug.log('AppletScope', 'Send message', registerMessage);
 
-    const loadEvent = new AppletEvent('load');
-    this.#dispatchEventAndHandler(loadEvent);
+    const connectEvent = new AppletEvent('connect');
+    this.#dispatchEventAndHandler(connectEvent);
 
     this.#createResizeObserver();
   }
@@ -128,16 +128,19 @@ export class AppletScope<DataType = any> extends EventTarget {
 
   #createResizeObserver() {
     const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const resizeMessage: AppletResizeMessage = {
-          type: 'resize',
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        };
-        this.#postMessage(resizeMessage);
-      }
+      for (let entry of entries) this.#sendResizeMessage(entry);
     });
     resizeObserver.observe(document.querySelector('html')!);
+  }
+
+  #sendResizeMessage(entry: ResizeObserverEntry) {
+    const resizeMessage: AppletResizeMessage = {
+      type: 'resize',
+      width: entry.contentRect.width,
+      height: entry.contentRect.height,
+    };
+    debug.log('AppletScope', 'Send message', resizeMessage);
+    this.#postMessage(resizeMessage);
   }
 
   async loadManifest(): Promise<AppletManifest | undefined> {
@@ -146,6 +149,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       | undefined;
     if (!manifestLinkElem) return;
 
+    // TODO: Add timeout
     try {
       const manifestRequest = await fetch(manifestLinkElem.href);
       const manifest = (await manifestRequest.json()) as AppletManifest;
@@ -176,18 +180,32 @@ export class AppletScope<DataType = any> extends EventTarget {
       [actionId]: properties,
     };
 
-    this.setActionHandler<T>(actionId, handler);
+    if (handler) {
+      this.setActionHandler<T>(actionId, handler);
+    }
   }
 
   set actions(actions: AppletActionMap) {
     if (!actions) return;
+    this.#actions = actions;
+
+    if (!this.#postMessage) {
+      console.warn(
+        `AppletScope['set actions'] called before applet has connected. This information has not been sent to the applet host. Listen for 'connect' event to avoid this issue.`
+      );
+      return;
+    }
 
     const actionsMessage: AppletActionsMessage = {
       type: 'actions',
       actions: this.#actions,
     };
 
+    debug.log('AppletScope', 'Send message', actionsMessage);
     this.#postMessage(actionsMessage);
+
+    const dataEvent = new AppletEvent('actions', { actions });
+    this.#dispatchEventAndHandler(dataEvent);
   }
 
   get actions(): AppletActionMap {
@@ -205,10 +223,18 @@ export class AppletScope<DataType = any> extends EventTarget {
   set data(data: DataType) {
     this.#data = data;
 
+    if (!this.#postMessage) {
+      console.warn(
+        `AppletScope['set data'] called before applet has connected. This information has not been sent to the applet host. Listen for 'connect' event to avoid this issue.`
+      );
+      return;
+    }
+
     const dataMessage: AppletDataMessage<DataType> = {
       type: 'data',
       data,
     };
+    debug.log('AppletScope', 'Send message', dataMessage);
     this.#postMessage(dataMessage);
 
     const dataEvent = new AppletEvent('data', { data });

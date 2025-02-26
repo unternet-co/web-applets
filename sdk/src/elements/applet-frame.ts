@@ -9,7 +9,7 @@ export class AppletFrame extends HTMLElement {
   container?: HTMLIFrameElement;
   ready?: boolean;
 
-  onload: (event: AppletEvent) => Promise<void> | void;
+  onload: (event: Event) => Promise<void> | void;
   onactions: (event: AppletEvent) => Promise<void> | void;
   ondata: (event: AppletEvent) => Promise<void> | void;
   onwindow: (event: AppletEvent) => Promise<void> | void;
@@ -70,8 +70,8 @@ export class AppletFrame extends HTMLElement {
       this.#dispatchEventAndHandler(event);
     };
 
-    // Emit ready load event when loading complete
-    this.#dispatchEventAndHandler(new AppletEvent('load'));
+    // Emit load event when setup & connection complete
+    this.#dispatchEventAndHandler(new Event('load'));
     if (this['load'] && typeof this['load'] === 'function') {
       this.onload(new Event('load'));
     }

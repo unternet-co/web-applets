@@ -16,10 +16,10 @@ export class AppletFactory {
       }, APPLET_CONNECT_TIMEOUT);
       const listener = () => {
         resolve(applet);
-        applet.removeEventListener('ready', listener);
+        applet.removeEventListener('connect', listener);
         clearTimeout(timeout);
       };
-      applet.addEventListener('ready', listener);
+      applet.addEventListener('connect', listener);
     });
   }
 

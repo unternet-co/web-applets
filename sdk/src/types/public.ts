@@ -38,7 +38,7 @@ export type AppletActionHandlerMap = {
   [key: string]: AppletActionHandler<any>;
 };
 
-export type AppletEventType = 'load' | 'actions' | 'resize' | 'data';
+export type AppletEventType = 'connect' | 'actions' | 'resize' | 'data';
 
 export interface AppletEventInit extends EventInit {
   data?: any;

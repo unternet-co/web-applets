@@ -20,7 +20,7 @@ export class AppSidebar extends LitElement {
   connectedCallback() {
     store.subscribe((data: StorageData) => {
       if (!data.applet) return;
-      this.actions = data.applet.actions;
+      data.applet.onactions = (e) => (this.actions = e.actions);
     });
     super.connectedCallback();
   }
@@ -73,22 +73,23 @@ export class AppSidebar extends LitElement {
       return html`<p class="status-message">No actions available.</p>`;
     }
 
-    const schema =
-      JSON.stringify(
-        Object.values(this.actions)[this.selected]?.parameters,
-        null,
-        2
-      ) ?? 'None';
+    const action = Object.values(this.actions)[this.selected];
+
+    const schema = JSON.stringify(action?.parameters, null, 2) ?? 'None';
 
     return html`
       <form @submit=${this.handleSubmit.bind(this)}>
-        <fieldset>
-          <label>Action ID</label>
+        <fieldset class="select">
+          <label>Select an action</label>
           <action-select
             .actions=${this.actions}
             name="action-id"
             @change=${this.handleSelect.bind(this)}
           ></action-select>
+        </fieldset>
+        <fieldset>
+          <label>Description</label>
+          <p class="description">${action?.description}</pre>
         </fieldset>
         <fieldset>
           <label>Schema</label>
@@ -104,9 +105,11 @@ export class AppSidebar extends LitElement {
           >
 {}</textarea
           >
-          ${this.schemaError
-            ? html`<div class="error-message">${this.schemaError}</div>`
-            : ''}
+          ${
+            this.schemaError
+              ? html`<div class="error-message">${this.schemaError}</div>`
+              : ''
+          }
         </fieldset>
         <fieldset>
           <input type="submit" value="Dispatch action" />

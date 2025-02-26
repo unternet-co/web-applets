@@ -2,7 +2,6 @@ import {
   AppletActionMap,
   AppletEventInit,
   AppletEventType,
-  AppletManifest,
 } from './types/public';
 
 export class AppletEvent extends Event {
@@ -16,7 +15,7 @@ export class AppletEvent extends Event {
       cancelable: init?.cancelable,
     });
 
-    this.data = init.data;
-    this.actions = init.actions;
+    this.data = init?.data;
+    this.actions = init?.actions;
   }
 }

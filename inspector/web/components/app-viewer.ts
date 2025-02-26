@@ -1,8 +1,8 @@
 import './app-viewer.css';
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { store } from '../lib/store';
-import '@web-applets/sdk/dist/components/applet-frame';
+import { StorageData, store } from '../lib/store';
+import '@web-applets/sdk/dist/elements/applet-frame';
 import { AppletFrame } from '@web-applets/sdk/dist/elements/applet-frame';
 import './url-input.css';
 import { Applet } from '@web-applets/sdk';
@@ -27,8 +27,9 @@ export class AppViewer extends LitElement {
   data: object = {};
 
   connectedCallback() {
-    store.subscribe((data) => {
-      this.appletUrl = data.appletUrl;
+    store.subscribe(({ appletUrl, data }: StorageData) => {
+      this.appletUrl = appletUrl;
+      this.data = data;
     });
     super.connectedCallback();
   }

@@ -9,7 +9,8 @@ export interface AppletConnectMessage {
 }
 
 export interface AppletRegisterMessage {
-  type: 'appletregister';
+  type: 'register';
+  manifest?: AppletManifest;
 }
 
 export interface AppletActionMessage extends AppletMessage {
@@ -38,11 +39,6 @@ export interface AppletActionsMessage extends AppletMessage {
 export interface AppletDataMessage<T = any> extends AppletMessage {
   type: 'data';
   data: T;
-}
-
-export interface AppletReadyMessage extends AppletMessage {
-  type: 'initialize';
-  manifest?: AppletManifest;
 }
 
 export interface AppletResizeMessage extends AppletMessage {
