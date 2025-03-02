@@ -1,12 +1,15 @@
-import {
-  AppletActionMap,
-  AppletEventInit,
-  AppletEventType,
-} from './types/public';
+import { AppletActionDescriptor } from './actions';
+
+export type AppletEventType = 'connect' | 'actions' | 'resize' | 'data';
+
+export interface AppletEventInit extends EventInit {
+  data?: any;
+  actions?: { [id: string]: AppletActionDescriptor };
+}
 
 export class AppletEvent extends Event {
   data?: any;
-  actions?: AppletActionMap;
+  actions?: { [id: string]: AppletActionDescriptor };
 
   constructor(type: AppletEventType, init?: AppletEventInit | undefined) {
     super(type, {

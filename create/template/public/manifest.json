@@ -6,11 +6,10 @@
       "src": "icon-128x128.png"
     }
   ],
-  "actions": [
-    {
-      "id": "set_name",
+  "actions": {
+    "set_name": {
       "description": "Sets the name of the user.",
-      "parameters": {
+      "params_schema": {
         "type": "object",
         "properties": {
           "name": {
@@ -20,5 +19,5 @@
         "required": ["name"]
       }
     }
-  ]
+  }
 }

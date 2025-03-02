@@ -5,7 +5,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@web-applets/sdk": "latest"
+    "@web-applets/sdk": "0.2.0-alpha.4"
   },
   "devDependencies": {
     "vite": "^5.4.9"

@@ -35,8 +35,8 @@ function getResponseSchema(applet: Applet) {
               required: ['id'],
             };
 
-            if (action.parameters) {
-              schema.properties.arguments = action.parameters;
+            if (action.params_schema) {
+              schema.properties.arguments = action.params_schema;
 
               // Set some variables that OpenAI requires if they're not present
               if (!schema.properties.arguments.required) {

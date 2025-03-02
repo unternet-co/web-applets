@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
-import { AppletAction, AppletActionMap } from '@web-applets/sdk';
+import { AppletActionDescriptor } from '@web-applets/sdk';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
@@ -12,7 +12,7 @@ export class AppSidebar extends LitElement {
   selected: number = 0;
 
   @property({ attribute: false })
-  actions: AppletActionMap = {};
+  actions: { [id: string]: AppletActionDescriptor } = {};
 
   @property({ type: String })
   schemaError: string = '';
@@ -76,7 +76,7 @@ export class AppSidebar extends LitElement {
 
     const action = Object.values(this.actions)[this.selected];
 
-    const schema = JSON.stringify(action?.parameters, null, 2) ?? 'None';
+    const schema = JSON.stringify(action?.params_schema, null, 2) ?? 'None';
 
     return html`
       <form @submit=${this.handleSubmit.bind(this)}>
@@ -90,7 +90,7 @@ export class AppSidebar extends LitElement {
         </fieldset>
         <fieldset>
           <label>Description</label>
-          <p class="description">${action?.description}</pre>
+          <p class="description">${action?.description}</p>
         </fieldset>
         <fieldset>
           <label>Schema</label>
@@ -106,11 +106,9 @@ export class AppSidebar extends LitElement {
           >
 {}</textarea
           >
-          ${
-            this.schemaError
-              ? html`<div class="error-message">${this.schemaError}</div>`
-              : ''
-          }
+          ${this.schemaError
+            ? html`<div class="error-message">${this.schemaError}</div>`
+            : ''}
         </fieldset>
         <fieldset>
           <input type="submit" value="Dispatch action" />
@@ -128,7 +126,7 @@ export class ActionSelect extends LitElement {
   name: string;
 
   @property({ attribute: false })
-  actions: AppletActionMap;
+  actions: { [id: string]: AppletActionDescriptor };
 
   render() {
     return html`

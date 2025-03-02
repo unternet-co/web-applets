@@ -1,4 +1,5 @@
-import { AppletActionMap, AppletManifest } from './public';
+import { AppletActionDescriptor } from './api/actions';
+import { AppletManifest } from './utils';
 
 export interface AppletMessage {
   type: string;
@@ -11,7 +12,7 @@ export interface AppletConnectMessage {
 export interface AppletRegisterMessage {
   type: 'register';
   manifest?: AppletManifest;
-  actions?: AppletActionMap;
+  actions?: { [id: string]: AppletActionDescriptor };
   data?: any;
 }
 
@@ -35,7 +36,7 @@ export interface AppletActionErrorMessage extends AppletMessage {
 
 export interface AppletActionsMessage extends AppletMessage {
   type: 'actions';
-  actions: AppletActionMap;
+  actions: { [key: string]: AppletActionDescriptor };
 }
 
 export interface AppletDataMessage<T = any> extends AppletMessage {

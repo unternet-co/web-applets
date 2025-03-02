@@ -1,6 +1,6 @@
 import { RESPONSE_MESSAGE_TIMEOUT } from '../constants';
-import { dispatchEventAndHandler } from '../lib/utils';
-import { AppletEvent } from '../events';
+import { AppletManifest, dispatchEventAndHandler } from '../utils';
+import { AppletEvent } from './events';
 import {
   AppletActionErrorMessage,
   AppletActionMessage,
@@ -10,14 +10,14 @@ import {
   AppletMessage,
   AppletRegisterMessage,
   AppletResizeMessage,
-} from '../types/protocol';
-import { debug } from '../lib/debug';
-import { AppletExecutionError } from '../errors';
-import { AppletActionMap, AppletManifest } from '../types/public';
+} from '../messages';
+import { debug } from '../debug';
+import { AppletExecutionError } from './errors';
+import { AppletActionDescriptor } from './actions';
 
 export class Applet<DataType = any> extends EventTarget {
   #window: Window;
-  #actions: AppletActionMap = {};
+  #actions: { [id: string]: AppletActionDescriptor } = {};
   #manifest: AppletManifest;
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
@@ -110,7 +110,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(actionsEvent);
   }
 
-  #dispatchActionsEvent(actions: AppletActionMap) {
+  #dispatchActionsEvent(actions: { [id: string]: AppletActionDescriptor }) {
     const actionsEvent = new AppletEvent('actions', {
       actions,
     });

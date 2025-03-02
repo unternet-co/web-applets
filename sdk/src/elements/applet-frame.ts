@@ -1,7 +1,7 @@
 import { Applet, AppletEvent, applets } from '../index';
-import { dispatchEventAndHandler } from '../lib/utils';
+import { dispatchEventAndHandler } from '../utils';
 
-export class AppletFrame extends HTMLElement {
+export class AppletFrameElement extends HTMLElement {
   #root: ShadowRoot;
   #src?: string;
   #applet?: Applet;
@@ -12,7 +12,6 @@ export class AppletFrame extends HTMLElement {
   onload: (event: Event) => Promise<void> | void;
   onactions: (event: AppletEvent) => Promise<void> | void;
   ondata: (event: AppletEvent) => Promise<void> | void;
-  onwindow: (event: AppletEvent) => Promise<void> | void;
 
   static observedAttributes = ['src'];
 
@@ -30,7 +29,7 @@ export class AppletFrame extends HTMLElement {
 
   set src(value: string) {
     this.#src = value;
-    this.loadApplet(value);
+    this.#loadApplet(value);
   }
 
   get src() {
@@ -43,7 +42,7 @@ export class AppletFrame extends HTMLElement {
     }
   }
 
-  async loadApplet(url: string) {
+  async #loadApplet(url: string) {
     if (!this.container) return;
 
     this.container.src = url;
@@ -59,7 +58,7 @@ export class AppletFrame extends HTMLElement {
 
     // Resize
     this.#applet.onresize = (event: AppletEvent) => {
-      this.resizeContainer({
+      this.#resizeContainer({
         width: this.#applet.width,
         height: this.#applet.height,
       });
@@ -93,7 +92,7 @@ export class AppletFrame extends HTMLElement {
     }
   }
 
-  resizeContainer(dimensions: { height: number; width: number }) {
+  #resizeContainer(dimensions: { height: number; width: number }) {
     this.style.height = `${dimensions.height}px`;
   }
 
@@ -114,4 +113,4 @@ export class AppletFrame extends HTMLElement {
   }
 }
 
-customElements.define('applet-frame', AppletFrame);
+customElements.define('applet-frame', AppletFrameElement);

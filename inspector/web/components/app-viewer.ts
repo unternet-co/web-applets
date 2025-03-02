@@ -3,7 +3,7 @@ import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { StorageData, store } from '../lib/store';
 import '@web-applets/sdk/dist/elements/applet-frame';
-import { AppletFrame } from '@web-applets/sdk/dist/elements/applet-frame';
+import { AppletFrameElement } from '@web-applets/sdk';
 import './url-input.css';
 import { Applet } from '@web-applets/sdk';
 
@@ -37,7 +37,7 @@ export class AppViewer extends LitElement {
   }
 
   updated() {
-    const frame = document.querySelector('applet-frame') as AppletFrame;
+    const frame = document.querySelector('applet-frame') as AppletFrameElement;
     if (!frame) return;
     frame.onload = () => {
       store.update({ applet: frame.applet });

@@ -1,4 +1,4 @@
-import { Applet, AppletAction } from '@web-applets/sdk';
+import { Applet, AppletActionDescriptor } from '@web-applets/sdk';
 
 type Subscriber = (data: any) => void;
 
@@ -9,8 +9,6 @@ type Settings = {
 export interface StorageData {
   appletUrl: string;
   applet?: Applet;
-  data?: any;
-  actions?: AppletAction;
   settings?: Settings;
   settingsDialogOpen: boolean;
 }

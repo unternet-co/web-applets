@@ -1,5 +1,6 @@
-import { debug } from '../lib/debug';
-import { AppletEvent } from '../events';
+import { AppletActionDescriptor } from './actions';
+import { debug } from '../debug';
+import { AppletEvent } from './events';
 import {
   AppletActionMessage,
   AppletActionsMessage,
@@ -10,20 +11,13 @@ import {
   AppletActionErrorMessage,
   AppletActionCompleteMessage,
   AppletConnectMessage,
-} from '../types/protocol';
-import {
-  AppletManifest,
-  AppletActionHandler,
-  AppletActionHandlerMap,
-  AppletActionMap,
-  AppletActionDefinition,
-} from '../types/public';
-import { dispatchEventAndHandler } from '../lib/utils';
+} from '../messages';
+import { AppletManifest, dispatchEventAndHandler } from '../utils';
 
 export class AppletScope<DataType = any> extends EventTarget {
-  #actionHandlers: AppletActionHandlerMap = {};
+  #actionHandlers: { [key: string]: Function } = {};
   #manifest: AppletManifest;
-  #actions: AppletActionMap;
+  #actions: { [key: string]: AppletActionDescriptor };
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
   #postMessage: MessagePort['postMessage'];
@@ -65,7 +59,7 @@ export class AppletScope<DataType = any> extends EventTarget {
   }
 
   async #initialize() {
-    const manifest = await this.loadManifest();
+    const manifest = await this.#loadManifest();
     this.#manifest = manifest || {};
     this.#actions = this.#actions || manifest?.actions || {};
 
@@ -153,7 +147,7 @@ export class AppletScope<DataType = any> extends EventTarget {
     this.#postMessage(resizeMessage);
   }
 
-  async loadManifest(): Promise<AppletManifest | undefined> {
+  async #loadManifest(): Promise<AppletManifest | undefined> {
     const manifestLinkElem = document.querySelector('link[rel="manifest"]') as
       | HTMLLinkElement
       | undefined;
@@ -165,8 +159,8 @@ export class AppletScope<DataType = any> extends EventTarget {
       const manifest = (await manifestRequest.json()) as AppletManifest;
       for (const key in manifest.actions) {
         const action = manifest.actions[key];
-        if (action.parameters && !Object.keys(action.parameters).length) {
-          action.parameters = undefined;
+        if (action.params_schema && !Object.keys(action.params_schema).length) {
+          action.params_schema = undefined;
         }
       }
       return manifest;
@@ -175,27 +169,18 @@ export class AppletScope<DataType = any> extends EventTarget {
     }
   }
 
-  setActionHandler<T = any>(actionId: string, handler: AppletActionHandler<T>) {
+  setActionHandler<T = any>(actionId: string, handler: Function) {
     this.#actionHandlers[actionId] = handler;
   }
 
-  defineAction<T = any>(
-    actionId: string,
-    definition: AppletActionDefinition<T>
-  ) {
-    const { handler, ...properties } = definition;
-
+  defineAction(actionId: string, definition: AppletActionDescriptor) {
     this.actions = {
       ...this.actions,
-      [actionId]: properties,
+      [actionId]: definition,
     };
-
-    if (handler) {
-      this.setActionHandler<T>(actionId, handler);
-    }
   }
 
-  set actions(actions: AppletActionMap) {
+  set actions(actions: { [id: string]: AppletActionDescriptor }) {
     if (!actions) return;
     this.#actions = actions;
 
@@ -211,7 +196,7 @@ export class AppletScope<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(dataEvent);
   }
 
-  get actions(): AppletActionMap {
+  get actions(): { [id: string]: AppletActionDescriptor } {
     return this.#actions;
   }
 
@@ -219,8 +204,12 @@ export class AppletScope<DataType = any> extends EventTarget {
     return this.#manifest;
   }
 
-  get actionHandlers(): AppletActionHandlerMap {
+  get actionHandlers(): { [id: string]: Function } {
     return this.#actionHandlers;
+  }
+
+  set actionHandlers(handlers: { [id: string]: Function }) {
+    this.#actionHandlers = handlers;
   }
 
   set data(data: DataType) {

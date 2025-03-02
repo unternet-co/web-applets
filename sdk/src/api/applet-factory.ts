@@ -1,5 +1,5 @@
 import { APPLET_CONNECT_TIMEOUT } from '../constants';
-import { AppletConnectionError } from '../errors';
+import { AppletConnectionError } from './errors';
 import { Applet } from './applet';
 import { AppletScope } from './applet-scope';
 

@@ -3,13 +3,13 @@
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",
   "description": "The CLI for creating a new web applet",
-  "version": "0.1.3",
+  "version": "0.2.0-alpha.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc && npm run postbuild",
     "prepare": "npm run build",
-    "postbuild": "cp -r template dist && chmod +x ./dist/index.js"
+    "postbuild": "cp -r template dist && rm -r dist/template/node_modules && chmod +x ./dist/index.js"
   },
   "files": [
     "dist"

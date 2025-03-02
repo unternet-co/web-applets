@@ -1,6 +1,6 @@
 import { applets } from '@web-applets/sdk';
 
-const context = applets.getContext();
+const context = applets.register();
 
 // Define a 'set_name' action, and make it update the shared data object with the new name
 context.setActionHandler('set_name', ({ name }) => {
