@@ -28,10 +28,11 @@ export class AppletScope<DataType = any> extends EventTarget {
   onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
 
-  constructor() {
+  constructor(manifest?: AppletManifest | undefined) {
     super();
     debug.log('AppletScope', 'Constructor called');
     this.#dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
+    if (manifest) this.#manifest = manifest;
 
     // Listen for a connect event to set up message port
     const appletConnectListener = (event: MessageEvent) => {
@@ -59,7 +60,7 @@ export class AppletScope<DataType = any> extends EventTarget {
   }
 
   async #initialize() {
-    const manifest = await this.#loadManifest();
+    const manifest = this.manifest ?? (await this.#loadManifest());
     this.#manifest = manifest || {};
     this.#actions = this.#actions || manifest?.actions || {};
 
