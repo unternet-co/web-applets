@@ -1,4 +1,4 @@
-import { AppletActionDescriptor } from './api/actions';
+import { AppletActionDescriptor } from './applets/actions';
 import { AppletManifest } from './utils';
 
 export interface AppletMessage {

@@ -1,7 +1,7 @@
 import { applets } from './index';
 import './index';
-import { type AppletFactory } from './api/applet-factory';
-import { AppletEvent } from './api/events';
+import { type AppletFactory } from './applets/applet-factory';
+import { AppletEvent } from './applets/events';
 
 declare global {
   interface Window {

@@ -1,4 +1,4 @@
-import { AppletActionDescriptor } from './api/actions';
+import { AppletActionDescriptor } from './applets/actions';
 
 export function dispatchEventAndHandler(event: Event) {
   if (typeof this[`on${event.type}`] === 'function') {
