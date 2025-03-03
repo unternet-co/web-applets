@@ -1,5 +1,5 @@
 function log(location: string, ...messages: any[]) {
-  // console.log(`[${location}]`, ...messages);
+  console.log(`[${location}]`, ...messages);
 }
 
 export const debug = {

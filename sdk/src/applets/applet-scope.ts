@@ -1,6 +1,6 @@
-import { AppletActionDescriptor } from './actions';
-import { debug } from '../debug';
-import { AppletEvent } from './events';
+import { AppletActionDescriptor } from './actions.js';
+import { debug } from '../debug.js';
+import { AppletEvent } from './events.js';
 import {
   AppletActionMessage,
   AppletActionsMessage,
@@ -11,8 +11,8 @@ import {
   AppletActionErrorMessage,
   AppletActionCompleteMessage,
   AppletConnectMessage,
-} from '../messages';
-import { AppletManifest, dispatchEventAndHandler } from '../utils';
+} from '../messages.js';
+import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
 
 export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};
@@ -52,11 +52,11 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
     window.addEventListener('message', appletConnectListener);
 
-    const registerMessage: AppletConnectMessage = {
+    const connectMessage: AppletConnectMessage = {
       type: 'appletconnect',
     };
-    window.parent.postMessage(registerMessage, '*');
-    debug.log('AppletScope', 'Send message', registerMessage);
+    window.parent.postMessage(connectMessage, '*');
+    debug.log('AppletScope', 'Send message', connectMessage);
   }
 
   async #initialize() {

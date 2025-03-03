@@ -1,4 +1,4 @@
-import { type JSONSchemaObject } from '../utils';
+import { type JSONSchemaObject } from '../utils.js';
 
 export interface AppletActionDescriptor {
   name?: string;

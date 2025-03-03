@@ -1,5 +1,5 @@
-import { AppletActionDescriptor } from './applets/actions';
-import { AppletManifest } from './utils';
+import { AppletActionDescriptor } from './applets/actions.js';
+import { AppletManifest } from './utils.js';
 
 export interface AppletMessage {
   type: string;

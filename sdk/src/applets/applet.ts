@@ -1,6 +1,6 @@
-import { RESPONSE_MESSAGE_TIMEOUT } from '../constants';
-import { AppletManifest, dispatchEventAndHandler } from '../utils';
-import { AppletEvent } from './events';
+import { RESPONSE_MESSAGE_TIMEOUT } from '../constants.js';
+import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
+import { AppletEvent } from './events.js';
 import {
   AppletActionErrorMessage,
   AppletActionMessage,
@@ -10,10 +10,10 @@ import {
   AppletMessage,
   AppletRegisterMessage,
   AppletResizeMessage,
-} from '../messages';
-import { debug } from '../debug';
-import { AppletExecutionError } from './errors';
-import { AppletActionDescriptor } from './actions';
+} from '../messages.js';
+import { debug } from '../debug.js';
+import { AppletExecutionError } from './errors.js';
+import { AppletActionDescriptor } from './actions.js';
 
 export class Applet<DataType = any> extends EventTarget {
   #window: Window;
@@ -86,7 +86,7 @@ export class Applet<DataType = any> extends EventTarget {
       case 'data':
         const dataMessage = message as AppletDataMessage;
         this.#data = dataMessage.data;
-        this.#dispatchDataEvent(registerMessage.data);
+        this.#dispatchDataEvent(dataMessage.data);
         break;
       case 'resize':
         const resizeMessage = message as AppletResizeMessage;
@@ -139,7 +139,7 @@ export class Applet<DataType = any> extends EventTarget {
       const callback = (messageEvent: MessageEvent) => {
         const message = messageEvent.data as AppletMessage;
         if (
-          ['actionresponse', 'actionerror'].includes(message.type) &&
+          ['actioncomplete', 'actionerror'].includes(message.type) &&
           'id' in message &&
           message.id === actionMessage.id
         ) {
