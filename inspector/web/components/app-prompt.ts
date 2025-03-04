@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import './app-prompt.css';
 import { model } from '../lib/model';
 import { store } from '../lib/store';
+import { historyContext, Interaction } from '../lib/history-context';
 
 type State = 'idle' | 'thinking';
 
@@ -30,14 +31,30 @@ export class AppPrompt extends LitElement {
 
     const form = e.target as HTMLFormElement;
     const input = form.elements.namedItem('prompt') as HTMLInputElement;
-    const value = input.value;
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
+
+    // Retrieve the last 10 interactions (default value) to provide context to the model.
+    const recentHistory = historyContext.getRecentInteractions();
 
     this.promptState = 'thinking';
     input.value = '';
 
-    const action = await model.getModelResponse(value, window.applet);
+    const action = await model.getModelResponse(
+      userMessage,
+      recentHistory,
+      window.applet
+    );
 
     window.applet.sendAction(action.id, action.arguments);
+
+    // Add the interaction to the context.
+    historyContext.addInteraction({
+      id: action.id,
+      input: { type: 'command', text: userMessage },
+      outputs: [{ type: action.id, ...action.arguments }],
+      timestamp: Date.now(),
+    });
 
     this.promptState = 'idle';
   }

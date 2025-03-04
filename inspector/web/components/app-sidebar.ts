@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
 import { AppletActionDescriptor } from '@web-applets/sdk';
+import { historyContext, Interaction } from '../lib/history-context';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
@@ -66,6 +67,15 @@ export class AppSidebar extends LitElement {
     const formData = new FormData(form);
     const actionId = formData.get('action-id') as string;
     const params = formData.get('params') as string;
+
+    // Add the user's action to the context.
+    historyContext.addInteraction({
+      id: actionId,
+      input: { type: 'action', text: actionId },
+      outputs: [{ type: actionId, ...JSON.parse(params) }],
+      timestamp: Date.now(),
+    });
+
     window.applet.sendAction(actionId, JSON.parse(params));
   }
 

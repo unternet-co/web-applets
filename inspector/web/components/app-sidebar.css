@@ -1,5 +1,5 @@
 app-sidebar {
-  width: 400px;
+  flex: 1;
   border-right: 1px solid var(--color-border);
   padding: 13px;
   height: 100%;

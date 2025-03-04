@@ -1,0 +1,52 @@
+app-history {
+  flex: 1;
+  border-left: 1px solid var(--color-border);
+  padding: 13px;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+app-history .history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+app-history .bubble-container {
+  display: flex;
+}
+
+/* Align assistant bubbles to the left */
+app-history .assistant-bubble-container {
+  justify-content: flex-start;
+}
+
+/* Align user bubbles to the right */
+app-history .user-bubble-container {
+  justify-content: flex-end;
+}
+
+app-history .bubble {
+  display: inline-block;
+  border-radius: 16px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: #f1f8e9;
+  max-width: 80%;
+  text-align: left;
+  min-width: 50%;
+}
+
+/* User bubbles get a different background color */
+app-history .user {
+  background-color: #e0f7fa;
+}
+
+app-history strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+app-history span {
+  white-space: pre-line;
+}

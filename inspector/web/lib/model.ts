@@ -2,6 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { store } from './store';
 import { generateObject, jsonSchema } from 'ai';
 import { Applet } from '@web-applets/sdk';
+import type { Interaction } from './history-context';
 
 function getSystemPrompt(applet: Applet) {
   const prompt = `\
@@ -64,7 +65,16 @@ function getResponseSchema(applet: Applet) {
   );
 }
 
-async function getModelResponse(prompt: string, applet: Applet) {
+async function getModelResponse(
+  prompt: string,
+  history: Interaction[],
+  applet: Applet
+) {
+  const contextText = history.map((interaction) =>
+    JSON.stringify(interaction.id)
+  );
+  const fullPrompt = contextText ? `${contextText}\n${prompt}` : prompt;
+
   /**
    * @TODO
    *
@@ -84,7 +94,7 @@ async function getModelResponse(prompt: string, applet: Applet) {
 
   const { object } = await generateObject({
     model,
-    prompt: prompt,
+    prompt: fullPrompt,
     system: systemPrompt,
     schema: responseSchema,
   });
