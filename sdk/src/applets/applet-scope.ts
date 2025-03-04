@@ -117,7 +117,7 @@ export class AppletScope<DataType = any> extends EventTarget {
         const actionErrorMessage: AppletActionErrorMessage = {
           type: 'actionerror',
           id: message.id,
-          message: `Error executing action handler '${message.actionId}'`,
+          message: e.message,
         };
         this.#postMessage(actionErrorMessage);
         console.error(e);
