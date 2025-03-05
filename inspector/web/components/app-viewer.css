@@ -1,9 +1,9 @@
 app-viewer {
-  flex-grow: 1;
   background: #f4f4f4;
   padding: 16px;
   display: flex;
   overflow: auto;
+  grid-area: viewer;
 }
 
 app-viewer .hidden {
