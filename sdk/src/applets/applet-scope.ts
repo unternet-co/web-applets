@@ -28,7 +28,7 @@ export class AppletScope<DataType = any> extends EventTarget {
   onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
 
-  constructor(manifest?: AppletManifest | undefined) {
+  constructor(manifest?: Object | undefined) {
     super();
     debug.log('AppletScope', 'Constructor called');
     this.#dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
