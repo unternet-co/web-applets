@@ -15,6 +15,9 @@ function getSystemPrompt(applet: Applet) {
   const prompt = `\
     In this environment you have access to a set of tools. Here are the functions available in JSONSchema format:
     ${JSON.stringify(applet.actions)}
+    This is the start data that the tools have provided:  ${JSON.stringify(
+      applet.data
+    )}
     Choose to respond as text and/or one or more functions to call to respond to the user's query.
   `;
 
