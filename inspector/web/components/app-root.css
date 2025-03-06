@@ -12,6 +12,9 @@ app-root main {
   grid-template-areas:
     'sidebar viewer history'
     'sidebar viewer prompt';
-  grid-template-columns: 1fr 2fr 1.5fr;
+  grid-template-columns: var(--sidebar-width, 1fr) 2fr var(
+      --history-width,
+      1.5fr
+    );
   grid-template-rows: 1fr auto;
 }
