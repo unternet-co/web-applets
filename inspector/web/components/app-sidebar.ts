@@ -1,8 +1,9 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
 import { AppletActionDescriptor } from '@web-applets/sdk';
+import { historyContext } from '../lib/history-context';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
@@ -60,13 +61,24 @@ export class AppSidebar extends LitElement {
     textarea.setCustomValidity('');
   }
 
-  handleSubmit(e: SubmitEvent) {
+  async handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const actionId = formData.get('action-id') as string;
     const params = formData.get('params') as string;
-    window.applet.sendAction(actionId, JSON.parse(params));
+
+    await window.applet.sendAction(actionId, JSON.parse(params));
+
+    // Add the user's action to the context.
+    historyContext.addInteraction({
+      input: { type: 'action', text: actionId },
+      outputs: [
+        { type: actionId, ...JSON.parse(params) },
+        { type: 'data', content: window.applet.data },
+      ],
+      timestamp: Date.now(),
+    });
   }
 
   render() {
