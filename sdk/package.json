@@ -20,7 +20,7 @@
   "scripts": {
     "build": "npm run build:module && npm run build:shim",
     "build:module": "tsc && cp ../README.md ./README.md",
-    "build:shim": "node ./bin/build.js",
+    "build:shim": "node ./scripts/build.js",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

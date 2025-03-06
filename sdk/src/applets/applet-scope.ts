@@ -174,10 +174,15 @@ export class AppletScope<DataType = any> extends EventTarget {
     this.#actionHandlers[actionId] = handler;
   }
 
-  defineAction(actionId: string, definition: AppletActionDescriptor) {
+  defineAction(
+    actionId: string,
+    definition: AppletActionDescriptor & { handler?: Function }
+  ) {
+    const { handler, ...actionDefinition } = definition;
+    if (handler) this.#actionHandlers[actionId] = handler;
     this.actions = {
       ...this.actions,
-      [actionId]: definition,
+      [actionId]: actionDefinition,
     };
   }
 
