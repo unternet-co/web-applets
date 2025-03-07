@@ -198,8 +198,10 @@ export class AppletScope<DataType = any> extends EventTarget {
     debug.log('AppletScope', 'Send message', actionsMessage);
     this.#postMessage && this.#postMessage(actionsMessage);
 
+    // Set a timeout, so if data is set and a listener attached immediately after
+    // the listener will still fire
     const dataEvent = new AppletEvent('actions', { actions });
-    this.#dispatchEventAndHandler(dataEvent);
+    setTimeout(() => this.#dispatchEventAndHandler(dataEvent), 1);
   }
 
   get actions(): { [id: string]: AppletActionDescriptor } {
@@ -228,8 +230,10 @@ export class AppletScope<DataType = any> extends EventTarget {
     debug.log('AppletScope', 'Send message', dataMessage);
     this.#postMessage && this.#postMessage(dataMessage);
 
+    // Set a timeout, so if data is set and a listener attached immediately after
+    // the listener will still fire
     const dataEvent = new AppletEvent('data', { data });
-    this.#dispatchEventAndHandler(dataEvent);
+    setTimeout(() => this.#dispatchEventAndHandler(dataEvent), 1);
   }
 
   get data(): DataType {
