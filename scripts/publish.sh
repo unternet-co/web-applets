@@ -1,2 +1,5 @@
+#! /bin/sh
+
 npm run sync-version
-npm publish
+cd sdk && npm publish && cd ..
+cd inspector && npm publish
