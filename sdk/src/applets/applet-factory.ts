@@ -23,7 +23,7 @@ export class AppletFactory {
     });
   }
 
-  register<DataType = any>(manifest?: Object): AppletScope {
+  register<DataType = any>(manifest?: Object): AppletScope<DataType> {
     return new AppletScope<DataType>(manifest);
   }
 }
