@@ -2,21 +2,42 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { store } from './store';
 import { generateObject, jsonSchema } from 'ai';
 import { Applet } from '@web-applets/sdk';
+import type { Interaction } from './history-context';
+
+type SchemaResponse = {
+  text?: string;
+  tools?: { id: string; arguments?: any }[];
+};
 
 function getSystemPrompt(applet: Applet) {
+  if (!applet) return;
+
   const prompt = `\
     In this environment you have access to a set of tools. Here are the functions available in JSONSchema format:
-    ${applet.actions}
-    Choose one or more functions to call to respond to the user's query.
+    ${JSON.stringify(applet.actions)}
+    This is the start data that the tools have provided:  ${JSON.stringify(
+      applet.data
+    )}
+    Choose to respond as text and/or one or more functions to call to respond to the user's query.
   `;
 
   return prompt;
 }
 
 function getResponseSchema(applet: Applet) {
+  if (!applet)
+    return jsonSchema<SchemaResponse>({
+      type: 'object',
+      properties: {
+        text: { type: 'string' },
+      },
+      additionalProperties: false,
+    });
+
   const responseSchema = {
     type: 'object',
     properties: {
+      text: { type: 'string' },
       tools: {
         type: 'array',
         items: {
@@ -35,7 +56,10 @@ function getResponseSchema(applet: Applet) {
               required: ['id'],
             };
 
-            if (action.params_schema) {
+            if (
+              action.params_schema &&
+              Object.keys(action.params_schema).length > 0
+            ) {
               schema.properties.arguments = action.params_schema;
 
               // Set some variables that OpenAI requires if they're not present
@@ -55,16 +79,20 @@ function getResponseSchema(applet: Applet) {
         additionalProperties: false,
       },
     },
-    required: ['tools'],
     additionalProperties: false,
   };
 
-  return jsonSchema<{ tools: { id: string; arguments?: any }[] }>(
-    responseSchema
-  );
+  return jsonSchema<SchemaResponse>(responseSchema);
 }
 
-async function getModelResponse(prompt: string, applet: Applet) {
+async function getModelResponse(
+  prompt: string,
+  history: Interaction[],
+  applet: Applet
+) {
+  const contextText = JSON.stringify(history);
+  const fullPrompt = contextText ? `${contextText}\n${prompt}` : prompt;
+
   /**
    * @TODO
    *
@@ -84,12 +112,12 @@ async function getModelResponse(prompt: string, applet: Applet) {
 
   const { object } = await generateObject({
     model,
-    prompt: prompt,
+    prompt: fullPrompt,
     system: systemPrompt,
     schema: responseSchema,
   });
 
-  return object.tools[0];
+  return object;
 }
 
 export const model = {

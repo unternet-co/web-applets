@@ -28,7 +28,7 @@ export class AppletScope<DataType = any> extends EventTarget {
   onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
 
-  constructor(manifest?: AppletManifest | undefined) {
+  constructor(manifest?: Object | undefined) {
     super();
     debug.log('AppletScope', 'Constructor called');
     this.#dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
@@ -117,7 +117,7 @@ export class AppletScope<DataType = any> extends EventTarget {
         const actionErrorMessage: AppletActionErrorMessage = {
           type: 'actionerror',
           id: message.id,
-          message: `Error executing action handler '${message.actionId}'`,
+          message: e.message,
         };
         this.#postMessage(actionErrorMessage);
         console.error(e);
@@ -174,10 +174,15 @@ export class AppletScope<DataType = any> extends EventTarget {
     this.#actionHandlers[actionId] = handler;
   }
 
-  defineAction(actionId: string, definition: AppletActionDescriptor) {
+  defineAction(
+    actionId: string,
+    definition: AppletActionDescriptor & { handler?: Function }
+  ) {
+    const { handler, ...actionDefinition } = definition;
+    if (handler) this.#actionHandlers[actionId] = handler;
     this.actions = {
       ...this.actions,
-      [actionId]: definition,
+      [actionId]: actionDefinition,
     };
   }
 
