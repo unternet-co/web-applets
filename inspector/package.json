@@ -6,6 +6,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "",
+  "workspaces": [
+    ".",
+    "web"
+  ],
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "build": "./scripts/build.sh",

@@ -1,7 +1,7 @@
 {
   "workspaces": [
-    "inspector/*",
-    "sdk"
+    "sdk",
+    "inspector"
   ],
   "scripts": {
     "build": "npm run build:sdk && npm run build:inspector",
