@@ -7,5 +7,6 @@
     "build": "npm run build:sdk && npm run build:inspector",
     "build:sdk": "cd sdk && npm run build",
     "build:inspector": "cd inspector && npm run build"
-  }
+  },
+  "version": "0.0.1"
 }
