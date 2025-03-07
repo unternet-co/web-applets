@@ -1,2 +1,2 @@
-npm run version
+npm run sync-version
 npm publish
