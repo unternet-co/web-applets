@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc && npm run postbuild",
     "prepare": "npm run build",
-    "postbuild": "cp -r template dist && rm -r dist/template/node_modules && chmod +x ./dist/index.js"
+    "postbuild": "cp -r template dist && rm -rf dist/template/node_modules && chmod +x ./dist/index.js"
   },
   "files": [
     "dist"
