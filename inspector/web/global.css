@@ -48,6 +48,23 @@
   --shadow: 0 2px 4px color-mix(in srgb, var(--color-neutral-1000), transparent 90%);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-neutral-0: oklch(24.11% 0.0029 264.54);
+    --color-neutral-50: oklch(32.11% 0.0029 264.54);
+    --color-neutral-100: oklch(35.1% 0.0029 264.54);
+    --color-neutral-200: oklch(38.2% 0.0029 264.54);
+    --color-neutral-300: oklch(45.5% 0.0029 264.54);
+    --color-neutral-400: oklch(53.92% 0.0046 286.24);
+    --color-neutral-500: oklch(65.8% 0.0029 264.54);
+    --color-neutral-600: oklch(77.32% 0.0044 271.36);
+    --color-neutral-700: oklch(85.5% 0.0029 264.54);
+    --color-neutral-800: oklch(92.17% 0.0029 264.54);
+    --color-neutral-900: oklch(95.79% 0.0029 264.54);
+    --color-neutral-1000: oklch(99.39% 0.002854 264.5422);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -58,6 +75,12 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
+  color: var(--color-neutral-1000);
+}
+
+input, button {
+  color: inherit;
+  background-color: inherit;
 }
 
 body {
