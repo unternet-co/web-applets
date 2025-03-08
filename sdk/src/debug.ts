@@ -1,5 +1,7 @@
 function log(location: string, ...messages: any[]) {
-  console.log(`[${location}]`, ...messages);
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[${location}]`, ...messages);
+  }
 }
 
 export const debug = {
