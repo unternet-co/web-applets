@@ -1,10 +1,9 @@
 app-header {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  padding: var(--space-xs) var(--space-md);
+  border-bottom: var(--panel-border);
+  padding: var(--space-xs) var(--space-lg);
   gap: var(--space-xs);
-  height: 40px;
   flex-shrink: 0;
 }
 

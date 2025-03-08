@@ -1,15 +1,13 @@
-settings-button .menu-button {
+.menu-button {
   display: flex;
   cursor: pointer;
   border: none;
-  color: var(--color-neutral-500);
+  color: var(--color-text);
   border-radius: var(--rounded);
-  padding-block: 2px;
-  padding-inline: 6px;
-  font-weight: 500;
   border: 1px solid transparent;
 }
 
-settings-button .menu-button:hover {
-  background: var(--color-highlight);
+.menu-button:hover {
+  background: transparent;
+  color: var(--color-action);
 }

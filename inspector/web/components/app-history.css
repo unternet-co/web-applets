@@ -1,5 +1,5 @@
 app-history {
-  border-left: 1px solid var(--color-border);
+  border-left: var(--panel-border);
   padding: var(--space-lg);
   grid-area: history;
   display: flex;
@@ -14,12 +14,14 @@ app-history .history {
   background: var(--color-neutral-0);
   padding: var(--space-md);
   border: 1px solid var(--color-border);
-  border-radius: var(--rounded-md);
+  border-radius: var(--rounded);
   overflow-y: scroll;
+  justify-content: end;
 }
 
 app-history .bubble-container {
   display: flex;
+  font-size: var(--text-base);
 }
 
 /* Align assistant bubbles to the left */
@@ -39,8 +41,13 @@ app-history .action-output {
   color: var(--color-neutral-600);
 }
 
+app-history .action-output:only-child {
+  flex-grow: 1;
+  align-items: center;
+}
+
 app-history .bubble {
-  border-radius: var(--rounded-lg);
+  border-radius: var(--rounded-md);
   padding: var(--space-sm) var(--space-md);
   box-shadow: var(--shadow);
   max-width: 64ch;
@@ -51,7 +58,7 @@ app-history .bubble {
 
 /* User bubble styling */
 app-history .user {
-  background-color: var(--color-neutral-100);
+  background-color: var(--color-background);
   border: 1px solid var(--color-border);
 }
 

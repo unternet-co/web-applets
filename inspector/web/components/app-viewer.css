@@ -1,5 +1,5 @@
 app-viewer {
-  background: var(--color-neutral-0);
+  background: var(--color-background);
   padding: var(--space-lg);
   display: flex;
   overflow: auto;
@@ -13,11 +13,11 @@ app-viewer .hidden {
 app-viewer .container {
   display: flex;
   flex-direction: column;
-  background: var(--color-neutral-0);
+  background: var(--color-raised);
   border: none;
   flex-grow: 1;
   border: 1px solid var(--color-border);
-  border-radius: var(--rounded-md);
+  border-radius: var(--rounded);
   overflow: hidden;
 }
 
@@ -27,7 +27,7 @@ applet-frame {
 
 app-viewer .data-view {
   flex-grow: 1;
-  background: var(--color-neutral-0);
+  background: var(--color-raised);
   padding: var(--space-md);
   margin: 0;
   white-space: pre-wrap;
@@ -48,29 +48,29 @@ app-viewer .applet-footer label {
 
 app-viewer .applet-footer .toggle {
   background: var(--color-neutral-50);
-  border: 1px solid var(--color-border);
+  border: var(--panel-border);
   display: flex;
   padding: 1px;
   border-radius: var(--rounded);
-  gap: var(--space-sm);
+  gap: var(--space-xxs);
 }
 
 app-viewer .applet-footer button {
   cursor: pointer;
   border: none;
-  color: var(--color-neutral-1000);
-  border-radius: var(--rounded);
+  /* border-radius: var(--rounded); */
   padding: var(--space-xxs) var(--space-xs);
-  font-weight: 500;
-  border: 1px solid transparent;
 }
 
 app-viewer .applet-footer button:hover {
-  background: var(--color-neutral-50);
+  /* background: var(--color-background); */
 }
 
 app-viewer .applet-footer button[data-selected='true'] {
-  background: var(--color-neutral-0);
-  color: var(--color-neutral-1000);
-  border-color: var(--color-border);
+  border: var(--button-border);
+  background: var(--color-raised);
+}
+
+app-viewer .applet-footer button[data-selected='true']:hover {
+  color: var(--text-color);
 }
