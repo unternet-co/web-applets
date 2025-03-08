@@ -1,6 +1,6 @@
 app-history {
   border-left: 1px solid var(--color-border);
-  padding: 16px;
+  padding: var(--space-lg);
   grid-area: history;
   display: flex;
   overflow: hidden;
@@ -10,11 +10,11 @@ app-history .history {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: #f4f4f4;
-  padding: 10px;
+  gap: var(--space-md);
+  background: var(--color-neutral-0);
+  padding: var(--space-md);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--rounded-md);
   overflow-y: scroll;
 }
 
@@ -34,30 +34,31 @@ app-history .user-bubble-container {
 
 app-history .action-output {
   justify-content: center;
-  font-style: italic;
   display: flex;
-  gap: 4px;
-  color: #666666;
+  gap: var(--space-sm);
+  color: var(--color-neutral-600);
 }
 
 app-history .bubble {
-  display: flex;
-  gap: 4px;
-  border-radius: 8px;
-  padding: 8px 12px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  max-width: 80%;
+  border-radius: var(--rounded-lg);
+  padding: var(--space-sm) var(--space-md);
+  box-shadow: var(--shadow);
+  max-width: 64ch;
   text-align: left;
+  word-break: break-word;
+  box-shadow: var(--shadow);
 }
 
 /* User bubble styling */
 app-history .user {
-  background-color: #e0f7fa;
+  background-color: var(--color-neutral-100);
+  border: 1px solid var(--color-border);
 }
 
 /* Assistant bubble styling (keeps the shadow) */
 app-history .assistant {
-  background-color: #f1f8e9;
+  /* background-color: var(--color-neutral-0); */
+  border: 1px solid var(--color-border);
 }
 
 app-history span {

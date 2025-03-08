@@ -3,7 +3,7 @@ settings-dialog dialog {
   flex-direction: column;
   border: 1px solid var(--color-border);
   padding: 0;
-  border-radius: 6px;
+  border-radius: var(--rounded-md);
   pointer-events: none;
   width: 400px;
   min-height: 200px;
@@ -37,9 +37,9 @@ settings-dialog .close-dialog-button {
 }
 
 settings-dialog .close-dialog-button:hover {
-  background: #ddd;
-  border: solid 1x var(--color-border);
-  border-radius: 6px;
+  background: var(--color-neutral-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--rounded);
 }
 
 settings-dialog .dialog-content {
@@ -50,15 +50,15 @@ settings-dialog .dialog-footer {
   border-block-start: 1px solid var(--color-border);
   display: flex;
   flex-direction: row-reverse;
-  gap: 6px;
+  gap: var(--space-sm);
 }
 
 settings-dialog .dialog-footer button {
   display: flex;
   cursor: pointer;
   border: none;
-  color: #555;
-  border-radius: 2px;
+  color: var(--color-neutral-500);
+  border-radius: var(--rounded-sm);
   padding-block: 6px;
   padding-inline: 6px;
   font-weight: 500;
@@ -66,11 +66,12 @@ settings-dialog .dialog-footer button {
 }
 
 settings-dialog .dialog-footer button:hover {
-  background: #ddd;
+  background: var(--color-highlight);
 }
 
 settings-dialog .dialog-header h2 {
   font-size: var(--text-lg);
+  line-height: calc(var(--space-unit) * 6);
   margin-block: var(--space-md);
   margin-inline-end: var(--space-md);
 }
@@ -111,7 +112,7 @@ settings-dialog .clear-button {
   align-items: center;
   cursor: pointer;
   border: none;
-  color: #555;
+  color: var(--color-neutral-500);
   border-radius: var(--rounded-sm);
   padding-block: var(--space-sm);
   padding-inline: var(--space-sm);
@@ -120,5 +121,5 @@ settings-dialog .clear-button {
 }
 
 settings-dialog .clear-button:hover {
-  background: #ddd;
+  background: var(--color-highlight);
 }

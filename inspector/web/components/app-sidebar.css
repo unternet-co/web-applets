@@ -1,6 +1,6 @@
 app-sidebar {
   border-right: 1px solid var(--color-border);
-  padding: 16px;
+  padding: var(--space-lg);
   height: 100%;
   grid-area: sidebar;
 }
@@ -28,30 +28,30 @@ app-sidebar fieldset {
 }
 
 app-sidebar .status-message {
+  font-family: monospace;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-grow: 1;
-  color: #666;
-  font-style: italic;
+  color: var(--color-neutral-700);
   padding: 0;
   margin: 0;
 }
 
 app-sidebar select {
   width: 100%;
-  padding: 7px;
+  padding: var(--space-sm);
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--rounded);
   font-weight: 500;
 }
 
 .schema {
   margin: 0;
-  background: #eee;
-  padding: 12px;
-  font-size: 12px;
-  border-radius: 4px;
+  background: var(--color-neutral-0);
+  padding: var(--space-md);
+  font-size: var(--text-sm);
+  border-radius: var(--rounded);
   border: 1px solid var(--color-border);
   overflow: auto;
 }
@@ -59,16 +59,16 @@ app-sidebar select {
 app-sidebar textarea {
   resize: none;
   border: 1px solid var(--color-border);
-  font-size: 12px;
-  border-radius: 4px;
+  font-size: var(--text-sm);
+  border-radius: var(--rounded);
 }
 
 app-sidebar input[type='submit'] {
-  padding: 8px;
+  padding: var(--space-sm);
   font-weight: 500;
   cursor: pointer;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--rounded);
 }
 
 app-sidebar input[type='submit']:hover {
@@ -76,8 +76,8 @@ app-sidebar input[type='submit']:hover {
 }
 
 app-sidebar .error-message {
-  padding: 4px;
-  border-radius: 3px;
-  color: #f44336;
-  border: solid 1px #f44336;
+  padding: var(--space-xs);
+  border-radius: var(--rounded);
+  color: var(--color-negative);
+  border: solid 1px var(--color-negative);
 }

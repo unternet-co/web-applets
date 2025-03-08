@@ -1,12 +1,32 @@
 :root {
-  --color-neutral-7: #fff;
-  --color-neutral-6: #eee;
-  --color-neutral-5: #ddd;
-  --color-neutral-1: #111;
+  --color-action: oklch(45.2% 0.313214 264.052); 
+  --color-highlight: oklch(93.59% 0.1528 101.65);
+  
+  --color-neutral-0: oklch(99.39% 0.002854 264.5422);
+  --color-neutral-50: oklch(95.79% 0.0029 264.54);
+  --color-neutral-100: oklch(92.17% 0.0029 264.54);
+  --color-neutral-200: oklch(85.5% 0.0029 264.54);
+  --color-neutral-300: oklch(77.32% 0.0044 271.36);
+  --color-neutral-400: oklch(65.8% 0.0029 264.54);
+  --color-neutral-500: oklch(53.92% 0.0046 286.24);
+  --color-neutral-600: oklch(45.5% 0.0029 264.54);
+  --color-neutral-700: oklch(38.2% 0.0029 264.54);
+  --color-neutral-800: oklch(35.1% 0.0029 264.54);
+  --color-neutral-900: oklch(32.11% 0.0029 264.54);
+  --color-neutral-1000: oklch(24.11% 0.0029 264.54);
 
-  --color-background: #fff;
-  --color-border: #ddd;
-  --color-raised: #eee;
+
+  --color-background: var(--color-neutral-100);
+  --color-border: var(--color-neutral-300);
+  --color-raised: var(--color-neutral-0);
+
+  /* Font size */
+  --text-scale: 1.125;
+  --text-lg: calc(var(--text-md) * var(--text-scale));
+  --text-md: calc(var(--text-base) * var(--text-scale));
+  --text-base: 14px;
+  --text-sm: calc(var(--text-base) / var(--text-scale));
+  --text-xs: calc(var(--text-sm) / var(--text-scale));
 
   --space-unit: 4px;
 
@@ -20,11 +40,12 @@
   --space-3xl: calc(var(--space-unit) * 12);
   --space-4xl: calc(var(--space-unit) * 16);
 
-  --rounded-sm: 4px;
+  --rounded-sm: calc(var(--space-unit) / 1.5);
+  --rounded: var(--space-unit);
+  --rounded-md: calc(var(--space-unit) * 1.5);
+  --rounded-lg: calc(var(--space-unit) * 2);
 
-  --text-base: 14px;
-  --text-md: 16px;
-  --text-lg: 18px;
+  --shadow: 0 2px 4px color-mix(in srgb, var(--color-neutral-1000), transparent 90%);
 }
 
 * {
@@ -43,6 +64,7 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: var(--text-base);
+  line-height: calc(var(--space-unit) * 4);
   background: var(--color-background);
 }
 
@@ -57,4 +79,9 @@ h4,
 h5 {
   padding: 0;
   margin: 0;
+}
+
+.status-message {
+  font-family: monospace;
+  color: var(--color-neutral-700);
 }

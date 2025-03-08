@@ -2,8 +2,8 @@ toggle-css-variable-button .menu-button {
   display: flex;
   cursor: pointer;
   border: none;
-  color: #555;
-  border-radius: 2px;
+  color: var(--color-neutral-500);
+  border-radius: var(--rounded-sm);
   padding-block: 2px;
   padding-inline: 6px;
   font-weight: 500;
@@ -11,5 +11,5 @@ toggle-css-variable-button .menu-button {
 }
 
 toggle-css-variable-button .menu-button:hover {
-  background: #ddd;
+  background: var(--color-neutral-100);
 }

@@ -1,6 +1,6 @@
 app-viewer {
-  background: #f4f4f4;
-  padding: 16px;
+  background: var(--color-neutral-0);
+  padding: var(--space-lg);
   display: flex;
   overflow: auto;
   grid-area: viewer;
@@ -13,11 +13,12 @@ app-viewer .hidden {
 app-viewer .container {
   display: flex;
   flex-direction: column;
-  background: white;
+  background: var(--color-neutral-0);
   border: none;
   flex-grow: 1;
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: var(--rounded-md);
+  overflow: hidden;
 }
 
 applet-frame {
@@ -26,8 +27,8 @@ applet-frame {
 
 app-viewer .data-view {
   flex-grow: 1;
-  background: #eee;
-  padding: 8px;
+  background: var(--color-neutral-0);
+  padding: var(--space-md);
   margin: 0;
   white-space: pre-wrap;
   overflow: auto;
@@ -35,41 +36,41 @@ app-viewer .data-view {
 
 app-viewer .applet-footer {
   border-top: 1px solid var(--color-border);
-  padding: 4px 8px;
+  padding: var(--space-unit) var(--space-md);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-md);
 }
 
 app-viewer .applet-footer label {
-  font-size: 13px;
+  font-size: var(--text-sm);
 }
 
 app-viewer .applet-footer .toggle {
-  background: #eee;
+  background: var(--color-neutral-50);
   border: 1px solid var(--color-border);
   display: flex;
   padding: 1px;
-  border-radius: 4px;
-  gap: 2px;
+  border-radius: var(--rounded);
+  gap: var(--space-sm);
 }
 
 app-viewer .applet-footer button {
   cursor: pointer;
   border: none;
-  color: #555;
-  border-radius: 2px;
-  padding: 2px 6px;
+  color: var(--color-neutral-1000);
+  border-radius: var(--rounded);
+  padding: var(--space-xxs) var(--space-xs);
   font-weight: 500;
   border: 1px solid transparent;
 }
 
 app-viewer .applet-footer button:hover {
-  background: #ddd;
+  background: var(--color-neutral-50);
 }
 
 app-viewer .applet-footer button[data-selected='true'] {
-  background: white;
-  color: black;
+  background: var(--color-neutral-0);
+  color: var(--color-neutral-1000);
   border-color: var(--color-border);
 }
