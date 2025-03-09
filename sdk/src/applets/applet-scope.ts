@@ -12,7 +12,7 @@ import {
   AppletActionCompleteMessage,
   AppletConnectMessage,
 } from '../messages.js';
-import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
+import { AppletManifest, dispatchEventAndHandler, isEmpty } from '../utils.js';
 
 export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};
@@ -160,7 +160,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       const manifest = (await manifestRequest.json()) as AppletManifest;
       for (const key in manifest.actions) {
         const action = manifest.actions[key];
-        if (action.params_schema && !Object.keys(action.params_schema).length) {
+        if (action.params_schema && !isEmpty(this.#actions.params_schema)) {
           action.params_schema = undefined;
         }
       }
