@@ -13,7 +13,7 @@ import {
   AppletConnectMessage,
 } from '../messages.js';
 import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
-import { isEmpty } from '../../../utils/common-utils.js';
+import { isEmpty } from '../../../utils/common-utils.mjs';
 
 export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};
