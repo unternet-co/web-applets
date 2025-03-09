@@ -4,7 +4,7 @@ import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
 import { AppletActionDescriptor } from '@web-applets/sdk';
 import { historyContext } from '../lib/history-context';
-import { isEmpty } from '../../../utils/common-utils';
+import { isEmpty } from '../../../utils/common-utils.mjs';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
