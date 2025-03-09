@@ -97,6 +97,7 @@ export class AppletFrameElement extends HTMLElement {
   get styles() {
     return /*css*/ `
       :host {
+        background: white;
         display: flex;
         flex-direction: column;
         height: 350px;
