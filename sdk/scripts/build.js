@@ -8,4 +8,7 @@ esbuild
     minify: true,
     outfile: './dist/web-applets.min.js',
   })
-  .catch(() => process.exit(1));
+  .catch(() => {
+    console.log('Failed to build web-applets.min.js');
+    process.exit(1);
+  });
