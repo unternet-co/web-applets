@@ -54,6 +54,7 @@ app-sidebar select {
   border-radius: 4px;
   border: 1px solid var(--color-border);
   overflow: auto;
+  white-space: pre-wrap;
 }
 
 app-sidebar textarea {
