@@ -17,9 +17,11 @@
     "url": "git+https://github.com/unternet-co/web-applets.git"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production npm run build:module && npm run build:shim",
+    "build": "cross-env NODE_ENV=production npm run build:module && npm run build:shim:prod",
+    "build:dev": "cross-env NODE_ENV=development npm run build:module && npm run build:shim:dev",
     "build:module": "tsc && cp ../README.md ./README.md",
-    "build:shim": "cross-env NODE_ENV=production node ./scripts/build.js",
+    "build:shim:prod": "cross-env NODE_ENV=production node ./scripts/build.js",
+    "build:shim:dev": "cross-env NODE_ENV=development node ./scripts/build.js",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
