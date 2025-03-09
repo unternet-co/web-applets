@@ -1,6 +1,5 @@
 app-viewer {
   background: var(--color-background);
-  padding: var(--space-lg);
   display: flex;
   overflow: auto;
   grid-area: viewer;
@@ -14,10 +13,7 @@ app-viewer .container {
   display: flex;
   flex-direction: column;
   background: var(--color-raised);
-  border: none;
   flex-grow: 1;
-  border: 1px solid var(--color-border);
-  border-radius: var(--rounded);
   overflow: hidden;
 }
 
@@ -34,19 +30,20 @@ app-viewer .data-view {
   overflow: auto;
 }
 
-app-viewer .applet-footer {
-  border-top: 1px solid var(--color-border);
+app-viewer .applet-header {
+  border-bottom: 1px solid var(--color-border);
   padding: var(--space-unit) var(--space-md);
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  background: var(--color-background);
 }
 
-app-viewer .applet-footer label {
+app-viewer .applet-header label {
   font-size: var(--text-sm);
 }
 
-app-viewer .applet-footer .toggle {
+app-viewer .applet-header .toggle {
   background: var(--color-neutral-50);
   border: var(--panel-border);
   display: flex;
@@ -55,22 +52,36 @@ app-viewer .applet-footer .toggle {
   gap: var(--space-xxs);
 }
 
-app-viewer .applet-footer button {
+app-viewer .applet-header button {
   cursor: pointer;
   border: none;
   /* border-radius: var(--rounded); */
   padding: var(--space-xxs) var(--space-xs);
 }
 
-app-viewer .applet-footer button:hover {
+app-viewer .applet-header button:hover {
   /* background: var(--color-background); */
 }
 
-app-viewer .applet-footer button[data-selected='true'] {
+app-viewer .applet-header button[data-selected='true'] {
   border: var(--button-border);
   background: var(--color-raised);
 }
 
-app-viewer .applet-footer button[data-selected='true']:hover {
+app-viewer .applet-header button[data-selected='true']:hover {
   color: var(--text-color);
+}
+
+applet-frame {
+  width: 100%;
+  height: 100%;
+}
+
+app-viewer .applet-icon {
+  width: 18px;
+}
+
+app-viewer .applet-title {
+  font-weight: 600;
+  flex-grow: 1;
 }

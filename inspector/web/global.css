@@ -1,9 +1,9 @@
 :root {
-  --color-action: oklch(45.2% 0.313214 264.052); 
+  --color-action: oklch(45.2% 0.313214 264.052);
   --color-highlight: oklch(93.59% 0.1528 101.65);
-  
+
   --color-neutral-0: oklch(99.39% 0.002854 264.5422);
-  --color-neutral-50: oklch(95.79% 0.0029 264.54);
+  --color-neutral-50: oklch(96.79% 0.0029 264.54);
   --color-neutral-100: oklch(92.17% 0.0029 264.54);
   --color-neutral-200: oklch(85.5% 0.0029 264.54);
   --color-neutral-300: oklch(77.32% 0.0044 271.36);
@@ -15,7 +15,7 @@
   --color-neutral-900: oklch(32.11% 0.0029 264.54);
   --color-neutral-1000: oklch(24.11% 0.0029 264.54);
 
-  --color-background: var(--color-neutral-100);
+  --color-background: var(--color-neutral-50);
   --color-border: var(--color-neutral-200);
   --color-raised: var(--color-neutral-0);
 
@@ -49,11 +49,14 @@
   --rounded-md: calc(var(--space-unit) * 1.5);
   --rounded-lg: calc(var(--space-unit) * 2);
 
-  --shadow: 0 2px 4px color-mix(in srgb, var(--color-neutral-1000), transparent 90%);
+  --shadow: 0 2px 4px
+    color-mix(in srgb, var(--color-neutral-1000), transparent 90%);
 
-  --panel-border: 1px groove var(--color-neutral-0);
-  --input-border: 1px inset var(--color-neutral-200);
-  --button-border: 1px outset var(--color-neutral-400);
+  --panel-border: 1px solid var(--color-border);
+  --input-border: 1px solid var(--color-border);
+  --button-border: 1px solid var(--color-border);
+
+  --history-width: 300px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,7 +90,8 @@ body {
   margin: 0;
 }
 
-input, button {
+input,
+button {
   color: inherit;
   background-color: inherit;
 }
@@ -133,14 +137,18 @@ select {
   cursor: pointer;
 }
 
-textarea, input, select {
+textarea,
+input,
+select {
   background-color: var(--color-neutral-0);
   border: var(--input-border);
   border-radius: var(--rounded);
   padding: var(--space-sm);
 }
 
-input::placeholder, textarea::placeholder, select::placeholder {
+input::placeholder,
+textarea::placeholder,
+select::placeholder {
   color: var(--color-neutral-500);
 }
 
@@ -158,6 +166,5 @@ input[type='submit']:hover {
 }
 
 .status-message {
-  font-family: monospace;
   color: var(--color-neutral-700);
 }

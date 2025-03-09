@@ -14,3 +14,10 @@ app-header h1 {
   flex-shrink: 0;
   margin-inline-end: auto;
 }
+
+.center-group {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

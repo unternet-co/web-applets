@@ -1,5 +1,5 @@
 import { html, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import './app-header.css';
 import './url-input';
 import './settings-button';
@@ -13,16 +13,16 @@ export class UrlInput extends LitElement {
 
   render() {
     return html`
-      <h1>Applet Inspector</h1>
-      <url-input></url-input>
-      <settings-button></settings-button>
-
       <toggle-css-variable-button
         variableName="--sidebar-width"
         defaultValue="1fr"
       >
       </toggle-css-variable-button>
-
+      <h1>Applet Inspector</h1>
+      <div class="center-group">
+        <url-input></url-input>
+        <settings-button></settings-button>
+      </div>
       <toggle-css-variable-button
         variableName="--history-width"
         defaultValue="1.5fr"

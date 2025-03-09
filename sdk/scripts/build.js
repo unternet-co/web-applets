@@ -1,8 +1,9 @@
 import esbuild from 'esbuild';
+import process from 'process';
 
 esbuild
   .build({
-    entryPoints: ['./src/shim.js'],
+    entryPoints: ['./src/polyfill.js'],
     bundle: true,
     minify: true,
     outfile: './dist/web-applets.min.js',

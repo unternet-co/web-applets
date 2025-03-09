@@ -11,10 +11,6 @@ app-history .history {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  background: var(--color-neutral-0);
-  padding: var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--rounded);
   overflow-y: scroll;
   justify-content: end;
 }
@@ -47,13 +43,12 @@ app-history .action-output:only-child {
 }
 
 app-history .bubble {
+  background-color: var(--color-neutral-0);
   border-radius: var(--rounded-md);
   padding: var(--space-sm) var(--space-md);
-  box-shadow: var(--shadow);
   max-width: 64ch;
   text-align: left;
   word-break: break-word;
-  box-shadow: var(--shadow);
 }
 
 /* User bubble styling */

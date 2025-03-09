@@ -78,6 +78,9 @@ export class AppPrompt extends LitElement {
     });
 
     this.promptState = 'idle';
+    setTimeout(() =>
+      (document.getElementById('prompt') as HTMLInputElement).focus()
+    );
   }
 
   render() {
@@ -87,6 +90,7 @@ export class AppPrompt extends LitElement {
           autocomplete="off"
           id="prompt"
           name="prompt"
+          autofocus
           .disabled="${!this.openAIAPIToken || this.promptState === 'thinking'}"
           placeholder="${this.openAIAPIToken
             ? this.promptState === 'thinking'
