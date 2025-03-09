@@ -3,10 +3,13 @@ import process from 'process';
 
 esbuild
   .build({
-    entryPoints: ['./src/polyfill.js'],
+    entryPoints: {
+      'web-applets.min': './src/polyfill.js',
+      'elements/applet-frame': './src/elements/applet-frame.ts',
+    },
     bundle: true,
     minify: true,
-    outfile: './dist/web-applets.min.js',
+    outdir: './dist',
   })
   .catch(() => {
     console.log('Failed to build web-applets.min.js');
