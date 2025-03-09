@@ -12,7 +12,8 @@ import {
   AppletActionCompleteMessage,
   AppletConnectMessage,
 } from '../messages.js';
-import { AppletManifest, dispatchEventAndHandler, isEmpty } from '../utils.js';
+import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
+import { isEmpty } from '../../../utils/common-utils.js';
 
 export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};

@@ -4,6 +4,7 @@ import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
 import { AppletActionDescriptor } from '@web-applets/sdk';
 import { historyContext } from '../lib/history-context';
+import { isEmpty } from '../../../utils/common-utils';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
@@ -82,7 +83,7 @@ export class AppSidebar extends LitElement {
   }
 
   render() {
-    if (!this.actions || Object.keys(this.actions).length === 0) {
+    if (!this.actions || isEmpty(this.actions)) {
       return html`<p class="status-message">No actions available.</p>`;
     }
 
