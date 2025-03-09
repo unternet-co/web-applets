@@ -154,7 +154,10 @@ export class AppletScope<DataType = any> extends EventTarget {
     const manifestLinkElem = document.querySelector('link[rel="manifest"]') as
       | HTMLLinkElement
       | undefined;
-    if (!manifestLinkElem) return;
+    if (!manifestLinkElem) {
+      console.warn('No manifest link found');
+      return;
+    }
 
     // TODO: Add timeout
     try {
