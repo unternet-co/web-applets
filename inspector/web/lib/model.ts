@@ -3,6 +3,7 @@ import { store } from './store';
 import { generateObject, jsonSchema } from 'ai';
 import { Applet } from '@web-applets/sdk';
 import type { Interaction } from './history-context';
+import { isEmpty } from '../../../utils/common-utils';
 
 type SchemaResponse = {
   text?: string;
@@ -58,7 +59,7 @@ function getResponseSchema(applet: Applet) {
 
             if (
               action.params_schema &&
-              Object.keys(action.params_schema).length > 0
+              !isEmpty(action.params_schema.properties)
             ) {
               schema.properties.arguments = action.params_schema;
 
