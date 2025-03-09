@@ -106,18 +106,19 @@ export class AppletScope<DataType = any> extends EventTarget {
   }
 
   async #handleActionMessage(message: AppletActionMessage) {
-    if (Object.keys(this.#actionHandlers).includes(message.actionId)) {
+    const { actionId, arguments: args, id } = message;
+    if (Object.keys(this.#actionHandlers).includes(actionId)) {
       try {
-        await this.#actionHandlers[message.actionId](message.arguments);
+        await this.#actionHandlers[actionId](args);
         const actionCompleteMessage: AppletActionCompleteMessage = {
           type: 'actioncomplete',
-          id: message.id,
+          id,
         };
         this.#postMessage(actionCompleteMessage);
       } catch (e) {
         const actionErrorMessage: AppletActionErrorMessage = {
           type: 'actionerror',
-          id: message.id,
+          id,
           message: e.message,
         };
         this.#postMessage(actionErrorMessage);
