@@ -14,7 +14,7 @@ program
 program.parse(process.argv);
 
 export async function serve() {
-  const port = 1234;
+  let port = 1234;
   const serverDir = path.join(__dirname, 'web');
   const app = express();
   app.use(express.static(serverDir));
@@ -26,8 +26,10 @@ export async function serve() {
       })
       .on('error', (err: any) => {
         if (err.code === 'EADDRINUSE') {
-          console.log(`Port ${port} is busy, trying port ${port + 1}`);
-          server.listen(port + 1);
+          const oldPort = port;
+          port += 1;
+          console.log(`Port ${oldPort} is busy, trying port ${port}`);
+          server.listen(port);
         } else {
           console.error(err);
         }

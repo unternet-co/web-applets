@@ -6,8 +6,7 @@ export class AppletFrameElement extends HTMLElement {
   #src?: string;
   #applet?: Applet;
   #dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
-  container?: HTMLIFrameElement;
-  ready?: boolean;
+  #iframe?: HTMLIFrameElement = document.createElement('iframe');
 
   onload: (event: Event) => Promise<void> | void;
   onactions: (event: AppletEvent) => Promise<void> | void;
@@ -16,19 +15,21 @@ export class AppletFrameElement extends HTMLElement {
   static observedAttributes = ['src'];
 
   connectedCallback() {
-    this.#root = this.attachShadow({ mode: 'open' });
-
-    this.container = document.createElement('iframe');
-    this.#root.appendChild(this.container);
-
+    this.#root = this.attachShadow({ mode: 'closed' });
+    this.#root.appendChild(this.#iframe);
     const styles = document.createElement('style');
     styles.textContent = this.styles;
     this.#root.appendChild(styles);
     this.src = this.getAttribute('src');
   }
 
+  get contentWindow() {
+    return this.#iframe.contentWindow;
+  }
+
   set src(value: string) {
     this.#src = value;
+    this.#applet = undefined;
     this.#loadApplet(value);
   }
 
@@ -43,10 +44,8 @@ export class AppletFrameElement extends HTMLElement {
   }
 
   async #loadApplet(url: string) {
-    if (!this.container) return;
-
-    this.container.src = url;
-    const window = this.container.contentWindow;
+    this.#iframe.src = url;
+    const window = this.#iframe.contentWindow;
     if (!window) return;
 
     this.#applet = await applets.connect(window);
@@ -62,7 +61,6 @@ export class AppletFrameElement extends HTMLElement {
         width: this.#applet.width,
         height: this.#applet.height,
       });
-      this.#dispatchEventAndHandler(event);
     };
 
     this.#applet.onactions = (event: AppletEvent) => {
@@ -81,7 +79,7 @@ export class AppletFrameElement extends HTMLElement {
   }
 
   set data(data: any) {
-    if (this.applet && this.ready) {
+    if (this.applet) {
       this.applet.data = data;
     } else {
       const listener = () => {
@@ -99,6 +97,7 @@ export class AppletFrameElement extends HTMLElement {
   get styles() {
     return /*css*/ `
       :host {
+        background: white;
         display: flex;
         flex-direction: column;
         height: 350px;
