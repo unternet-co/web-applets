@@ -47,8 +47,12 @@ export class AppViewer extends LitElement {
   }
 
   render() {
-    const footer = html`<div class="applet-footer">
-      <label>View as:</label>
+    const footer = html`<div class="applet-header">
+      <img
+        src="${this.appletUrl}/${window.applet?.manifest.icons[0]?.src}"
+        class="applet-icon"
+      />
+      <div class="applet-title">${window.applet?.manifest.name}</div>
       <div class="toggle">
         <button
           data-selected=${this.mode === 'gui'}
@@ -67,6 +71,7 @@ export class AppViewer extends LitElement {
 
     return html`
       <div class="container">
+        ${footer}
         <applet-frame
           src=${this.appletUrl}
           class=${this.mode === 'gui' ? '' : 'hidden'}
@@ -74,7 +79,6 @@ export class AppViewer extends LitElement {
         <pre class=${this.mode === 'gui' ? 'hidden' : 'data-view'}>
 ${JSON.stringify(this.data, null, 2)}</pre
         >
-        ${footer}
       </div>
     `;
   }

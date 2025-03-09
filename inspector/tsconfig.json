@@ -3,11 +3,11 @@
     "target": "ES2018",
     "module": "CommonJS",
     "outDir": "./dist",
-    "rootDir": "src",
+    "rootDir": "cli",
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src/**/*"]
+  "include": ["cli/**/*"]
 }

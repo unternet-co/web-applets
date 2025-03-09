@@ -1,5 +1,5 @@
 {
-  "name": "@web-applets/inspector",
+  "name": "@web-applets/inspector-web",
   "description": "Inspector for testing & developing web applets.",
   "main": "index.js",
   "scripts": {
