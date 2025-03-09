@@ -1,6 +1,5 @@
 app-viewer {
-  background: #f4f4f4;
-  padding: 16px;
+  background: var(--color-background);
   display: flex;
   overflow: auto;
   grid-area: viewer;
@@ -13,11 +12,9 @@ app-viewer .hidden {
 app-viewer .container {
   display: flex;
   flex-direction: column;
-  background: white;
-  border: none;
+  background: var(--color-raised);
   flex-grow: 1;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
+  overflow: hidden;
 }
 
 applet-frame {
@@ -26,50 +23,65 @@ applet-frame {
 
 app-viewer .data-view {
   flex-grow: 1;
-  background: #eee;
-  padding: 8px;
+  background: var(--color-raised);
+  padding: var(--space-md);
   margin: 0;
   white-space: pre-wrap;
   overflow: auto;
 }
 
-app-viewer .applet-footer {
-  border-top: 1px solid var(--color-border);
-  padding: 4px 8px;
+app-viewer .applet-header {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-unit) var(--space-md);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-md);
+  background: var(--color-background);
 }
 
-app-viewer .applet-footer label {
-  font-size: 13px;
+app-viewer .applet-header label {
+  font-size: var(--text-sm);
 }
 
-app-viewer .applet-footer .toggle {
-  background: #eee;
-  border: 1px solid var(--color-border);
+app-viewer .applet-header .toggle {
+  background: var(--color-neutral-50);
+  border: var(--panel-border);
   display: flex;
   padding: 1px;
-  border-radius: 4px;
-  gap: 2px;
+  border-radius: var(--rounded);
+  gap: var(--space-xxs);
 }
 
-app-viewer .applet-footer button {
+app-viewer .applet-header button {
   cursor: pointer;
   border: none;
-  color: #555;
-  border-radius: 2px;
-  padding: 2px 6px;
-  font-weight: 500;
-  border: 1px solid transparent;
+  /* border-radius: var(--rounded); */
+  padding: var(--space-xxs) var(--space-xs);
 }
 
-app-viewer .applet-footer button:hover {
-  background: #ddd;
+app-viewer .applet-header button:hover {
+  /* background: var(--color-background); */
 }
 
-app-viewer .applet-footer button[data-selected='true'] {
-  background: white;
-  color: black;
-  border-color: var(--color-border);
+app-viewer .applet-header button[data-selected='true'] {
+  border: var(--button-border);
+  background: var(--color-raised);
+}
+
+app-viewer .applet-header button[data-selected='true']:hover {
+  color: var(--text-color);
+}
+
+applet-frame {
+  width: 100%;
+  height: 100%;
+}
+
+app-viewer .applet-icon {
+  width: 18px;
+}
+
+app-viewer .applet-title {
+  font-weight: 600;
+  flex-grow: 1;
 }
