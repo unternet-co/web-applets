@@ -35,6 +35,13 @@ app-history .action-output {
   display: flex;
   gap: var(--space-sm);
   color: var(--color-neutral-600);
+  flex-direction: column;
+}
+
+app-history .action-output span {
+  word-break: break-all;
+  font-family: monospace;
+  font-size: 11px;
 }
 
 app-history .action-output:only-child {
