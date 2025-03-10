@@ -91,6 +91,7 @@ body {
 }
 
 input,
+textarea,
 button {
   color: inherit;
   background-color: inherit;
