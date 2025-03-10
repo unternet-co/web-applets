@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
 import { AppletActionDescriptor } from '@web-applets/sdk';
+import { isEmpty } from '../../../utils/common-utils.mjs';
 import { historyContext } from '../lib/history-context';
 
 @customElement('app-sidebar')
@@ -82,11 +83,7 @@ export class AppSidebar extends LitElement {
   }
 
   render() {
-<<<<<<< HEAD
     if (!this.actions || isEmpty(this.actions)) {
-=======
-    if (!this.actions || Object.keys(this.actions).length === 0) {
->>>>>>> development
       return html`<p class="status-message">No actions available.</p>`;
     }
 
