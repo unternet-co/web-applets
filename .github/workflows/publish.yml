@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - production
 
 jobs:
   publish:
@@ -18,6 +20,6 @@ jobs:
 
       - run: npm ci
 
-      - run: ./scripts/publish
+      - run: ./scripts/publish.sh
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

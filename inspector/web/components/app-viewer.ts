@@ -48,10 +48,12 @@ export class AppViewer extends LitElement {
 
   render() {
     const footer = html`<div class="applet-header">
-      <img
-        src="${this.appletUrl}/${window.applet?.manifest.icons[0]?.src}"
-        class="applet-icon"
-      />
+      ${window.applet?.manifest?.icons
+        ? html`<img
+            src="${this.appletUrl}/${window.applet?.manifest.icons[0]?.src}"
+            class="applet-icon"
+          />`
+        : ''}
       <div class="applet-title">${window.applet?.manifest.name}</div>
       <div class="toggle">
         <button
