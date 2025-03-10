@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import './app-prompt.css';
 import { model } from '../lib/model';
 import { store } from '../lib/store';
+import { historyContext, InteractionOutput } from '../lib/history-context';
 
 type State = 'idle' | 'thinking';
 
@@ -30,16 +31,56 @@ export class AppPrompt extends LitElement {
 
     const form = e.target as HTMLFormElement;
     const input = form.elements.namedItem('prompt') as HTMLInputElement;
-    const value = input.value;
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
+
+    // Retrieve the last 10 interactions (default value) to provide context to the model.
+    const recentHistory = historyContext.getRecentInteractions();
 
     this.promptState = 'thinking';
     input.value = '';
 
-    const action = await model.getModelResponse(value, window.applet);
+    const response = await model.getModelResponse(
+      userMessage,
+      recentHistory,
+      window.applet
+    );
 
-    window.applet.dispatchAction(action.id, action.arguments);
+    // contruct array for storing outputs from model
+    const outputs: InteractionOutput[] = [];
+
+    // store text in the output array
+    if (response.text) outputs.push({ type: 'text', content: response.text });
+
+    if (response.tools && response.tools.length > 0) {
+      await Promise.all(
+        response.tools.map(async (tool) => {
+          await window.applet.sendAction(tool.id, tool.arguments);
+
+          // store tool used in the output array
+          outputs.push({ type: tool.id, arguments: tool.arguments });
+
+          // store tool data in the output array
+          if (window.applet.data)
+            outputs.push({
+              type: 'data',
+              content: window.applet.data as object,
+            });
+        })
+      );
+    }
+
+    // Add the interaction to the context.
+    historyContext.addInteraction({
+      input: { type: 'command', text: userMessage },
+      outputs,
+      timestamp: Date.now(),
+    });
 
     this.promptState = 'idle';
+    setTimeout(() =>
+      (document.getElementById('prompt') as HTMLInputElement).focus()
+    );
   }
 
   render() {
@@ -49,6 +90,7 @@ export class AppPrompt extends LitElement {
           autocomplete="off"
           id="prompt"
           name="prompt"
+          autofocus
           .disabled="${!this.openAIAPIToken || this.promptState === 'thinking'}"
           placeholder="${this.openAIAPIToken
             ? this.promptState === 'thinking'

@@ -1,11 +1,17 @@
 import './app-viewer.css';
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { store } from '../lib/store';
-import '@web-applets/sdk/dist/components/applet-frame';
-import { AppletFrame } from '@web-applets/sdk/dist/components/applet-frame';
+import { StorageData, store } from '../lib/store';
+import '@web-applets/sdk/dist/elements/applet-frame';
+import { AppletFrameElement } from '@web-applets/sdk';
 import './url-input.css';
 import { Applet } from '@web-applets/sdk';
+
+declare global {
+  interface Window {
+    applet: Applet;
+  }
+}
 
 @customElement('app-viewer')
 export class AppViewer extends LitElement {
@@ -18,20 +24,22 @@ export class AppViewer extends LitElement {
   mode: string = 'gui';
 
   @property({ attribute: false })
-  data: object = {};
+  data: any = {};
 
   connectedCallback() {
-    store.subscribe((data) => {
+    store.subscribe((data: StorageData) => {
       this.appletUrl = data.appletUrl;
+      if (!data.applet) return;
+      this.data = data.applet.data;
+      data.applet.ondata = () => (this.data = data.applet.data);
     });
     super.connectedCallback();
   }
 
   updated() {
-    const frame = document.querySelector('applet-frame') as AppletFrame;
+    const frame = document.querySelector('applet-frame') as AppletFrameElement;
     if (!frame) return;
     frame.onload = () => {
-      console.log('onload', window.applet?.data, this.data);
       store.update({ applet: frame.applet });
       window.applet = frame.applet;
       window.applet.ondata = (e) => (this.data = e.data);
@@ -39,8 +47,14 @@ export class AppViewer extends LitElement {
   }
 
   render() {
-    const footer = html`<div class="applet-footer">
-      <label>View as:</label>
+    const footer = html`<div class="applet-header">
+      ${window.applet?.manifest?.icons
+        ? html`<img
+            src="${this.appletUrl}/${window.applet?.manifest.icons[0]?.src}"
+            class="applet-icon"
+          />`
+        : ''}
+      <div class="applet-title">${window.applet?.manifest.name}</div>
       <div class="toggle">
         <button
           data-selected=${this.mode === 'gui'}
@@ -59,6 +73,7 @@ export class AppViewer extends LitElement {
 
     return html`
       <div class="container">
+        ${footer}
         <applet-frame
           src=${this.appletUrl}
           class=${this.mode === 'gui' ? '' : 'hidden'}
@@ -66,14 +81,7 @@ export class AppViewer extends LitElement {
         <pre class=${this.mode === 'gui' ? 'hidden' : 'data-view'}>
 ${JSON.stringify(this.data, null, 2)}</pre
         >
-        ${footer}
       </div>
     `;
-  }
-}
-
-declare global {
-  interface Window {
-    applet: Applet;
   }
 }

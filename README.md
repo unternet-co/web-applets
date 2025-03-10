@@ -4,7 +4,7 @@
 
 🌐 [Docs](https://unternet.co/docs) | 👾 [Community Discord](https://discord.gg/VsMuEKmqvt) | 💌 [Mailing List](https://buttondown.com/unternet)
 
-[![Mozilla builders logo](docs/assets/builders.png)](https://builders.mozilla.org/)
+[![Mozilla builders logo](.assets/builders.png)](https://builders.mozilla.org/)
 
 Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 
@@ -15,7 +15,7 @@ Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 - [Motivation](https://unternet.co/docs/web-applets/introduction)
 - [Getting started with building an applet](https://unternet.co/docs/web-applets/creating-an-applet)
 
-![Demo of a web applets chatbot](./docs/assets/applets-chat-demo.gif)
+![Demo of a web applets chatbot](.assets/applets-chat-demo.gif)
 
 ## Feedback & Community
 

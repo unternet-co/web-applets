@@ -5,6 +5,7 @@ import './app-header';
 import './app-viewer';
 import './app-sidebar';
 import './app-prompt';
+import './app-history';
 import './settings-dialog';
 
 @customElement('app-root')
@@ -18,10 +19,9 @@ export class UrlInput extends LitElement {
       <app-header></app-header>
       <main>
         <app-sidebar></app-sidebar>
-        <div class="column">
-          <app-viewer></app-viewer>
-          <app-prompt></app-prompt>
-        </div>
+        <app-viewer></app-viewer>
+        <app-history></app-history>
+        <app-prompt></app-prompt>
       </main>
       <settings-dialog></settings-dialog>
     `;

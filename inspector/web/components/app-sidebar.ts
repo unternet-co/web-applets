@@ -1,8 +1,9 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './app-sidebar.css';
 import { StorageData, store } from '../lib/store';
-import { AppletAction } from '@web-applets/sdk';
+import { AppletActionDescriptor } from '@web-applets/sdk';
+import { historyContext } from '../lib/history-context';
 
 @customElement('app-sidebar')
 export class AppSidebar extends LitElement {
@@ -12,7 +13,7 @@ export class AppSidebar extends LitElement {
   selected: number = 0;
 
   @property({ attribute: false })
-  actions: AppletAction[] = [];
+  actions: { [id: string]: AppletActionDescriptor } = {};
 
   @property({ type: String })
   schemaError: string = '';
@@ -21,6 +22,7 @@ export class AppSidebar extends LitElement {
     store.subscribe((data: StorageData) => {
       if (!data.applet) return;
       this.actions = data.applet.actions;
+      data.applet.onactions = (e) => (this.actions = e.actions);
     });
     super.connectedCallback();
   }
@@ -59,28 +61,39 @@ export class AppSidebar extends LitElement {
     textarea.setCustomValidity('');
   }
 
-  handleSubmit(e: SubmitEvent) {
+  async handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    console.log(formData.get('action-id'));
     const actionId = formData.get('action-id') as string;
     const params = formData.get('params') as string;
-    window.applet.dispatchAction(actionId, JSON.parse(params));
+
+    await window.applet.sendAction(actionId, JSON.parse(params));
+
+    // Add the user's action to the context.
+    historyContext.addInteraction({
+      input: { type: 'action', text: actionId },
+      outputs: [
+        { type: actionId, ...JSON.parse(params) },
+        { type: 'data', content: window.applet.data },
+      ],
+      timestamp: Date.now(),
+    });
   }
 
   render() {
-    if (!this.actions.length) {
+    if (!this.actions || Object.keys(this.actions).length === 0) {
       return html`<p class="status-message">No actions available.</p>`;
     }
 
-    const schema =
-      JSON.stringify(this.actions[this.selected].parameters, null, 2) ?? 'None';
+    const action = Object.values(this.actions)[this.selected];
+
+    const schema = JSON.stringify(action?.params_schema, null, 2) ?? 'None';
 
     return html`
       <form @submit=${this.handleSubmit.bind(this)}>
-        <fieldset>
-          <label>Action ID</label>
+        <fieldset class="select">
+          <label>Select an action</label>
           <action-select
             .actions=${this.actions}
             name="action-id"
@@ -88,11 +101,15 @@ export class AppSidebar extends LitElement {
           ></action-select>
         </fieldset>
         <fieldset>
+          <label>Description</label>
+          <p class="description">${action?.description}</p>
+        </fieldset>
+        <fieldset>
           <label>Schema</label>
           <pre class="schema">${schema}</pre>
         </fieldset>
         <fieldset>
-          <label>Params</label>
+          <label>Parameters</label>
           <textarea
             rows=${6}
             name="params"
@@ -121,13 +138,13 @@ export class ActionSelect extends LitElement {
   name: string;
 
   @property({ attribute: false })
-  actions: AppletAction[] = [];
+  actions: { [id: string]: AppletActionDescriptor };
 
   render() {
     return html`
       <select name=${this.name}>
-        ${this.actions.map((action) => {
-          return html`<option id="action">${action.id}</option>`;
+        ${Object.keys(this.actions).map((actionId) => {
+          return html`<option id="action">${actionId}</option>`;
         })}
       </select>
     `;

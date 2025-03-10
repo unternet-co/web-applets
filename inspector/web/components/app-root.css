@@ -7,12 +7,14 @@ app-root {
 
 app-root main {
   flex-grow: 1;
-  display: flex;
   overflow: auto;
-}
-
-app-root .column {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  display: grid;
+  grid-template-areas:
+    'sidebar viewer history'
+    'sidebar viewer prompt';
+  grid-template-columns: var(--sidebar-width, 350px) 2fr var(
+      --history-width,
+      350px
+    );
+  grid-template-rows: 1fr auto;
 }
