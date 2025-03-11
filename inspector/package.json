@@ -9,7 +9,8 @@
     "start": "npm run build && node dist/index.js",
     "build": "./scripts/build.sh",
     "build:cli": "tsc",
-    "build:web": "cd web && npm run build"
+    "build:web": "cd web && npm run build",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist"
