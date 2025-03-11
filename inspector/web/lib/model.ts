@@ -3,7 +3,7 @@ import { store } from './store';
 import { generateObject, jsonSchema } from 'ai';
 import { Applet } from '@web-applets/sdk';
 import type { Interaction } from './history-context';
-import { isEmpty } from '../../../utils/common-utils.mjs';
+import { isEmpty } from '../utils';
 
 type SchemaResponse = {
   text?: string;
