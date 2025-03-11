@@ -9,5 +9,9 @@ tag_latest() {
     npm dist-tag add "$package_name@$version" latest
 }
 
-cd sdk && tag_latest && cd ..
-cd inspector && tag_latest
+cd sdk
+tag_latest
+cd ..
+
+cd inspector
+tag_latest
