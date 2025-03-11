@@ -4,9 +4,7 @@
 
 🌐 [Docs](https://unternet.co/docs) | 👾 [Community Discord](https://discord.gg/VsMuEKmqvt) | 💌 [Mailing List](https://buttondown.com/unternet)
 
-<<<<<<< HEAD [![Mozilla builders logo](_assets/builders.png)](https://builders.mozilla.org/) ======= [![Mozilla builders logo](.assets/builders.png)](https://builders.mozilla.org/)
-
-> > > > > > > development
+[![Mozilla builders logo](.assets/builders.png)](https://builders.mozilla.org/)
 
 Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 
