@@ -4,6 +4,7 @@ app-sidebar {
   height: 100%;
   grid-area: sidebar;
   display: flex;
+  transition: width 0.3s ease;
 }
 
 app-sidebar form {
@@ -69,4 +70,16 @@ app-sidebar .error-message {
   border-radius: var(--rounded);
   color: var(--color-negative);
   border: solid 1px var(--color-negative);
+}
+
+app-sidebar.open {
+  width: 350px;
+  transition: opacity 0.3s ease-in, width 0.3s ease;
+}
+
+app-sidebar.closed {
+  width: 0px;
+  padding: 0px;
+  overflow: hidden;
+  opacity: 0;
 }
