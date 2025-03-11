@@ -12,8 +12,7 @@ Web Applets is a [Mozilla Builders](https://builders.mozilla.org/) project.
 
 **Web Applets is an open specification for building software that both humans and AI can understand and use together.** Instead of forcing AI to operate traditional point-and-click apps built for humans, Web Applets creates a new kind of web software designed for human-AI collaboration. You can read more about it on our website.
 
-- [Motivation](https://unternet.co/docs/web-applets/introduction)
-- [Getting started with building an applet](https://unternet.co/docs/web-applets/creating-an-applet)
+Read [the docs](https://unternet.co/docs/web-applets/introduction)!
 
 ![Demo of a web applets chatbot](.assets/applets-chat-demo.gif)
 
