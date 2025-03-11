@@ -13,6 +13,7 @@ import {
   AppletConnectMessage,
 } from '../messages.js';
 import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
+import { isEmpty } from '../../../utils/common-utils.mjs';
 
 export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};
@@ -105,18 +106,19 @@ export class AppletScope<DataType = any> extends EventTarget {
   }
 
   async #handleActionMessage(message: AppletActionMessage) {
-    if (Object.keys(this.#actionHandlers).includes(message.actionId)) {
+    const { actionId, arguments: args, id } = message;
+    if (Object.keys(this.#actionHandlers).includes(actionId)) {
       try {
-        await this.#actionHandlers[message.actionId](message.arguments);
+        await this.#actionHandlers[actionId](args);
         const actionCompleteMessage: AppletActionCompleteMessage = {
           type: 'actioncomplete',
-          id: message.id,
+          id,
         };
         this.#postMessage(actionCompleteMessage);
       } catch (e) {
         const actionErrorMessage: AppletActionErrorMessage = {
           type: 'actionerror',
-          id: message.id,
+          id,
           message: e.message,
         };
         this.#postMessage(actionErrorMessage);
@@ -152,7 +154,10 @@ export class AppletScope<DataType = any> extends EventTarget {
     const manifestLinkElem = document.querySelector('link[rel="manifest"]') as
       | HTMLLinkElement
       | undefined;
-    if (!manifestLinkElem) return;
+    if (!manifestLinkElem) {
+      console.warn('No manifest link found');
+      return;
+    }
 
     // TODO: Add timeout
     try {
@@ -160,7 +165,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       const manifest = (await manifestRequest.json()) as AppletManifest;
       for (const key in manifest.actions) {
         const action = manifest.actions[key];
-        if (action.params_schema && !Object.keys(action.params_schema).length) {
+        if (action.params_schema && !isEmpty(this.#actions.params_schema)) {
           action.params_schema = undefined;
         }
       }
