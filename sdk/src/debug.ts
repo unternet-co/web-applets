@@ -1,5 +1,9 @@
+const isProduction = process.env.NODE_ENV === "production";
+
 function log(location: string, ...messages: any[]) {
-  console.log(`[${location}]`, ...messages);
+  if (!isProduction) {
+    console.log(`[${location}]`, ...messages);
+  }
 }
 
 export const debug = {
