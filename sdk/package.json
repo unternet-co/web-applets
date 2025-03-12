@@ -3,6 +3,7 @@
   "description": "The Web Applets SDK, for creating & hosting Web Applets.",
   "author": "Rupert Manfredi <rupert@unternet.co>",
   "license": "MIT",
+  "version": "0.2.6",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,6 +30,5 @@
     "cross-env": "^7.0.3",
     "esbuild": "^0.25.0",
     "typescript": "^5.6.2"
-  },
-  "version": "0.2.5"
+  }
 }
