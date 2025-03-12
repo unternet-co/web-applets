@@ -4,6 +4,9 @@ app-history {
   grid-area: history;
   display: flex;
   overflow: hidden;
+  flex-direction: column-reverse;
+  gap: var(--space-md);
+  transition: width 0.3s ease;
 }
 
 app-history .history {
@@ -72,4 +75,16 @@ app-history .assistant {
 
 app-history span {
   white-space: pre-line;
+}
+
+app-history.open {
+  width: 350px;
+  transition: opacity 0.3s ease-in, width 0.3s ease;
+}
+
+app-history.closed {
+  width: 0px;
+  padding: 0px;
+  overflow: hidden;
+  opacity: 0;
 }

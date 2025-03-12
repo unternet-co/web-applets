@@ -18,10 +18,11 @@ export class UrlInput extends LitElement {
     return html`
       <app-header></app-header>
       <main>
-        <app-sidebar></app-sidebar>
+        <app-sidebar class="open"></app-sidebar>
         <app-viewer></app-viewer>
-        <app-history></app-history>
-        <app-prompt></app-prompt>
+        <app-history class="open">
+          <app-prompt></app-prompt>
+        </app-history>
       </main>
       <settings-dialog></settings-dialog>
     `;

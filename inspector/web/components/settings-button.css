@@ -11,3 +11,7 @@
   background: transparent;
   color: var(--color-action);
 }
+
+.menu-button.active {
+  opacity: 0.5;
+}

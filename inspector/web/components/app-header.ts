@@ -13,10 +13,7 @@ export class UrlInput extends LitElement {
 
   render() {
     return html`
-      <toggle-css-variable-button
-        variableName="--sidebar-width"
-        defaultValue="1fr"
-      >
+      <toggle-css-variable-button componentName="app-sidebar">
       </toggle-css-variable-button>
       <h1>Applet Inspector</h1>
       <div class="center-group">
@@ -24,11 +21,10 @@ export class UrlInput extends LitElement {
         <settings-button></settings-button>
       </div>
       <toggle-css-variable-button
-        variableName="--history-width"
-        defaultValue="1.5fr"
-        icon='<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7.5 2.5V17.5M11.6667 7.5L14.1667 10L11.6667 12.5M4.16667 2.5H15.8333C16.7538 2.5 17.5 3.24619 17.5 4.16667V15.8333C17.5 16.7538 16.7538 17.5 15.8333 17.5H4.16667C3.24619 17.5 2.5 16.7538 2.5 15.8333V4.16667C2.5 3.24619 3.24619 2.5 4.16667 2.5Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>'
+        componentName="app-history"
+        icon='<svg xmlns="http://www.w3.org/2000/svg" width="20" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M6 4a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6ZM5 7a1 1 0 0 1 1-1h7v12H6a1 1 0 0 1-1-1V7Zm10 11h3a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-3v12Z" clip-rule="evenodd"/>
+          </svg>'
       >
       </toggle-css-variable-button>
     `;
