@@ -159,19 +159,18 @@ export class AppletScope<DataType = any> extends EventTarget {
       return;
     }
 
-    // TODO: Add timeout
     try {
       const manifestRequest = await fetch(manifestLinkElem.href);
       const manifest = (await manifestRequest.json()) as AppletManifest;
       for (const key in manifest.actions) {
         const action = manifest.actions[key];
-        if (action.params_schema && !isEmpty(this.#actions.params_schema)) {
+        if (action.params_schema && isEmpty(action.params_schema)) {
           action.params_schema = undefined;
         }
       }
       return manifest;
     } catch (e) {
-      return;
+      console.warn('Failed to fetch manifest', e.message);
     }
   }
 

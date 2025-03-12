@@ -112,4 +112,6 @@ export class AppletFrameElement extends HTMLElement {
   }
 }
 
+export const test = 'test';
+
 customElements.define('applet-frame', AppletFrameElement);
