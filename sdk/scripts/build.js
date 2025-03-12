@@ -5,7 +5,6 @@ esbuild
   .build({
     entryPoints: {
       'web-applets.min': './src/polyfill.js',
-      'elements/applet-frame': './src/elements/applet-frame.ts',
     },
     bundle: true,
     minify: true,
