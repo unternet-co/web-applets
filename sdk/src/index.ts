@@ -2,11 +2,11 @@
 import { AppletFactory } from './applets/applet-factory.js';
 export const applets = new AppletFactory();
 
-// Applet & AppletScope (as types, not intantiable classes)
+// Applet & AppletScope (as types, not instantiable classes)
 import { Applet as AppletClass } from './applets/applet.js';
 import { AppletScope as AppletScopeClass } from './applets/applet-scope.js';
-export type Applet = InstanceType<typeof AppletClass>;
-export type AppletScope = InstanceType<typeof AppletScopeClass>;
+export type Applet<DataType = any> = AppletClass<DataType>;
+export type AppletScope<DataType = any> = AppletScopeClass<DataType>;
 
 // AppletFrame
 import './elements/applet-frame.js';
