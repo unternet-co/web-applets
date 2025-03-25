@@ -1,11 +1,11 @@
-import './app-viewer.css';
 import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { StorageData, store } from '../lib/store';
-import '@web-applets/sdk/dist/elements/applet-frame';
 import { AppletFrameElement } from '@web-applets/sdk';
-import './url-input.css';
 import { Applet } from '@web-applets/sdk';
+import '@web-applets/sdk';
+import './app-viewer.css';
+import './url-input.css';
 
 declare global {
   interface Window {
