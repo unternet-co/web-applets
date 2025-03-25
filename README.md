@@ -24,6 +24,13 @@ This is a community project, and we're open to community members discussing the 
 - Follow [our blog](https://unternet.co/blog) for regular updates
 - Join [our discord](https://discord.gg/VsMuEKmqvt)
 
+## Get the codebase running
+
+```sh
+npm install
+npm run build
+```
+
 ## License
 
 [MIT](./LICENSE.md)

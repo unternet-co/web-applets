@@ -1,5 +1,4 @@
 import { AppletFrameElement, applets } from './index.js';
-import './index.js';
 import { type AppletFactory } from './applets/applet-factory.js';
 import { AppletEvent } from './applets/events.js';
 
