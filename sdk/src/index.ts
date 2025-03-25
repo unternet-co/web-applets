@@ -9,8 +9,9 @@ export type Applet = InstanceType<typeof AppletClass>;
 export type AppletScope = InstanceType<typeof AppletScopeClass>;
 
 // AppletFrame
-import './elements/applet-frame.js';
-export { AppletFrameElement } from './elements/applet-frame.js';
+import { AppletFrameElement } from './elements/applet-frame.js';
+customElements.define('applet-frame', AppletFrameElement);
+export { AppletFrameElement };
 
 // AppletEvent
 export { AppletEvent } from './applets/events.js';
