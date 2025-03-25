@@ -1,14 +1,16 @@
 {
-  "version": "0.2.5",
+  "version": "0.2.6",
   "workspaces": [
     "sdk",
     "inspector",
-    "inspector/web"
+    "inspector/web",
+    "test/example"
   ],
   "scripts": {
     "sync-version": "cd sdk && npm version $npm_package_version && cd ../inspector && npm version $npm_package_version",
     "build": "npm run build:sdk && npm run build:inspector",
     "build:sdk": "cd sdk && npm run build",
-    "build:inspector": "cd inspector && npm run build"
+    "build:inspector": "cd inspector && npm run build",
+    "example": "cd test/example && npm run dev"
   }
 }

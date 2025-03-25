@@ -4,6 +4,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "version": "0.2.6",
   "description": "An inspector CLI for web applets.",
   "scripts": {
     "start": "npm run build && node dist/index.js",
