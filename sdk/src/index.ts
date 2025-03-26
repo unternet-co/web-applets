@@ -7,8 +7,8 @@ export const applets = new AppletFactory();
 
 import { Applet as AppletClass } from './applets/applet.js';
 import { AppletScope as AppletScopeClass } from './applets/applet-scope.js';
-export type Applet = InstanceType<typeof AppletClass>;
-export type AppletScope = InstanceType<typeof AppletScopeClass>;
+export type Applet<DataType = any> = AppletClass<DataType>;
+export type AppletScope<DataType = any> = AppletScopeClass<DataType>;
 
 // AppletEvent
 

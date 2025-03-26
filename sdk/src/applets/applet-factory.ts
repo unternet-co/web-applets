@@ -4,7 +4,7 @@ import { Applet } from './applet.js';
 import { AppletScope } from './applet-scope.js';
 
 export class AppletFactory {
-  async connect<DataType = any>(window: Window): Promise<Applet> {
+  async connect<DataType = any>(window: Window): Promise<Applet<DataType>> {
     return new Promise((resolve, reject) => {
       const applet = new Applet<DataType>(window);
       const timeout = setTimeout(() => {
@@ -23,7 +23,7 @@ export class AppletFactory {
     });
   }
 
-  register<DataType = any>(manifest?: Object): AppletScope {
+  register<DataType = any>(manifest?: Object): AppletScope<DataType> {
     return new AppletScope<DataType>(manifest);
   }
 }
