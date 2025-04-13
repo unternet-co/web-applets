@@ -38,12 +38,12 @@ export class AppletScope<DataType = any> extends EventTarget {
     // Listen for a connect event to set up message port
     const appletConnectListener = (event: MessageEvent) => {
       if (
-        event.source === window.parent &&
+        event.source === window &&
         event.data.type === 'appletconnect' &&
         event.ports &&
         event.ports.length > 0
       ) {
-        debug.log('AppletScope', 'Recieved message', event.data);
+        debug.log('AppletScope', 'Received message', event.data);
         const port = event.ports[0];
         this.#postMessage = port.postMessage.bind(port);
         port.onmessage = this.#handleMessage.bind(this);
