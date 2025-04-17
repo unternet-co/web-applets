@@ -1,6 +1,6 @@
-import { AppletFrameElement, applets } from './index.js';
-import { type AppletFactory } from './applets/applet-factory.js';
-import { AppletEvent } from './applets/events.js';
+import { AppletFrameElement, applets } from './index.ts';
+import { type AppletFactory } from './applets/applet-factory.ts';
+import { AppletEvent } from './applets/events.ts';
 
 declare global {
   interface Window {

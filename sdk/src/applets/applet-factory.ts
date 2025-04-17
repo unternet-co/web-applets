@@ -1,7 +1,7 @@
-import { APPLET_CONNECT_TIMEOUT } from '../constants.js';
-import { AppletConnectionError } from './errors.js';
-import { Applet } from './applet.js';
-import { AppletScope } from './applet-scope.js';
+import { APPLET_CONNECT_TIMEOUT } from '../constants.ts';
+import { AppletConnectionError } from './errors.ts';
+import { Applet } from './applet.ts';
+import { AppletScope } from './applet-scope.ts';
 
 export class AppletFactory {
   async connect<DataType = any>(window: Window): Promise<Applet<DataType>> {

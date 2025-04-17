@@ -1,6 +1,6 @@
-import { AppletActionDescriptor } from './actions.js';
-import { debug } from '../debug.js';
-import { AppletEvent } from './events.js';
+import { AppletActionDescriptor } from './actions.ts';
+import { debug } from '../debug.ts';
+import { AppletEvent } from './events.ts';
 import {
   AppletActionMessage,
   AppletActionsMessage,
@@ -11,9 +11,9 @@ import {
   AppletActionErrorMessage,
   AppletActionCompleteMessage,
   AppletConnectMessage,
-} from '../messages.js';
-import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
-import { isEmpty } from '../utils.js';
+} from '../messages.ts';
+import { AppletManifest, dispatchEventAndHandler } from '../utils.ts';
+import { isEmpty } from '../utils.ts';
 
 export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};

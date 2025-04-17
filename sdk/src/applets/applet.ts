@@ -1,6 +1,6 @@
-import { RESPONSE_MESSAGE_TIMEOUT } from '../constants.js';
-import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
-import { AppletEvent } from './events.js';
+import { RESPONSE_MESSAGE_TIMEOUT } from '../constants.ts';
+import { AppletManifest, dispatchEventAndHandler } from '../utils.ts';
+import { AppletEvent } from './events.ts';
 import {
   AppletActionErrorMessage,
   AppletActionMessage,
@@ -10,10 +10,10 @@ import {
   AppletMessage,
   AppletRegisterMessage,
   AppletResizeMessage,
-} from '../messages.js';
-import { debug } from '../debug.js';
-import { AppletExecutionError } from './errors.js';
-import { AppletActionDescriptor } from './actions.js';
+} from '../messages.ts';
+import { debug } from '../debug.ts';
+import { AppletExecutionError } from './errors.ts';
+import { AppletActionDescriptor } from './actions.ts';
 
 export class Applet<DataType = any> extends EventTarget {
   #window: Window;

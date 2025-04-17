@@ -1,4 +1,4 @@
-import { AppletActionDescriptor } from './actions.js';
+import { AppletActionDescriptor } from './actions.ts';
 
 export type AppletEventType = 'connect' | 'actions' | 'resize' | 'data';
 
