@@ -37,12 +37,12 @@ export class AppletScope<DataType = any> extends EventTarget {
     if (manifest) this.#manifest = manifest;
 
     // Listen for a connect event to set up message port
-    window.addEventListener('message', this.#handleConnect.bind(this));
+    self.addEventListener('message', this.#handleConnect.bind(this));
 
     const connectMessage: AppletConnectMessage = {
       type: 'appletconnect',
     };
-    window.parent.postMessage(connectMessage, '*');
+    self.parent.postMessage(connectMessage, '*');
     debug.log('AppletScope', 'Send message', connectMessage);
   }
 
