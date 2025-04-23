@@ -118,7 +118,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(actionsEvent);
   }
 
-  async sendAction(actionId: string, args: any): Promise<void> {
+  async sendAction(actionId: string, args?: any): Promise<void> {
     const actionMessage: AppletActionMessage = {
       id: crypto.randomUUID(),
       type: 'action',
