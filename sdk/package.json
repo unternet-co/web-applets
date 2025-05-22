@@ -17,6 +17,10 @@
     "type": "git",
     "url": "git+https://github.com/unternet-co/web-applets.git"
   },
+  "imports": {
+    "#src/*": "./src/*",
+    "#tests/*": "./tests/*"
+  },
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run build:module && npm run build:shim:prod",
     "build:dev": "cross-env NODE_ENV=development npm run build:module && npm run build:shim:dev",
@@ -24,12 +28,16 @@
     "build:shim:prod": "cross-env NODE_ENV=production node ./scripts/build.js",
     "build:shim:dev": "cross-env NODE_ENV=development node ./scripts/build.js",
     "postinstall": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest --root tests --watch=false",
+    "test:dev": "vitest --root tests --watch"
   },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.13.10",
     "cross-env": "^7.0.3",
     "esbuild": "^0.25.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "vitest": "^3.1.4"
   }
 }

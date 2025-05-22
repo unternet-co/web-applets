@@ -23,9 +23,10 @@ export interface AppletActionMessage extends AppletMessage {
   arguments: any;
 }
 
-export interface AppletActionCompleteMessage extends AppletMessage {
+export interface AppletActionCompleteMessage<T> extends AppletMessage {
   type: 'actioncomplete';
   id: string;
+  result: T
 }
 
 export interface AppletActionErrorMessage extends AppletMessage {

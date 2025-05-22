@@ -2,6 +2,7 @@ import { RESPONSE_MESSAGE_TIMEOUT } from '../constants.js';
 import { AppletManifest, dispatchEventAndHandler } from '../utils.js';
 import { AppletEvent } from './events.js';
 import {
+    AppletActionCompleteMessage,
   AppletActionErrorMessage,
   AppletActionMessage,
   AppletActionsMessage,
@@ -118,7 +119,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(actionsEvent);
   }
 
-  async sendAction(actionId: string, args?: any): Promise<void> {
+  async sendAction<Result = any>(actionId: string, args?: any, options?: { timeoutDuration?: number }): Promise<Result> {
     const actionMessage: AppletActionMessage = {
       id: crypto.randomUUID(),
       type: 'action',
@@ -135,7 +136,7 @@ export class Applet<DataType = any> extends EventTarget {
             `Applet action handler failed to complete before timeout (${RESPONSE_MESSAGE_TIMEOUT}ms)`
           )
         );
-      }, RESPONSE_MESSAGE_TIMEOUT);
+      }, options?.timeoutDuration ?? RESPONSE_MESSAGE_TIMEOUT);
 
       const callback = (messageEvent: MessageEvent) => {
         const message = messageEvent.data as AppletMessage;
@@ -151,7 +152,8 @@ export class Applet<DataType = any> extends EventTarget {
             const actionErrorMessage = message as AppletActionErrorMessage;
             reject(new AppletExecutionError(actionErrorMessage.message));
           } else {
-            resolve();
+            const actionCompleteMessage = message as AppletActionCompleteMessage<Result>
+            resolve(actionCompleteMessage.result);
           }
         }
       };
