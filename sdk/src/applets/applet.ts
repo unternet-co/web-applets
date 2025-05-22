@@ -118,7 +118,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(actionsEvent);
   }
 
-  async sendAction<Result = any>(actionId: string, args: any): Promise<Result> {
+  async sendAction<Result = any>(actionId: string, args?: any, options?: { timeoutDuration?: number }): Promise<Result> {
     const actionMessage: AppletActionMessage = {
       id: crypto.randomUUID(),
       type: 'action',
@@ -135,7 +135,7 @@ export class Applet<DataType = any> extends EventTarget {
             `Applet action handler failed to complete before timeout (${RESPONSE_MESSAGE_TIMEOUT}ms)`
           )
         );
-      }, RESPONSE_MESSAGE_TIMEOUT);
+      }, options?.timeoutDuration ?? RESPONSE_MESSAGE_TIMEOUT);
 
       const callback = (messageEvent: MessageEvent) => {
         const message = messageEvent.data as AppletMessage;
