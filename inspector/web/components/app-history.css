@@ -1,6 +1,6 @@
 app-history {
   border-left: var(--panel-border);
-  padding: var(--space-lg);
+  padding: var(--space-lg) 0;
   grid-area: history;
   display: flex;
   overflow: hidden;
@@ -9,13 +9,21 @@ app-history {
   transition: width 0.3s ease;
 }
 
+app-history app-prompt {
+  padding: 0 var(--space-lg);
+}
+
 app-history .history {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
   overflow-y: scroll;
-  justify-content: end;
+  padding: 0 var(--space-lg);
+}
+
+app-history .history__push-to-bottom {
+  flex: 1 1 auto;
 }
 
 app-history .bubble-container {

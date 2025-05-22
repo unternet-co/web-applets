@@ -54,7 +54,7 @@ export class AppHistory extends LitElement {
                 <span class="status-message">Enter a message below to interact</span>
               </div>
             `
-          : html``}
+          : html`<div class="history__push-to-bottom"></div>`}
         ${this.interactions.map((interaction) => {
           // Render the user's input bubble.
           const inputBubble =
