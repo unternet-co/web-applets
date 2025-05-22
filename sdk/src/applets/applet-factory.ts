@@ -4,9 +4,9 @@ import { Applet } from './applet.js';
 import { AppletScope } from './applet-scope.js';
 
 export class AppletFactory {
-  async connect<DataType = any>(window: Window): Promise<Applet<DataType>> {
+  async connect<DataType = any>(window: Window, options?: { context?: Window }): Promise<Applet<DataType>> {
     return new Promise((resolve, reject) => {
-      const applet = new Applet<DataType>(window);
+      const applet = new Applet<DataType>(window, options);
       const timeout = setTimeout(() => {
         reject(
           new AppletConnectionError(
