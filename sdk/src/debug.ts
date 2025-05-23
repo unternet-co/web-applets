@@ -1,4 +1,4 @@
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = true // process.env.NODE_ENV === "production";
 
 function log(location: string, ...messages: any[]) {
   if (!isProduction) {
