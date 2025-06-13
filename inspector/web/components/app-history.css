@@ -1,6 +1,6 @@
 app-history {
   border-left: var(--panel-border);
-  padding: var(--space-lg);
+  padding: var(--space-lg) 0;
   grid-area: history;
   display: flex;
   overflow: hidden;
@@ -10,6 +10,10 @@ app-history {
   min-width: 0;
   min-height: 0;
   height: 100%;
+}
+
+app-history app-prompt {
+  padding: 0 var(--space-lg);
 }
 
 app-history .history {
