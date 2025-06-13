@@ -144,6 +144,7 @@ select {
   border: var(--input-border);
   border-radius: var(--rounded);
   padding: var(--space-sm);
+  color: var(--color-text);
 }
 
 input::placeholder,

@@ -1,8 +1,9 @@
 app-viewer {
   background: var(--color-background);
   display: flex;
-  overflow: auto;
+  overflow: hidden;
   grid-area: viewer;
+  min-width: 0;
 }
 
 app-viewer .hidden {
@@ -57,10 +58,6 @@ app-viewer .applet-header button {
   border: none;
   /* border-radius: var(--rounded); */
   padding: var(--space-xxs) var(--space-xs);
-}
-
-app-viewer .applet-header button:hover {
-  /* background: var(--color-background); */
 }
 
 app-viewer .applet-header button[data-selected='true'] {
