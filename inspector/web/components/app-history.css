@@ -23,7 +23,7 @@ app-history .history {
   gap: var(--space-md);
   overflow-y: auto;
   min-height: 0;
-  padding-bottom: var(--space-md);
+  padding: 0 var(--space-lg) var(--space-md) var(--space-lg);
 }
 
 app-history .bubble-container {
