@@ -7,6 +7,9 @@ app-history {
   flex-direction: column-reverse;
   gap: var(--space-md);
   transition: width 0.3s ease;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
 }
 
 app-history app-prompt {
@@ -16,14 +19,11 @@ app-history app-prompt {
 app-history .history {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: var(--space-md);
-  overflow-y: scroll;
-  padding: 0 var(--space-lg);
-}
-
-app-history .history__push-to-bottom {
-  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: var(--space-md);
 }
 
 app-history .bubble-container {

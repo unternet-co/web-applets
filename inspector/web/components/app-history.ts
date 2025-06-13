@@ -49,13 +49,13 @@ export class AppHistory extends LitElement {
     return html`
       <div class="history">
         ${this.interactions.length <= 0
-          ? html`
+        ? html`
               <div class="action-output">
                 <span class="status-message">Enter a message below to interact</span>
               </div>
             `
-          : html`<div class="history__push-to-bottom"></div>`}
-        ${this.interactions.map((interaction) => {
+        : html``}
+        ${this.interactions.slice().reverse().map((interaction) => {
           // Render the user's input bubble.
           const inputBubble =
             interaction.input.type === 'command'
@@ -106,7 +106,7 @@ export class AppHistory extends LitElement {
               return html``;
             });
 
-          return html`${inputBubble}${outputBubbles}`;
+          return html`${outputBubbles}${inputBubble}`;
         })}
       </div>
     `;

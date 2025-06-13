@@ -5,6 +5,8 @@ app-sidebar {
   grid-area: sidebar;
   display: flex;
   transition: width 0.3s ease;
+  min-width: 0;
+  overflow: hidden;
 }
 
 app-sidebar form {
@@ -23,6 +25,24 @@ app-sidebar fieldset {
   padding: 0;
   margin: 0;
   min-width: 0;
+  min-height: 0;
+}
+
+/* Schema fieldset should be scrollable */
+app-sidebar fieldset:has(.schema) {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Parameters fieldset should not grow */
+app-sidebar fieldset:has(textarea) {
+  flex: 0 0 auto;
+}
+
+/* Submit button fieldset should not grow */
+app-sidebar fieldset:has(input[type="submit"]) {
+  flex: 0 0 auto;
 }
 
 app-sidebar .status-message {
@@ -45,24 +65,15 @@ app-sidebar select {
   font-size: var(--text-sm);
   border-radius: var(--rounded);
   border: 1px solid var(--color-border);
-  overflow: auto;
+  overflow-y: auto;
   white-space: pre-wrap;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
 }
 
 app-sidebar textarea {
   resize: none;
-}
-
-app-sidebar input[type='submit'] {
-  /* padding: var(--space-sm);
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid var(--color-border);
-  border-radius: var(--rounded); */
-}
-
-app-sidebar input[type='submit']:hover {
-  /* background: var(--color-border); */
 }
 
 app-sidebar .error-message {

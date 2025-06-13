@@ -7,6 +7,9 @@ settings-dialog dialog {
   pointer-events: none;
   width: 400px;
   min-height: 200px;
+  background-color: var(--color-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow);
 }
 
 settings-dialog dialog[open] {
@@ -33,6 +36,13 @@ settings-dialog .close-dialog-button {
   inset-inline-end: var(--space-sm);
   padding: 0;
   border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+settings-dialog .close-dialog-button:hover {
+  color: var(--color-action);
 }
 
 settings-dialog .dialog-content {
@@ -75,4 +85,11 @@ settings-dialog input {
 
 settings-dialog .clear-button {
   align-self: end;
+  background: var(--color-raised);
+  color: var(--color-text);
+}
+
+settings-dialog .clear-button:hover {
+  background: var(--color-action);
+  color: var(--color-button-text-hover);
 }
