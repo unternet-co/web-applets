@@ -1,21 +1,30 @@
-# For triggering a rebuild when docs are updated in an external repo
-# Copy this file to .github/workflows/ in your documentation repository
+# Documentation Sync Trigger for External Repositories
+# 
+# This workflow triggers the main website's documentation sync when docs are updated.
+# It uses repository dispatch events for provider-agnostic deployment - the main site
+# will sync docs and trigger its own deployment via deploy hooks.
+#
+# Copy this file to .github/workflows/docsync.yml in your external repository.
 
-name: Trigger website rebuild
+name: Trigger documentation sync
 
 on:
+  # Trigger on all pushes to main (since docs could be anywhere)
   push:
     branches: [ main ]
   
+  # Allow manual trigger
+  workflow_dispatch:
+
 jobs:
-  trigger-rebuild:
+  trigger-docsync:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Trigger website rebuild
+    - name: Trigger documentation sync
       uses: actions/github-script@v7
       with:
-        github-token: ${{ secrets.DEPLOY_TOKEN }}
+        github-token: ${{ secrets.DOCSYNC_TOKEN }}
         script: |
           const response = await github.rest.repos.createDispatchEvent({
             owner: 'unternet-co',
@@ -28,5 +37,5 @@ jobs:
             }
           });
           
-          console.log('Website rebuild triggered successfully');
+          console.log('Documentation sync triggered successfully');
           console.log('Response:', response.status);
