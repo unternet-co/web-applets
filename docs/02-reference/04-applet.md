@@ -1,13 +1,3 @@
----
-layout: docs
-title: Applet - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Applet
-  parent: Reference
-  order: 3
----
-
 # Applet
 
 The `Applet` class represents the interface through which the client interacts with an applet window. It is returned by the `AppletFactory.connect()` method and provides access to the applet's properties, data, and actions.

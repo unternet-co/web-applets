@@ -1,13 +1,3 @@
----
-layout: docs
-title: Web Applets documentation
-tags: docs
-eleventyNavigation:
-  key: Introduction
-  parent: Web Applets
-  order: 1
----
-
 # Introduction to Web Applets
 
 Web Applets is an SDK, protocol and set of standards for building software that both humans and AI can understand and use together. It's built to be a light-weight layer over the existing web, that makes web apps legible to external systems, which can in turn send actions to them and receive data.

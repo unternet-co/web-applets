@@ -1,13 +1,3 @@
----
-layout: docs
-title: AppletFactory - Web Applets
-tags: docs
-eleventyNavigation:
-  key: AppletFactory
-  parent: Reference
-  order: 1
----
-
 # AppletFactory
 
 This is the main entry point for both connecting to existing applets (from the host app) and registering new ones (from within an applet).

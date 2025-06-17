@@ -1,13 +1,3 @@
----
-layout: docs
-title: AppletFrameElement - Web Applets
-tags: docs
-eleventyNavigation:
-  key: AppletFrameElement
-  parent: Reference
-  order: 7
----
-
 # AppletFrameElement
 
 `AppletFrameElement` is a custom HTML element that provides a container for embedding and interacting with applets. It handles the connection to the applet, manages communication, and automatically resizes based on the applet's dimensions.

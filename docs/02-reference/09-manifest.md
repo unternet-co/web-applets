@@ -1,13 +1,3 @@
----
-layout: docs
-title: Manifest - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Manifest
-  parent: Reference
-  order: 8
----
-
 # Manifest
 
 The `manifest.json` file is an important extension to the <a href="https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest" target="_blank">Web App Manifest</a> spec, which declares metadata about the applet that clients and crawlers can access without having to load the applet in the browser.

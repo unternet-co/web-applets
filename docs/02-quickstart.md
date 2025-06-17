@@ -1,13 +1,3 @@
----
-layout: docs
-title: Quickstart - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Quickstart
-  parent: Web Applets
-  order: 2
----
-
 # Quickstart
 
 Here we'll quickly get you set up with how to [create an applet](#applet) or [a client](#client)

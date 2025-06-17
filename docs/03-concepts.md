@@ -1,13 +1,3 @@
----
-layout: docs
-title: Concepts - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Concepts
-  parent: Web Applets
-  order: 3
----
-
 # Concepts
 
 The Web Applets protocol is implemented by a **client** (e.g. a browser, extension, or dedicated app) and an **applet** (which is a web app). Using this protocol, the Web Applets SDK establishes a connection allowing the host to send **actions** to the applet, and receive **data** when the applet's internal state is updated.

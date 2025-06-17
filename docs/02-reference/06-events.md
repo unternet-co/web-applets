@@ -1,13 +1,3 @@
----
-layout: docs
-title: Events - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Events
-  parent: Reference
-  order: 5
----
-
 # Events
 
 The Web Applets API uses a standard event-based communication system. Applications can listen for these events to respond to applet lifecycle changes, communication, and user interactions.

@@ -1,13 +1,3 @@
----
-layout: docs
-title: Errors - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Errors
-  parent: Reference
-  order: 6
----
-
 # Errors
 
 The Web Applets API defines specific error types to help identify and handle different failure scenarios that may occur during applet operations.

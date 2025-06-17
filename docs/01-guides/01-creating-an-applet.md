@@ -1,13 +1,3 @@
----
-layout: docs
-title: Creating an applet - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Create your first applet
-  parent: Guides
-  order: 1
----
-
 # Creating an applet
 
 ## What we will be building
