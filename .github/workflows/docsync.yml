@@ -11,9 +11,9 @@ jobs:
     steps:
     - name: Trigger deployment
       run: |
-        if [ -n "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+        if [ -n "${{ secrets.DOCS_DEPLOY_HOOK }}" ]; then
           echo "Triggering documentation rebuild..."
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          curl -X POST "${{ secrets.DOCS_DEPLOY_HOOK }}"
           echo "Rebuild triggered successfully"
         else
           echo "RENDER_DEPLOY_HOOK not configured, skipping deployment trigger"
