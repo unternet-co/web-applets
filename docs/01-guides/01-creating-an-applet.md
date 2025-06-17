@@ -16,7 +16,7 @@ You will be building a very simple applet that says hello when we send it an act
 
 This tutorial will walkthrough how an applet communicates with an external source and is able to pass data through the communication protocol. In addition, we will cover integrating the SDK to a web app, inspecting it during development, building and deploying it so you get a feel for the end to end process. Let's get started!
 
-![](/assets/docs/run-your-applet.png)
+![](../assets/run-your-applet.png)
 
 ## Setup
 
@@ -123,11 +123,11 @@ With this you have all three pieces in place:
 
 While developing, it is helpful to have a way to test out your applet. We built an inspector that allows you to do just that. To install the inspector and run it in a separate port, type `npx @web-applets/inspector`. Click the link and you should see an empty page where you can load any applet to inspect.
 
-![](/assets/docs/web-applets-inspector.png)
+![](../assets/web-applets-inspector.png)
 
 To inspect our applet, we need to run it. To get your applet running, run `npm run dev` in the applet's directory. Once running, let's enter our web applet's URL (`http://localhost:5173/`), in the inspector. You will see that the inspector loads the app on one side and displays all actions on the other side. Of course, we only have one action, but you can imagine how this would be beneficial when we have many.
 
-![](/assets/docs/plain-inspector.png)
+![](../assets/plain-inspector.png)
 
 > **Good to know:** The inspector is a Node express server running on a different port and allows you to inspect your web app. It has some additional UI to test your actions easily.
 
@@ -141,7 +141,7 @@ Now that you have a way to test your actions, let's dispatch a sample event. In 
 
 When you click "dispatch action", you can see the view layer respond according to the handler we had written.
 
-![](/assets/docs/view-layer-responding.png)
+![](../assets/view-layer-responding.png)
 
 Congratulations! 🎉
 

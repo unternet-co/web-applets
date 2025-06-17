@@ -13,7 +13,7 @@ eleventyNavigation:
 The Web Applets protocol is implemented by a **client** (e.g. a browser, extension, or dedicated app) and an **applet** (which is a web app). Using this protocol, the Web Applets SDK establishes a connection allowing the host to send **actions** to the applet, and receive **data** when the applet's internal state is updated.
 
 <figure>
-<img src="/assets/docs/applet-network-diagram.png" alt="A schematic diagram showing an 'Applet' square with arrows connecting to a 'Client' square, showing the passing of actions and data between them">
+<img src="./assets/applet-network-diagram.png" alt="A schematic diagram showing an 'Applet' square with arrows connecting to a 'Client' square, showing the passing of actions and data between them">
 <figcaption>A rough schematic of data transfer between an applet and a client. The applet is typically embedded in an iframe or webview within the client, and uses a message passing protocol to exchange data.</figcaption>
 </figure>
 

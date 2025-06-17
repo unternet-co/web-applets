@@ -1,13 +1,3 @@
----
-layout: docs
-title: Templates - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Templates
-  parent: Resources & Tools
-  order: 2
----
-
 # Templates
 
 We've prepared a <a href="https://github.com/unternet-co/web-applet-template-ts-vite" target="_blank">template</a> that can be cloned to quickly spin up a new Web Applet using TypeScript, and <a href="https://vite.dev" target="_blank">Vite</a> for bundling.

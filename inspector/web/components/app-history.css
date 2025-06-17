@@ -1,6 +1,6 @@
 app-history {
   border-left: var(--panel-border);
-  padding: var(--space-lg) 0;
+  padding: var(--space-lg);
   grid-area: history;
   display: flex;
   overflow: hidden;
@@ -12,10 +12,6 @@ app-history {
   height: 100%;
 }
 
-app-history app-prompt {
-  padding: 0 var(--space-lg);
-}
-
 app-history .history {
   flex: 1;
   display: flex;
@@ -23,7 +19,7 @@ app-history .history {
   gap: var(--space-md);
   overflow-y: auto;
   min-height: 0;
-  padding: 0 var(--space-lg) var(--space-md) var(--space-lg);
+  padding-bottom: var(--space-md);
 }
 
 app-history .bubble-container {

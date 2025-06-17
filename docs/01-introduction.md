@@ -17,7 +17,7 @@ Web Applets is an SDK, protocol and set of standards for building software that 
 The project is MIT-licensed, and source code is hosted on GitHub <a href="https://github.com/unternet-co/web-applets" target="_blank">here</a>.
 
 <figure>
-<img src="/assets/blog/2025-01-maps-demo.gif" alt="A user interface showing a client loading up a graphical map applet in response to a query" />
+<img src="./assets/maps-demo.gif" alt="A user interface showing a client loading up a graphical map applet in response to a query" />
 <figcaption>An example of our web applet client loading a map applet in response to a query, then responding to a follow-up question by reading the map's data.</figcaption>
 </figure>
 

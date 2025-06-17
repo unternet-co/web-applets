@@ -1,13 +1,3 @@
----
-layout: docs
-title: Inspector - Web Applets
-tags: docs
-eleventyNavigation:
-  key: Inspector
-  parent: Resources & Tools
-  order: 1
----
-
 # Inspector
 
 The **Web Applets Inspector** is a utility for inspecting and debugging web applets.
