@@ -4,7 +4,7 @@ Web Applets is an SDK, protocol and set of standards for building software that 
 
 > Want to try one out now? In your terminal (with Node installed) run `npx @web-applets/inspector` and in the Inspector's URL bar paste the link of an applet from our [directory](/directory).
 
-The project is MIT-licensed, and source code is hosted on GitHub <a href="https://github.com/unternet-co/web-applets" target="_blank">here</a>.
+The project is MIT-licensed, and the source code is hosted on GitHub <a href="https://github.com/unternet-co/web-applets" target="_blank">here</a>.
 
 <figure>
 <img src="./assets/maps-demo.gif" alt="A user interface showing a client loading up a graphical map applet in response to a query" />
