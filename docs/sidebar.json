@@ -1,0 +1,80 @@
+{
+  "title": "Web Applets Documentation",
+  "items": [
+    {
+      "title": "Introduction",
+      "path": "introduction"
+    },
+    {
+      "title": "Quick Start", 
+      "path": "quickstart"
+    },
+    {
+      "title": "Concepts",
+      "path": "concepts"
+    },
+    {
+      "title": "Guides",
+      "items": [
+        {
+          "title": "Creating an Applet",
+          "path": "guides/creating-an-applet"
+        }
+      ]
+    },
+    {
+      "title": "Reference",
+      "items": [
+        {
+          "title": "Overview",
+          "path": "reference/overview"
+        },
+        {
+          "title": "Applet Factory",
+          "path": "reference/applet-factory"
+        },
+        {
+          "title": "Applet Scope",
+          "path": "reference/applet-scope"
+        },
+        {
+          "title": "Applet",
+          "path": "reference/applet"
+        },
+        {
+          "title": "Actions",
+          "path": "reference/actions"
+        },
+        {
+          "title": "Events",
+          "path": "reference/events"
+        },
+        {
+          "title": "Errors",
+          "path": "reference/errors"
+        },
+        {
+          "title": "Applet Frame Element",
+          "path": "reference/applet-frame-element"
+        },
+        {
+          "title": "Manifest",
+          "path": "reference/manifest"
+        }
+      ]
+    },
+    {
+      "title": "Resources",
+      "items": [
+        {
+          "title": "Inspector",
+          "path": "resources/inspector"
+        },
+        {
+          "title": "Templates",
+          "path": "resources/templates"
+        }
+      ]
+    }
+  ]
+}
