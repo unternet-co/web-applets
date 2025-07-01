@@ -19,9 +19,9 @@ export class AppletScope<DataType = any> extends EventTarget {
   #actionHandlers: { [key: string]: Function } = {};
   #manifest: AppletManifest;
   #actions: { [key: string]: AppletActionDescriptor };
+  #connectedPorts: MessagePort[] = [];
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
-  #postMessage: MessagePort['postMessage'];
   #width: number;
   #height: number;
 
@@ -33,34 +33,35 @@ export class AppletScope<DataType = any> extends EventTarget {
     super();
     debug.log('AppletScope', 'Constructor called');
     this.#dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
+    this.#createResizeObserver();
     if (manifest) this.#manifest = manifest;
 
     // Listen for a connect event to set up message port
-    const appletConnectListener = (event: MessageEvent) => {
-      if (
-        event.source === window.parent &&
-        event.data.type === 'appletconnect' &&
-        event.ports &&
-        event.ports.length > 0
-      ) {
-        debug.log('AppletScope', 'Recieved message', event.data);
-        const port = event.ports[0];
-        this.#postMessage = port.postMessage.bind(port);
-        port.onmessage = this.#handleMessage.bind(this);
-        this.removeEventListener('message', appletConnectListener);
-        this.#initialize();
-      }
-    };
-    window.addEventListener('message', appletConnectListener);
+    self.addEventListener('message', this.#handleConnect.bind(this));
 
     const connectMessage: AppletConnectMessage = {
       type: 'appletconnect',
     };
-    window.parent.postMessage(connectMessage, '*');
+    self.parent.postMessage(connectMessage, '*');
     debug.log('AppletScope', 'Send message', connectMessage);
   }
 
-  async #initialize() {
+  #handleConnect(event: MessageEvent) {
+    if (
+      event.source !== window &&
+      event.data.type === 'appletconnect' &&
+      event.ports &&
+      event.ports.length > 0
+    ) {
+      debug.log('AppletScope', 'Received message', event.data);
+      const port = event.ports[0];
+      port.onmessage = this.#handleMessage(port);
+      this.#connectedPorts.push(port);
+      this.#initialize(port);
+    }
+  }
+
+  async #initialize(port: MessagePort) {
     const manifest = this.manifest ?? (await this.#loadManifest());
     this.#manifest = manifest || {};
     this.#actions = this.#actions || manifest?.actions || {};
@@ -72,40 +73,43 @@ export class AppletScope<DataType = any> extends EventTarget {
       actions: this.#actions,
       data: this.#data,
     };
-    this.#postMessage(registerMessage);
+    port.postMessage(registerMessage);
     debug.log('AppletScope', 'Send message', registerMessage);
 
     const connectEvent = new AppletEvent('connect');
     this.#dispatchEventAndHandler(connectEvent);
 
-    this.#createResizeObserver();
+    // Announce current applet dimensions
+    this.#handleResize({ height: this.#height, width: this.#width })
   }
 
-  #handleMessage(messageEvent: MessageEvent) {
-    const message = messageEvent.data as AppletMessage;
-    debug.log('AppletScope', 'Recieved message', message);
+  #handleMessage(port: MessagePort) {
+    return (messageEvent: MessageEvent) => {
+      const message = messageEvent.data as AppletMessage;
+      debug.log('AppletScope', 'Recieved message', message);
 
-    switch (message.type) {
-      case 'data':
-        if ('data' in message) this.data = message.data as DataType;
-        break;
-      case 'action':
-        if (
-          'type' in message &&
-          message.type === 'action' &&
-          'id' in message &&
-          typeof message.id === 'string' &&
-          'actionId' in message &&
-          typeof message.actionId == 'string' &&
-          'arguments' in message
-        ) {
-          this.#handleActionMessage(message as AppletActionMessage);
-        }
-        break;
+      switch (message.type) {
+        case 'data':
+          if ('data' in message) this.data = message.data as DataType;
+          break;
+        case 'action':
+          if (
+            'type' in message &&
+            message.type === 'action' &&
+            'id' in message &&
+            typeof message.id === 'string' &&
+            'actionId' in message &&
+            typeof message.actionId == 'string' &&
+            'arguments' in message
+          ) {
+            this.#handleActionMessage(message as AppletActionMessage, port);
+          }
+          break;
+      }
     }
   }
 
-  async #handleActionMessage(message: AppletActionMessage) {
+  async #handleActionMessage(message: AppletActionMessage, port: MessagePort) {
     const { actionId, arguments: args, id } = message;
     if (Object.keys(this.#actionHandlers).includes(actionId)) {
       try {
@@ -114,14 +118,14 @@ export class AppletScope<DataType = any> extends EventTarget {
           type: 'actioncomplete',
           id,
         };
-        this.#postMessage(actionCompleteMessage);
+        port.postMessage(actionCompleteMessage);
       } catch (e) {
         const actionErrorMessage: AppletActionErrorMessage = {
           type: 'actionerror',
           id,
           message: e.message,
         };
-        this.#postMessage(actionErrorMessage);
+        port.postMessage(actionErrorMessage);
         console.error(e);
       }
     }
@@ -147,7 +151,9 @@ export class AppletScope<DataType = any> extends EventTarget {
       height,
     };
     debug.log('AppletScope', 'Send message', resizeMessage);
-    this.#postMessage(resizeMessage);
+    this.#connectedPorts.forEach(port => {
+      port.postMessage(resizeMessage);
+    })
   }
 
   async #loadManifest(): Promise<AppletManifest | undefined> {
@@ -200,7 +206,9 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
 
     debug.log('AppletScope', 'Send message', actionsMessage);
-    this.#postMessage && this.#postMessage(actionsMessage);
+    this.#connectedPorts.forEach(port => {
+      port.postMessage(actionsMessage);
+    })
 
     // Set a timeout, so if data is set and a listener attached immediately after
     // the listener will still fire
@@ -232,7 +240,9 @@ export class AppletScope<DataType = any> extends EventTarget {
       data,
     };
     debug.log('AppletScope', 'Send message', dataMessage);
-    this.#postMessage && this.#postMessage(dataMessage);
+    this.#connectedPorts.forEach(port => {
+      port.postMessage(dataMessage);
+    })
 
     // Set a timeout, so if data is set and a listener attached immediately after
     // the listener will still fire

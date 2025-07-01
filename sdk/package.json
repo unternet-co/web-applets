@@ -23,6 +23,7 @@
     "build:module": "tsc && cp ../README.md ./README.md",
     "build:shim:prod": "cross-env NODE_ENV=production node ./scripts/build.js",
     "build:shim:dev": "cross-env NODE_ENV=development node ./scripts/build.js",
+    "postinstall": "npm run build",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {

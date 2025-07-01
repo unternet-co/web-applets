@@ -31,7 +31,7 @@ export class Applet<DataType = any> extends EventTarget {
   onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
 
-  constructor(targetWindow: Window) {
+  constructor(targetWindow: Window, { context }: { context?: Window } = {}) {
     super();
     debug.log('Applet', 'Constructor called');
     this.#window = targetWindow;
@@ -52,7 +52,8 @@ export class Applet<DataType = any> extends EventTarget {
         this.removeEventListener('message', registerListener);
       }
     };
-    window.addEventListener('message', registerListener);
+
+    (context || self).addEventListener('message', registerListener);
   }
 
   #createMessageChannel() {
@@ -117,7 +118,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(actionsEvent);
   }
 
-  async sendAction(actionId: string, args: any): Promise<void> {
+  async sendAction(actionId: string, args?: any): Promise<void> {
     const actionMessage: AppletActionMessage = {
       id: crypto.randomUUID(),
       type: 'action',
