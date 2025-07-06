@@ -269,8 +269,4 @@ export class AppletScope<DataType = any> extends EventTarget {
   get height(): number {
     return this.#height;
   }
-
-  get workerPort(): MessagePort | undefined {
-    return this.#workerPort
-  }
 }
