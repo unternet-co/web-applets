@@ -21,7 +21,8 @@ export class AppletScope<DataType = any> extends EventTarget {
   #actions: { [key: string]: AppletActionDescriptor };
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
-  #postMessage: MessagePort['postMessage'];
+  #messagePort: MessagePort | undefined;
+  #workerPort: MessagePort | undefined;
   #width: number;
   #height: number;
 
@@ -44,18 +45,20 @@ export class AppletScope<DataType = any> extends EventTarget {
         event.ports.length > 0
       ) {
         debug.log('AppletScope', 'Recieved message', event.data);
-        const port = event.ports[0];
-        this.#postMessage = port.postMessage.bind(port);
-        port.onmessage = this.#handleMessage.bind(this);
+        this.#messagePort = event.ports[0];
+        this.#messagePort.onmessage = this.#handleMessage.bind(this);
+        this.#workerPort = event.ports[1];
         this.removeEventListener('message', appletConnectListener);
         this.#initialize();
       }
     };
+
     window.addEventListener('message', appletConnectListener);
 
     const connectMessage: AppletConnectMessage = {
       type: 'appletconnect',
     };
+
     window.parent.postMessage(connectMessage, '*');
     debug.log('AppletScope', 'Send message', connectMessage);
   }
@@ -72,12 +75,14 @@ export class AppletScope<DataType = any> extends EventTarget {
       actions: this.#actions,
       data: this.#data,
     };
-    this.#postMessage(registerMessage);
+    this.#messagePort?.postMessage(registerMessage);
     debug.log('AppletScope', 'Send message', registerMessage);
 
+    // Dispatch connect event
     const connectEvent = new AppletEvent('connect');
     this.#dispatchEventAndHandler(connectEvent);
 
+    // Resize observer
     this.#createResizeObserver();
   }
 
@@ -115,14 +120,14 @@ export class AppletScope<DataType = any> extends EventTarget {
           id,
           result
         };
-        this.#postMessage(actionCompleteMessage);
+        this.#messagePort?.postMessage(actionCompleteMessage);
       } catch (e) {
         const actionErrorMessage: AppletActionErrorMessage = {
           type: 'actionerror',
           id,
           message: e.message,
         };
-        this.#postMessage(actionErrorMessage);
+        this.#messagePort?.postMessage(actionErrorMessage);
         console.error(e);
       }
     }
@@ -148,7 +153,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       height,
     };
     debug.log('AppletScope', 'Send message', resizeMessage);
-    this.#postMessage(resizeMessage);
+    this.#messagePort?.postMessage(resizeMessage);
   }
 
   async #loadManifest(): Promise<AppletManifest | undefined> {
@@ -201,7 +206,7 @@ export class AppletScope<DataType = any> extends EventTarget {
     };
 
     debug.log('AppletScope', 'Send message', actionsMessage);
-    this.#postMessage && this.#postMessage(actionsMessage);
+    this.#messagePort?.postMessage(actionsMessage);
 
     // Set a timeout, so if data is set and a listener attached immediately after
     // the listener will still fire
@@ -233,7 +238,7 @@ export class AppletScope<DataType = any> extends EventTarget {
       data,
     };
     debug.log('AppletScope', 'Send message', dataMessage);
-    this.#postMessage && this.#postMessage(dataMessage);
+    this.#messagePort?.postMessage(dataMessage);
 
     // Set a timeout, so if data is set and a listener attached immediately after
     // the listener will still fire
@@ -251,5 +256,9 @@ export class AppletScope<DataType = any> extends EventTarget {
 
   get height(): number {
     return this.#height;
+  }
+
+  get workerPort(): MessagePort | undefined {
+    return this.#workerPort
   }
 }

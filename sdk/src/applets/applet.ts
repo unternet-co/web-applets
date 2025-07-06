@@ -23,7 +23,7 @@ export class Applet<DataType = any> extends EventTarget {
   #data: DataType;
   #dispatchEventAndHandler: typeof dispatchEventAndHandler;
   #messagePort: MessagePort;
-  #postMessage: MessagePort['postMessage'];
+  #workerPort: MessagePort;
   #width: number;
   #height: number;
 
@@ -38,8 +38,8 @@ export class Applet<DataType = any> extends EventTarget {
     this.#window = targetWindow;
     this.#dispatchEventAndHandler = dispatchEventAndHandler.bind(this);
 
-    // Set up message port
-    this.#createMessageChannel();
+    // Set up message ports
+    this.#createMessageChannels();
 
     // In case the window hasn't loaded, wait for load then
     const registerListener = (messageEvent: MessageEvent) => {
@@ -49,24 +49,25 @@ export class Applet<DataType = any> extends EventTarget {
         messageEvent.data.type === 'appletconnect'
       ) {
         debug.log('Applet', 'Recieved message', messageEvent.data);
-        this.#createMessageChannel();
+        this.#createMessageChannels();
         this.removeEventListener('message', registerListener);
       }
     };
     window.addEventListener('message', registerListener);
   }
 
-  #createMessageChannel() {
+  #createMessageChannels() {
     if (this.#messagePort) this.#messagePort.close();
     const messageChannel = new MessageChannel();
+    const workerChannel = new MessageChannel();
     const connectMessage: AppletConnectMessage = {
       type: 'appletconnect',
     };
     debug.log('Applet', 'Send message', connectMessage);
     this.#messagePort = messageChannel.port1;
     this.#messagePort.onmessage = this.#handleMessage.bind(this);
-    this.#window.postMessage(connectMessage, '*', [messageChannel.port2]);
-    this.#postMessage = this.#messagePort.postMessage.bind(this.#messagePort);
+    this.#workerPort = workerChannel.port1;
+    this.#window.postMessage(connectMessage, '*', [messageChannel.port2, workerChannel.port2]);
   }
 
   #handleMessage(messageEvent: MessageEvent) {
@@ -118,7 +119,7 @@ export class Applet<DataType = any> extends EventTarget {
     this.#dispatchEventAndHandler(actionsEvent);
   }
 
-  async sendAction<Result = any>(actionId: string, args?: any, options?: { timeoutDuration?: number }): Promise<Result> {
+  async sendAction<Result = any>(actionId: string, args?: any, options?: { timeoutDuration?: number, worker?: boolean }): Promise<Result> {
     const actionMessage: AppletActionMessage = {
       id: crypto.randomUUID(),
       type: 'action',
@@ -127,7 +128,8 @@ export class Applet<DataType = any> extends EventTarget {
     };
 
     return new Promise((resolve, reject) => {
-      this.#postMessage(actionMessage);
+      if (options?.worker === true) this.#workerPort.postMessage(actionMessage);
+      else this.#messagePort.postMessage(actionMessage);
 
       const timeout = setTimeout(() => {
         reject(
@@ -157,7 +159,11 @@ export class Applet<DataType = any> extends EventTarget {
         }
       };
 
-      this.#messagePort.addEventListener('message', callback);
+      if (options?.worker === true) {
+        this.#workerPort.addEventListener('message', callback)
+      } else {
+        this.#messagePort.addEventListener('message', callback)
+      }
     });
   }
 
@@ -171,7 +177,7 @@ export class Applet<DataType = any> extends EventTarget {
       type: 'data',
       data,
     };
-    this.#postMessage(dataMessage);
+    this.#messagePort.postMessage(dataMessage);
   }
 
   get window() {
