@@ -28,6 +28,7 @@ export class AppletScope<DataType = any> extends EventTarget {
   onconnect: (event: AppletEvent) => void;
   onactions: (event: AppletEvent) => void;
   ondata: (event: AppletEvent) => void;
+  onworkerport: (event: AppletEvent) => void;
 
   constructor(manifest?: Object | undefined) {
     super();
@@ -57,14 +58,19 @@ export class AppletScope<DataType = any> extends EventTarget {
       const port = event.ports[0];
       port.onmessage = this.#handleMessage(port);
       this.#connectedPorts.push(port);
-      this.#initialize(port);
+      const workerPort = event.ports[1];
+      this.#initialize(port, workerPort);
     }
   }
 
-  async #initialize(port: MessagePort) {
+  async #initialize(port: MessagePort, workerPort?: MessagePort) {
     const manifest = this.manifest ?? (await this.#loadManifest());
     this.#manifest = manifest || {};
     this.#actions = this.#actions || manifest?.actions || {};
+
+    // Dispatch worker port event
+    const workerEvent = new AppletEvent("workerport", { port: workerPort })
+    this.#dispatchEventAndHandler(workerEvent)
 
     // Register the applet
     const registerMessage: AppletRegisterMessage = {
@@ -76,6 +82,7 @@ export class AppletScope<DataType = any> extends EventTarget {
     port.postMessage(registerMessage);
     debug.log('AppletScope', 'Send message', registerMessage);
 
+    // Dispatch connect event
     const connectEvent = new AppletEvent('connect');
     this.#dispatchEventAndHandler(connectEvent);
 
@@ -261,5 +268,9 @@ export class AppletScope<DataType = any> extends EventTarget {
 
   get height(): number {
     return this.#height;
+  }
+
+  get workerPort(): MessagePort | undefined {
+    return this.#workerPort
   }
 }
