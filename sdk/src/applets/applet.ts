@@ -162,6 +162,7 @@ export class Applet<DataType = any> extends EventTarget {
 
       if (options?.worker === true) {
         this.#workerPort.addEventListener('message', callback)
+        this.#workerPort.start()
       } else {
         this.#messagePort.addEventListener('message', callback)
       }
