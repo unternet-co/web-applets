@@ -203,4 +203,11 @@ export class Applet<DataType = any> extends EventTarget {
   get height(): number {
     return this.#height;
   }
+
+  get ports() {
+    return {
+      applet: this.#messagePort,
+      worker: this.#workerPort,
+    }
+  }
 }
