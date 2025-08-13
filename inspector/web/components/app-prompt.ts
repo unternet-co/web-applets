@@ -34,17 +34,10 @@ export class AppPrompt extends LitElement {
     const userMessage = input.value.trim();
     if (!userMessage) return;
 
-    // Retrieve the last 10 interactions (default value) to provide context to the model.
-    const recentHistory = historyContext.getRecentInteractions();
-
     this.promptState = 'thinking';
     input.value = '';
 
-    const response = await model.getModelResponse(
-      userMessage,
-      recentHistory,
-      window.applet
-    );
+    const response = await model.getModelResponse(userMessage, window.applet);
 
     // contruct array for storing outputs from model
     const outputs: InteractionOutput[] = [];

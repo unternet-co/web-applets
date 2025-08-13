@@ -2,7 +2,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { store } from './store';
 import { generateObject, jsonSchema } from 'ai';
 import { Applet } from '@web-applets/sdk';
-import type { Interaction } from './history-context';
+import { historyContext } from './history-context';
 import { isEmpty } from '../utils';
 
 type SchemaResponse = {
@@ -11,18 +11,33 @@ type SchemaResponse = {
 };
 
 function getSystemPrompt(applet: Applet) {
-  if (!applet) return;
+  // Retrieve the last 10 interactions (default value) to provide context to the model.
+  const recentHistory = historyContext.getRecentInteractions();
 
-  const prompt = `\
-    In this environment you have access to a set of tools. Here are the functions available in JSONSchema format:
-    ${JSON.stringify(applet.actions)}
-    This is the start data that the tools have provided:  ${JSON.stringify(
-      applet.data
-    )}
-    Choose to respond as text and/or one or more functions to call to respond to the user's query.
-  `;
+  const baseSystemPrompt = [
+    'In this environment you have access to a set of tools and a set of the last ten historical messages and tools used.',
+  ];
+  if (recentHistory.length > 0)
+    baseSystemPrompt.push(
+      `Here is a a history of the last ten messages and tools used for context: ${JSON.stringify(
+        recentHistory
+      )}.`
+    );
 
-  return prompt;
+  if (applet) {
+    baseSystemPrompt.push(
+      `Here are the functions available in JSONSchema format:
+        ${JSON.stringify(applet.actions)}
+      This is the start data that the tools have provided:
+        ${JSON.stringify(applet.data)}.`
+    );
+  }
+
+  baseSystemPrompt.push(
+    `Choose to respond as text and/or one or more functions to call to respond to the user's query.`
+  );
+
+  return baseSystemPrompt.join(' ');
 }
 
 function getResponseSchema(applet: Applet) {
@@ -86,14 +101,7 @@ function getResponseSchema(applet: Applet) {
   return jsonSchema<SchemaResponse>(responseSchema);
 }
 
-async function getModelResponse(
-  prompt: string,
-  history: Interaction[],
-  applet: Applet
-) {
-  const contextText = JSON.stringify(history);
-  const fullPrompt = contextText ? `${contextText}\n${prompt}` : prompt;
-
+async function getModelResponse(prompt: string, applet: Applet) {
   /**
    * @TODO
    *
@@ -113,7 +121,7 @@ async function getModelResponse(
 
   const { object } = await generateObject({
     model,
-    prompt: fullPrompt,
+    prompt: prompt,
     system: systemPrompt,
     schema: responseSchema,
   });
